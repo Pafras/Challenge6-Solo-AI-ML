@@ -1,0 +1,165 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Guitar Chord Chart Sprint</title>
+<style>
+:root{--bg:#faf9f7;--card:#fff;--ink:#1c1a17;--dim:#6b665f;
+      --line:#e5e1db;--accent:#c2410c;--done:#15803d}
+@media (prefers-color-scheme:dark){:root{--bg:#161513;--card:#1f1e1b;--ink:#eceae6;
+      --dim:#9b958c;--line:#332f2a;--accent:#fb923c;--done:#4ade80}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+     font:15px/1.55 ui-sans-serif,-apple-system,system-ui,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:32px 20px 80px}
+h1{font-size:26px;margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:var(--dim);font-size:13px;margin:0 0 20px;white-space:pre-line}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:10px 0 6px}
+.bar>i{display:block;height:100%;background:var(--done);width:0;transition:width .3s}
+.count{font-size:13px;color:var(--dim);margin-bottom:8px}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);
+   margin:34px 0 12px;font-weight:600}
+.day{background:var(--card);border:1px solid var(--line);border-radius:12px;
+     padding:14px 16px;margin-bottom:10px}
+.day.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.day>header{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.day h3{font-size:15px;margin:0;font-weight:600}
+.tag{font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--dim)}
+.now{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--accent);color:#fff}
+ul{list-style:none;margin:0;padding:0}
+li{display:flex;gap:10px;align-items:flex-start;padding:4px 0}
+li input{margin:3px 0 0;accent-color:var(--done);flex:none}
+li label{cursor:pointer}
+li:has(:checked) label{color:var(--dim);text-decoration:line-through}
+li.note{display:list-item;list-style:none;color:var(--dim);font-size:13px;padding-left:0}
+code{font-size:.9em;background:var(--line);padding:1px 5px;border-radius:4px}
+footer{margin-top:40px;font-size:12px;color:var(--dim)}
+</style>
+<div class="wrap">
+<h1>Guitar Chord Chart Sprint</h1>
+<p class="sub">Solo challenge Academy · 7–18 September 2026<br>Ingredient: Foundation Models &amp; native AI (3★) · Training models with PyTorch (4★, ganti Create ML) · Integrating models with Core ML (3★)<br>&gt; Learn how to train a model that listens to my guitar playing and automatically turns it into a chord chart.<br>Pipeline: <code>mic (AVAudioEngine) → mel-spectrogram → CNN (PyTorch) → coremltools → Core ML on-device → chord sequence → chord chart UI → Foundation Models komentar progression</code><br>Konteks lengkap + riwayat pivot: lihat <code>CLAUDE.md</code>.<br><strong>Asumsi yang masih bisa diubah:</strong> vocabulary mulai dari 5–6 open chord; dataset public dulu, rekaman sendiri buat test set.<br>- <strong>Preprocessing parity.</strong> Mel-spectrogram di Swift harus persis sama dengan training di PyTorch. Beda window / hop / normalisasi = akurasi anjlok tanpa error apa pun. Penyebab kegagalan nomor satu.<br>- <strong>Segmentasi sequence.</strong> Chord chart butuh tahu <em>kapan</em> chord ganti, bukan cuma chord apa. Sliding window + dedupe berurutan; onset detection kalau perlu.<br>- <strong>Chord mirip.</strong> C vs Am vs Em beda tipis secara harmonik. Confusion matrix wajib dilihat, bukan cuma akurasi total.<br>- <strong>Domain gap.</strong> Dataset public direkam beda mic dan ruangan dari iPhone kamu.</p>
+<div class="bar"><i id="fill"></i></div>
+<div class="count" id="count"></div>
+<h2>Risiko utama</h2>
+<ul>
+<li class="note"><strong>Preprocessing parity.</strong> Mel-spectrogram di Swift harus persis sama dengan training di PyTorch. Beda window / hop / normalisasi = akurasi anjlok tanpa error apa pun. Penyebab kegagalan nomor satu.</li>
+<li class="note"><strong>Segmentasi sequence.</strong> Chord chart butuh tahu <em>kapan</em> chord ganti, bukan cuma chord apa. Sliding window + dedupe berurutan; onset detection kalau perlu.</li>
+<li class="note"><strong>Chord mirip.</strong> C vs Am vs Em beda tipis secara harmonik. Confusion matrix wajib dilihat, bukan cuma akurasi total.</li>
+<li class="note"><strong>Domain gap.</strong> Dataset public direkam beda mic dan ruangan dari iPhone kamu.</li>
+</ul>
+<h2>Engage</h2>
+<section class="day" data-date="2026-09-07"><header><h3>Hari 1 — Senin, 7 Sep</h3>
+<span class="tag">Foundation Models</span>
+</header><ul>
+<li><input type="checkbox" id="t0"><label for="t0">Kunci scope: chord chart dari rekaman, 5–6 open chord</label></li>
+<li><input type="checkbox" id="t1"><label for="t1">Tulis 1 paragraf problem statement / use-case</label></li>
+<li><input type="checkbox" id="t2"><label for="t2">Coba Foundation Models framework — 1 prompt sederhana</label></li>
+<li><input type="checkbox" id="t3"><label for="t3">Setup env Python: PyTorch, torchaudio, coremltools</label></li>
+</ul>
+</section>
+<h2>Investigate</h2>
+<section class="day" data-date="2026-09-08"><header><h3>Hari 2 — Selasa, 8 Sep</h3>
+<span class="tag">PyTorch</span>
+</header><ul>
+<li><input type="checkbox" id="t4"><label for="t4">Pilih &amp; verifikasi dataset chord (cek lisensi + jumlah sample per kelas)</label></li>
+<li><input type="checkbox" id="t5"><label for="t5">Load 1 file audio, render mel-spectrogram, cek bentuk tensor</label></li>
+<li><input type="checkbox" id="t6"><label for="t6">Kunci parameter audio: sample rate, durasi window, n_mels, hop length</label></li>
+<li><input type="checkbox" id="t7"><label for="t7">Riset batasan nyata Foundation Models (bukan cuma dokumentasi)</label></li>
+</ul>
+</section>
+<section class="day" data-date="2026-09-09"><header><h3>Hari 3 — Rabu, 9 Sep</h3>
+<span class="tag">PyTorch</span>
+</header><ul>
+<li><input type="checkbox" id="t8"><label for="t8">Bangun Dataset + DataLoader + preprocessing pipeline</label></li>
+<li><input type="checkbox" id="t9"><label for="t9">Sanity check: CNN kecil, overfit 1 batch dulu</label></li>
+<li><input type="checkbox" id="t10"><label for="t10">Training kecil 2 kelas, pastikan loss turun end-to-end</label></li>
+<li><input type="checkbox" id="t11"><label for="t11">Putuskan: lanjut apa adanya, atau ubah fitur/arsitektur</label></li>
+</ul>
+</section>
+<h2>Act — Minggu 1</h2>
+<section class="day" data-date="2026-09-10"><header><h3>Hari 4 — Kamis, 10 Sep</h3>
+<span class="tag">PyTorch</span>
+</header><ul>
+<li><input type="checkbox" id="t12"><label for="t12">Finalisasi 5–6 chord yang dipakai</label></li>
+<li><input type="checkbox" id="t13"><label for="t13">Split dataset train/val/test, cek balance per kelas</label></li>
+<li><input type="checkbox" id="t14"><label for="t14">Tambah augmentation: noise, gain, time shift</label></li>
+<li><input type="checkbox" id="t15"><label for="t15">Training penuh, catat baseline akurasi</label></li>
+</ul>
+</section>
+<section class="day" data-date="2026-09-11"><header><h3>Hari 5 — Jumat, 11 Sep</h3>
+<span class="tag">PyTorch</span>
+</header><ul>
+<li><input type="checkbox" id="t16"><label for="t16">Analisis confusion matrix</label></li>
+<li><input type="checkbox" id="t17"><label for="t17">Catat chord yang sering ketuker + kenapa</label></li>
+<li><input type="checkbox" id="t18"><label for="t18">Tuning: learning rate / arsitektur / data untuk kelas lemah</label></li>
+<li><input type="checkbox" id="t19"><label for="t19">Simpan checkpoint v1 dan v2, bandingkan</label></li>
+</ul>
+</section>
+<section class="day" data-date="2026-09-12"><header><h3>Hari 6 — Sabtu, 12 Sep <em>(buffer)</em></h3>
+<span class="tag">Core ML</span>
+</header><ul>
+<li><input type="checkbox" id="t20"><label for="t20">Convert PyTorch → Core ML pakai coremltools</label></li>
+<li><input type="checkbox" id="t21"><label for="t21">Verifikasi output Core ML sama dengan PyTorch (bandingkan numerik)</label></li>
+<li><input type="checkbox" id="t22"><label for="t22">Setup project SwiftUI baru + mic permission + AVAudioEngine</label></li>
+</ul>
+</section>
+<section class="day" data-date="2026-09-13"><header><h3>Hari 7 — Minggu, 13 Sep <em>(buffer)</em></h3>
+<span class="tag">Core ML</span>
+</header><ul>
+<li><input type="checkbox" id="t23"><label for="t23">Replikasi mel-spectrogram di Swift, cocokkan dengan output PyTorch</label></li>
+<li><input type="checkbox" id="t24"><label for="t24">Jalankan prediksi per window, print chord stream ke console</label></li>
+<li><input type="checkbox" id="t25"><label for="t25">Dedupe chord berurutan jadi sequence (C C C G G → C G)</label></li>
+</ul>
+</section>
+<h2>Act — Minggu 2</h2>
+<section class="day" data-date="2026-09-14"><header><h3>Hari 8 — Senin, 14 Sep</h3>
+<span class="tag">Core ML</span>
+</header><ul>
+<li><input type="checkbox" id="t26"><label for="t26">UI rekam session: start / stop, indikator listening</label></li>
+<li><input type="checkbox" id="t27"><label for="t27">Render chord chart dari sequence hasil deteksi</label></li>
+<li><input type="checkbox" id="t28"><label for="t28">Confidence threshold + handle window tanpa suara</label></li>
+</ul>
+</section>
+<section class="day" data-date="2026-09-15"><header><h3>Hari 9 — Selasa, 15 Sep</h3>
+<span class="tag">Foundation Models</span>
+</header><ul>
+<li><input type="checkbox" id="t29"><label for="t29">Integrasi Foundation Models: progression → komentar natural</label></li>
+<li><input type="checkbox" id="t30"><label for="t30">Test beberapa progression (I-V-vi-IV, 12-bar, dll)</label></li>
+<li><input type="checkbox" id="t31"><label for="t31">Rapikan alur end-to-end: rekam → chart → komentar</label></li>
+</ul>
+</section>
+<section class="day" data-date="2026-09-16"><header><h3>Hari 10 — Rabu, 16 Sep</h3>
+<span class="tag">Core ML</span>
+</header><ul>
+<li><input type="checkbox" id="t32"><label for="t32">Test di iPhone fisik, bukan simulator</label></li>
+<li><input type="checkbox" id="t33"><label for="t33">Rekam test set sendiri, ukur akurasi di kondisi nyata</label></li>
+<li><input type="checkbox" id="t34"><label for="t34">Perbaiki bug: mic gain, noise ruangan, jarak gitar</label></li>
+</ul>
+</section>
+<h2>Cooldown</h2>
+<section class="day" data-date="2026-09-17"><header><h3>Hari 11 — Kamis, 17 Sep</h3>
+</header><ul>
+<li><input type="checkbox" id="t35"><label for="t35">Rekam video demo (30–60 detik)</label></li>
+<li><input type="checkbox" id="t36"><label for="t36">Tulis model card: dataset, arsitektur, metrik, keterbatasan</label></li>
+<li><input type="checkbox" id="t37"><label for="t37">Kumpulkan screenshot &amp; catatan proses</label></li>
+</ul>
+</section>
+<section class="day" data-date="2026-09-18"><header><h3>Hari 12 — Jumat, 18 Sep</h3>
+</header><ul>
+<li><input type="checkbox" id="t38"><label for="t38">Review &amp; polish terakhir</label></li>
+<li><input type="checkbox" id="t39"><label for="t39">Submit ke Academy</label></li>
+<li><input type="checkbox" id="t40"><label for="t40">Refleksi: apa yang dipelajari, apa langkah berikutnya</label></li>
+</ul>
+</section>
+<footer>Generated from <code>CHALLENGE.md</code> by <code>build_tracker.py</code>.
+Centang di browser tidak tersimpan — minta Claude Code edit markdown-nya, lalu regenerate.</footer>
+</div>
+<script>
+const boxes=[...document.querySelectorAll('input')];
+const tally=()=>{const n=boxes.filter(b=>b.checked).length;
+  fill.style.width=(n/boxes.length*100)+'%';
+  count.textContent=`${n}/${boxes.length} selesai (${Math.round(n/boxes.length*100)}%)`;};
+boxes.forEach(b=>b.addEventListener('change',tally));tally();
+const d=document.querySelector(`.day[data-date="${new Date().toLocaleDateString('sv')}"]`);
+if(d){d.classList.add('today');
+  d.querySelector('header').insertAdjacentHTML('beforeend','<span class="now">hari ini</span>');}
+</script>

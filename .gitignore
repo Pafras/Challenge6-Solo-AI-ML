@@ -1,0 +1,19 @@
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Datasets, checkpoints and converted models — too big for git
+data/
+*.wav
+*.mp3
+*.pt
+*.pth
+*.mlmodel
+*.mlpackage/
+
+# Xcode
+xcuserdata/
+*.xcuserstate
+DerivedData/
