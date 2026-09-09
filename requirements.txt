@@ -1,0 +1,9 @@
+# Install coremltools together with torch from the start: it pins a narrow
+# range of torch versions, and finding that out on Day 9 means reinstalling
+# everything mid-conversion.
+torch
+torchvision
+coremltools
+numpy
+matplotlib
+opencv-python
