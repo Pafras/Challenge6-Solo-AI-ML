@@ -118,7 +118,9 @@ accounts, a database, a progression system, 3D graphics.
   feeling broken.
 - **Preprocessing parity.** Face crop, resize and normalisation in Swift
   must match training in PyTorch exactly. A mismatch drops accuracy
-  silently, with no error.
+  silently, with no error. Note that Core ML ML Program runs float16 by
+  default, so a gap around 1e-4 against PyTorch is expected and is not the
+  bug you are looking for — `scripts/test_conversion.py` measures it.
 - **The app eating the training.** Days 9–11 are hard-capped. Cut app scope,
   never training days.
 - **Two days lost to the pivot, one to the deadline.** Days 1–2 went to the
