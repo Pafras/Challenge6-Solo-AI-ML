@@ -1,7 +1,9 @@
-# Install coremltools together with torch from the start: it pins a narrow
-# range of torch versions, and finding that out on Day 9 means reinstalling
-# everything mid-conversion.
-torch
+# torch is pinned to 2.7.0 because that is the newest version coremltools 9.0
+# has actually been tested against — 2.8 only raises a warning today, but the
+# failure would land on Day 9, which has no slack, under a model already
+# trained. Nothing this project uses changed between 2.7 and 2.8.
+# Re-check when a newer coremltools ships: if it covers 2.8, unpinning is free.
+torch==2.7.0
 torchvision
 coremltools
 numpy
