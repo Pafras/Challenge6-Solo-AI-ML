@@ -1,117 +1,140 @@
-# Project Context — Guitar Chord Recognizer (Academy Solo Challenge)
+# Project Context — Emotion-to-Beatbox (Academy Solo Challenge)
 
-This file exists so Claude Code has full context on this project without needing
-it re-explained. It summarizes a planning discussion that happened before any
-code was written. Read this before making architectural suggestions or asking
-"what is this project for" — the reasoning behind each decision is included so
-you don't re-litigate settled trade-offs.
+Read this before making architectural suggestions or asking "what is this
+project for". The reasoning behind each decision is included so settled
+trade-offs don't get re-litigated.
 
-## What this project is
+## The actual goal
 
-An iOS app that listens to guitar playing, recognizes the chords being played
-in real time using a custom-trained ML model, and automatically turns a
-recorded jam session into a chord chart — instead of the player having to
-remember or manually transcribe what they played.
+**The point of this project is to learn how to train a model properly — with
+a lot of options genuinely explored and compared.** Architecture,
+hyperparameters, augmentation, class balance, transfer learning: each one
+tried, measured, logged, compared. Not "get one model that works".
 
-**Challenge statement:**
-> Learn how to train a model that listens to my guitar playing and
-> automatically turns it into a chord chart.
+The macOS app exists because building one is part of the challenge, and
+because a demo you can play beats a notebook full of numbers. It is
+deliberately kept simple. **If the app starts eating training days, cut the
+app, not the training.**
+
+**Final submission is Thursday 17 September**, a day earlier than the sprint's nominal end. Days 3–8 are training (6 days, untouched). Days 9–10 are the app (2 days). Day 11 is submission day, not a working day — nothing may be stacked on it.
+
+## What the product is
+
+A macOS app where facial expressions control a beatbox, plus a quest system
+where the user recreates a target beat by performing an expression sequence.
+
+```text
+FACE → EMOTION → BEAT → AUDIO → QUEST → SCORE
+```
 
 ## Context: what kind of project this is
 
-This is a solo challenge at an Apple Developer Academy (Bali), running
-7–18 September 2026 (12 days). The Academy's own framework structures the
-work as: **Engage (1 day) → Investigate (2 days) → Act (2 days, end of week 1)
-→ Act (5 days, week 2) → Cooldown**. The two extra weekend days (Sat–Sun
-between week 1 and week 2) are being used as informal buffer, not part of the
-official structure.
+Solo challenge at an Apple Developer Academy (Bali), 7–17 September 2026.
+Final submission Thursday 17 September. Academy framework: **Engage (1d) → Investigate (2d) → Act (2d,
+end of week 1) → Act (5d, week 2) → Cooldown**. The Sat–Sun between week 1
+and week 2 is informal buffer.
 
-The Academy also provided three "ingredients" this challenge must combine,
-each rated by how central it should be:
-- **Foundation models & native AI capabilities** (3★) — what Apple already
-  offers out of the box, explored before training anything custom.
-- **Training models with Create ML** (4★, originally) — building a model from
-  your own data.
-- **Integrating models with Core ML** (3★) — getting a trained model running
-  inside the app.
+Academy ingredients, as weighted by the person doing the work (not by the
+brief's star rating):
 
-## How the direction got here (read this before suggesting alternatives)
+- **Training models with PyTorch** — the core. Everything else is secondary.
+- **Core ML** — on the critical path, because a PyTorch model cannot run in
+  a macOS app without conversion. One day, convert and verify.
+- **Foundation models & native AI** — optional. Noted as a possible addition
+  in `CHALLENGE.md` under "Opsional", not scheduled.
 
-The project went through several pivots during planning. Each one is recorded
-here so the reasoning isn't lost:
+## How the direction got here (read before suggesting alternatives)
 
-1. **Started as hand-gesture recognition** (static hand poses via Vision's
-   hand-pose landmarks, classified with Create ML) for a "silent
-   communication" use case. This was the original plan built around the
-   three ingredients above.
-2. **Mentor feedback #1:** the Create ML approach was too small in scope for
-   a solo challenge — Create ML's built-in classifier is close to
-   drag-and-drop, with little real ML engineering (no architecture design,
-   no training loop, no hyperparameter work).
-3. **Mentor feedback #2:** train the model in **PyTorch or TensorFlow**
-   instead of Create ML's no-code trainer, then convert to Core ML with
-   `coremltools`. This became a firm decision — **PyTorch was chosen** over
-   TensorFlow because Apple's `coremltools` has a more actively maintained,
-   first-class PyTorch conversion workflow, and PyTorch is more transferable
-   to future AI/ML work.
-4. **Mentor feedback #3:** hand-gesture recognition is arguably not novel
-   enough, since gesture-based interaction already exists natively on
-   iPhone. Suggested pivoting to a topic drawn from a personal hobby instead.
-5. **Pivoted to music** (the person's hobbies include guitar and drums).
-   Guitar was chosen over drums as the primary instrument (drums remain a
-   possible future extension: drum-hit classification would need an onset
-   detection step before classification, which is a meaningfully different,
-   two-stage pipeline).
-6. Considered three product directions built on top of "recognize the
-   chord being played": (a) a real-time practice companion that checks your
-   playing against a target progression, (b) auto-generating a chord chart
-   from a recorded jam/improvisation, (c) an ear-training quiz game.
-   **(b) was chosen** — it's the most personally motivated (solves a real
-   "I forgot what I just played" problem for an improvising musician), the
-   easiest to demo, and doesn't require pre-authoring a "target song" before
-   the feature is useful.
+1. Started as **hand-gesture recognition** with Create ML.
+2. **Mentor feedback #1:** Create ML's built-in classifier is too close to
+   drag-and-drop — no architecture design, no training loop, no
+   hyperparameter work. Too small for a solo challenge.
+3. **Mentor feedback #2:** train in **PyTorch**, convert with `coremltools`.
+   Firm decision. PyTorch over TensorFlow because Apple's `coremltools` has a
+   first-class, actively maintained PyTorch path, and PyTorch transfers
+   better to future ML work.
+4. **Mentor feedback #3:** gesture recognition isn't novel — iPhone already
+   does it natively. Pivot to a personal hobby instead.
+5. Went to **guitar chord recognition**. Dropped: weak dataset situation,
+   and the output was a static chart rather than something interactive.
+6. **Current: Emotion-to-Beatbox.** Facial expression as input (large public
+   datasets exist), music as output, quest layer to make it demoable. Full
+   spec in `docs/spec-emotion-beatbox.md`.
 
-**Net effect on the ingredients:** Create ML is effectively replaced by
-PyTorch for the actual model training (per mentor feedback #2) — Core ML is
-still the integration layer, and Foundation Models is still used, now as a
-natural-language layer that comments on the detected chord progression
-(e.g., "this progression is a classic pop/folk pattern") rather than as the
-core recognition mechanism.
+## Technical approach
 
-## Technical approach (current plan)
+- **Input:** webcam frame → face detection → face crop.
+- **Model:** facial-expression classifier trained in PyTorch. The
+  architecture is not pre-decided — comparing small CNN vs ResNet18 vs
+  MobileNet, from-scratch vs fine-tuned, *is* the exercise.
+- **Training loop:** hand-written, not `Trainer`-wrapped. Config-driven so
+  swapping an option doesn't mean editing code.
+- **Conversion:** `coremltools` PyTorch path → `.mlpackage`, verified
+  numerically against PyTorch on the same input.
+- **macOS app:** SwiftUI + Vision (face detection) + Core ML (inference) +
+  AVFoundation (audio). Kept small.
+- **Beat:** symbolic tokens (`K` kick, `H` hi-hat, `S` snare). Rule-based
+  emotion → beat mapping, a plain lookup table. No ML beat generator — it
+  would add nothing to the learning goal.
+- **Audio engine:** sample playback on a BPM clock. Not AI, doesn't need
+  to be.
+- **Quest:** 2–3 hardcoded target sequences, compared against the detected
+  sequence, scored on sequence match.
 
-- **Input:** short audio clips of guitar chords / a recorded jam session
-  (via `AVAudioEngine` on-device).
-- **Features:** mel-spectrogram (or similar) extracted from the audio.
-- **Model:** a small CNN (or similarly lightweight architecture) trained in
-  PyTorch to classify chords from the spectrogram. Kept intentionally small —
-  the input is a spectrogram of a few seconds of audio, not raw video, so
-  the model does not need to be large to be a legitimate ML engineering
-  exercise.
-- **Conversion:** `coremltools`' PyTorch conversion workflow, producing a
-  `.mlmodel` / `.mlpackage` for on-device inference.
-- **iOS integration:** SwiftUI app (the person's existing stack is SwiftUI
-  with MVVM/MVC), Core ML for inference, a UI that renders the detected
-  chord sequence as a chart.
-- **Foundation Models layer:** after a chord sequence is detected, pass it
-  to Apple's on-device Foundation Models framework to generate a short
-  natural-language comment about the progression (style, similar songs,
-  possible next chord) — free, on-device, no API key required.
+## Experiment discipline
 
-## What's still open (do not assume these are decided)
+This is where the learning actually happens, so it has rules:
 
-- The exact 12-day / Engage–Investigate–Act–Cooldown breakdown has **not**
-  been finalized for this audio-based direction — an earlier day-by-day plan
-  and tracker existed for the hand-gesture version and is now obsolete.
-  If asked to help plan the days, build a fresh breakdown around: audio data
-  collection → spectrogram pipeline → PyTorch model training/iteration →
-  coremltools conversion → SwiftUI integration → Foundation Models layer →
-  device testing → demo/documentation (cooldown).
-  Do **not** assume static hand-pose landmarks, Create ML, or a gesture
-  vocabulary are still part of the project — they were explicitly replaced.
-- Exact chord vocabulary (how many/which chords to recognize first) is not
-  yet fixed. Start narrow (a handful of common open chords) and expand only
-  if time allows, consistent with the "keep scope tight" lesson learned
-  from the original gesture-recognition scoping mistake.
-- Dataset size/collection method (self-recorded vs. any public guitar-chord
-  audio datasets) has not been decided yet.
+- One run = one row in `docs/experiments.md`. Unlogged runs don't count.
+- Change one variable per run. Change two and the result is uninterpretable.
+- Seed and split are fixed and saved to disk. Runs are only comparable if
+  the data underneath them is identical.
+- The test set is opened once, on Day 8. All tuning uses the val set.
+- No MLflow, no Weights & Biases. A markdown table is enough for ~30 runs.
+
+## Scope discipline
+
+**P0:** the training experiments and the log; expression recognition working
+in real time; a simple app where an expression changes the sound.
+
+**P1:** quest + scoring — now a stretch goal on Day 10, not a scheduled
+deliverable. Free mode (expression changes the sound live) carries the demo
+on its own.
+
+**Cut before cutting training days:** quest complexity, UI polish, timing
+accuracy, Foundation Models, emotion intensity, ML beat generator.
+
+Explicitly do NOT build: a custom face detector, a cloud backend, user
+accounts, a database, a progression system, 3D graphics.
+
+## Known risks
+
+- **Fiddling without logging.** The number-one risk for this specific goal.
+  Twenty runs and no results table means nothing was learned, just time
+  spent.
+- **Prediction jitter.** Real-time predictions flicker between frames even
+  when the user holds still. Temporal smoothing (majority vote over a short
+  window + confidence threshold) is mandatory. Number-one cause of the demo
+  feeling broken.
+- **Preprocessing parity.** Face crop, resize and normalisation in Swift
+  must match training in PyTorch exactly. A mismatch drops accuracy
+  silently, with no error.
+- **The app eating the training.** Days 9–11 are hard-capped. Cut app scope,
+  never training days.
+- **Two days lost to the pivot, one to the deadline.** Days 1–2 went to the
+  previous direction, and submission moved up to the 17th. The spec's 12 days
+  are compressed into 9 (Days 3–11). The app absorbed the cut, not training.
+- **No buffer on the last day.** Day 11 is submission. The model card is
+  drafted on Day 8 while the numbers are fresh, and a backup demo is recorded
+  on Day 10, so a slip on Wednesday doesn't mean submitting nothing.
+
+## What's still open
+
+- Dataset choice (FER2013 vs RAF-DB vs CK+). Decide fast, don't hunt for the
+  perfect one. Day 3.
+- Final emotion class list. Starts at 4 (happy / neutral / angry / surprise),
+  chosen for what a user can actually perform on demand in front of a webcam,
+  not for what scores best.
+- Whether the mentor counts transfer learning as "training a model" — worth
+  asking, but the plan compares scratch and pretrained either way, so the
+  answer changes framing rather than work.

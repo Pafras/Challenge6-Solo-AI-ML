@@ -1,120 +1,132 @@
-# Guitar Chord Chart Sprint
+# Emotion-to-Beatbox Sprint
 
-Solo challenge Academy · 7–18 September 2026
-Ingredient: Foundation Models & native AI (3★) · Training models with PyTorch (4★, ganti Create ML) · Integrating models with Core ML (3★)
+Solo challenge Academy · 7–17 September 2026 · **submit Kamis 17 Sep**
+Ingredient: Training models with PyTorch (inti) · Integrating models with Core ML (jalur wajib ke app) · Foundation Models & native AI (opsional, kalau sempat)
 
-> Learn how to train a model that listens to my guitar playing and automatically turns it into a chord chart.
+> Ekspresi wajah jadi alat musik. Muka user ngendaliin beatbox, terus ada quest yang minta user niruin urutan ekspresi buat ngerecreate satu beat.
 
-Pipeline: `mic (AVAudioEngine) → mel-spectrogram → CNN (PyTorch) → coremltools → Core ML on-device → chord sequence → chord chart UI → Foundation Models komentar progression`
+**Tujuan belajar utama: ngerti cara training model, dengan banyak opsi yang beneran diutak-atik dan dibandingin** — arsitektur, hyperparameter, augmentation, class balance, transfer learning. Bukan sekadar dapet satu model yang jalan. Aplikasi macOS tetap dibuat karena itu bagian dari challenge, tapi sengaja dibikin simple.
 
-Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`.
+Pipeline: `webcam → Vision face detect → CNN ekspresi (PyTorch) → coremltools → Core ML on-device → emosi → beat token (K/H/S) → AVFoundation audio → quest → score`
 
-**Asumsi yang masih bisa diubah:** vocabulary mulai dari 5–6 open chord; dataset public dulu, rekaman sendiri buat test set.
+Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spec-emotion-beatbox.md`. Hasil tiap eksperimen training: `docs/experiments.md`.
 
-> **Cara pakai bareng Claude Code:** minta Claude Code mencentang tugas (mis. "centang tugas coremltools di hari 6"), lalu `python3 build_tracker.py` untuk regenerate `tracker.html`.
+**Pembagian hari:** Hari 3–8 training (6 hari, inti). Hari 9–10 app macOS (2 hari, simple). Hari 11 submit. Deadline maju sehari dari rencana awal — yang dipotong app, bukan training.
+
+**Asumsi yang masih bisa diubah:** mulai 4 kelas emosi (happy/neutral/angry/surprise); dataset public (FER2013 dkk); beat generator rule-based, ML beat generator dibuang.
+
+**Catatan jadwal:** Hari 1–2 kepakai arah lama (guitar chord), deadline maju ke Kamis 17 Sep. Rencana 12 hari di spec dipadatkan jadi 9 hari, Hari 3–11.
+
+> **Cara pakai bareng Claude Code:** minta Claude Code mencentang tugas (mis. "centang tugas coremltools di hari 9"), lalu `python3 build_tracker.py` untuk regenerate `tracker.html`.
+
+## Aturan eksperimen
+
+- Satu run = satu baris di `docs/experiments.md`. Config, metrik, catatan. Kalau nggak dicatat, nggak kehitung.
+- Ganti satu variabel per run. Ganti dua, nggak akan tau mana yang ngefek.
+- Seed dikunci, split dikunci. Kalau dua-duanya berubah tiap run, angkanya nggak bisa dibandingin.
+- Test set dibuka sekali di akhir. Semua tuning pakai val set.
 
 ## Risiko utama
 
-- **Preprocessing parity.** Mel-spectrogram di Swift harus persis sama dengan training di PyTorch. Beda window / hop / normalisasi = akurasi anjlok tanpa error apa pun. Penyebab kegagalan nomor satu.
-- **Segmentasi sequence.** Chord chart butuh tahu *kapan* chord ganti, bukan cuma chord apa. Sliding window + dedupe berurutan; onset detection kalau perlu.
-- **Chord mirip.** C vs Am vs Em beda tipis secara harmonik. Confusion matrix wajib dilihat, bukan cuma akurasi total.
-- **Domain gap.** Dataset public direkam beda mic dan ruangan dari iPhone kamu.
+- **Ngoprek tanpa nyatet.** Risiko nomor satu buat tujuan belajar ini. 20 run tanpa tabel hasil = nggak belajar apa-apa, cuma sibuk.
+- **Prediksi kedip-kedip.** Frame-by-frame prediksi loncat-loncat walau muka diem. Temporal smoothing (majority vote + confidence threshold) wajib.
+- **Preprocessing parity.** Crop, resize, normalisasi di Swift harus persis sama dengan training PyTorch. Beda dikit = akurasi anjlok tanpa error apa pun.
+- **Emosi mirip.** Angry vs disgust, fear vs surprise gampang ketuker. Lihat confusion matrix, bukan cuma akurasi total. Kelas yang jelek dibuang dari mapping.
+- **App nyedot waktu training.** App cuma dapat 2 hari. Kalau melar, potong quest, jangan potong hari training.
+- **Hari terakhir gak punya buffer.** Hari 11 itu hari submit, bukan hari kerja. Model card didraft Hari 8, demo direkam Hari 10 sebagai cadangan. Jangan numpuk apa pun di Kamis.
 
 ---
 
-## Engage
-
-### Hari 1 — Senin, 7 Sep
-`Foundation Models`
-
-- [ ] Kunci scope: chord chart dari rekaman, 5–6 open chord
-- [ ] Tulis 1 paragraf problem statement / use-case
-- [ ] Coba Foundation Models framework — 1 prompt sederhana
-- [ ] Setup env Python: PyTorch, torchaudio, coremltools
-
 ## Investigate
-
-### Hari 2 — Selasa, 8 Sep
-`PyTorch`
-
-- [ ] Pilih & verifikasi dataset chord (cek lisensi + jumlah sample per kelas)
-- [ ] Load 1 file audio, render mel-spectrogram, cek bentuk tensor
-- [ ] Kunci parameter audio: sample rate, durasi window, n_mels, hop length
-- [ ] Riset batasan nyata Foundation Models (bukan cuma dokumentasi)
 
 ### Hari 3 — Rabu, 9 Sep
 `PyTorch`
 
-- [ ] Bangun Dataset + DataLoader + preprocessing pipeline
-- [ ] Sanity check: CNN kecil, overfit 1 batch dulu
-- [ ] Training kecil 2 kelas, pastikan loss turun end-to-end
-- [ ] Putuskan: lanjut apa adanya, atau ubah fitur/arsitektur
+- [ ] Setup env: venv, PyTorch, torchvision, opencv, requirements.txt
+- [ ] Pilih & download dataset ekspresi (FER2013 / RAF-DB) — cek lisensi + jumlah sample per kelas
+- [ ] Bikin Dataset + DataLoader, render 1 batch buat verifikasi label bener
+- [ ] Kunci 4 kelas emosi (tes di depan kamera dulu, mana yang bisa dipasang on-demand) + mapping ke K/H/S
+- [ ] Kunci seed + split train/val/test, simpan split-nya ke file biar konsisten antar run
 
 ## Act — Minggu 1
 
 ### Hari 4 — Kamis, 10 Sep
 `PyTorch`
 
-- [ ] Finalisasi 5–6 chord yang dipakai
-- [ ] Split dataset train/val/test, cek balance per kelas
-- [ ] Tambah augmentation: noise, gain, time shift
-- [ ] Training penuh, catat baseline akurasi
+- [ ] Tulis training loop sendiri: forward, loss, backward, step, eval per epoch
+- [ ] Sanity check: overfit 1 batch sampai loss mendekati nol
+- [ ] Run baseline: CNN kecil, setting default, catat akurasi val
+- [ ] Bikin `docs/experiments.md`, isi baris pertama = baseline
+- [ ] Bikin script train yang baca config, biar ganti opsi nggak perlu edit kode
 
 ### Hari 5 — Jumat, 11 Sep
 `PyTorch`
 
-- [ ] Analisis confusion matrix
-- [ ] Catat chord yang sering ketuker + kenapa
-- [ ] Tuning: learning rate / arsitektur / data untuk kelas lemah
-- [ ] Simpan checkpoint v1 dan v2, bandingkan
+- [ ] Eksperimen arsitektur: CNN kecil vs CNN lebih dalam
+- [ ] Eksperimen arsitektur: ResNet18 pretrained (fine-tune)
+- [ ] Eksperimen arsitektur: MobileNet pretrained (fine-tune)
+- [ ] Bandingin akurasi vs jumlah parameter vs waktu training, catat semua
+- [ ] Simpulin: from-scratch vs transfer learning, menang mana dan kenapa
 
-### Hari 6 — Sabtu, 12 Sep *(buffer)*
-`Core ML`
+### Hari 6 — Sabtu, 12 Sep
+`PyTorch`
 
-- [ ] Convert PyTorch → Core ML pakai coremltools
-- [ ] Verifikasi output Core ML sama dengan PyTorch (bandingkan numerik)
-- [ ] Setup project SwiftUI baru + mic permission + AVAudioEngine
+- [ ] Eksperimen learning rate: 3 nilai, lihat kurva loss-nya
+- [ ] Eksperimen optimizer: SGD+momentum vs Adam vs AdamW
+- [ ] Eksperimen scheduler: tanpa scheduler vs StepLR vs CosineAnnealing
+- [ ] Eksperimen batch size + efeknya ke lr
+- [ ] Catat semua, tandai kombinasi terbaik sejauh ini
 
-### Hari 7 — Minggu, 13 Sep *(buffer)*
-`Core ML`
+### Hari 7 — Minggu, 13 Sep
+`PyTorch`
 
-- [ ] Replikasi mel-spectrogram di Swift, cocokkan dengan output PyTorch
-- [ ] Jalankan prediksi per window, print chord stream ke console
-- [ ] Dedupe chord berurutan jadi sequence (C C C G G → C G)
+- [ ] Eksperimen augmentation: tanpa augment vs flip vs flip+rotate+brightness
+- [ ] Eksperimen class imbalance: tanpa penanganan vs class weight vs oversample
+- [ ] Eksperimen image size (48 vs 96 vs 224) — akurasi naik seberapa, latency naik seberapa
+- [ ] Eksperimen regularisasi: dropout / weight decay / early stopping
+- [ ] Update tabel eksperimen, lihat pola mana yang konsisten
+
+### Hari 8 — Senin, 14 Sep
+`PyTorch`
+
+- [ ] Pilih config final dari tabel, training penuh sekali lagi
+- [ ] Buka test set — sekali ini aja. Catat accuracy, precision, recall, F1
+- [ ] Confusion matrix: kelas mana yang ketuker, buang dari mapping kalau parah
+- [ ] Pipeline realtime Python: webcam → face detect → model → emosi + temporal smoothing
+- [ ] Ukur latency per frame, pastikan cukup buat realtime
+- [ ] Draft model card selagi angkanya masih anget (dataset, arsitektur, metrik, keterbatasan)
 
 ## Act — Minggu 2
 
-### Hari 8 — Senin, 14 Sep
+### Hari 9 — Selasa, 15 Sep
 `Core ML`
 
-- [ ] UI rekam session: start / stop, indikator listening
-- [ ] Render chord chart dari sequence hasil deteksi
-- [ ] Confidence threshold + handle window tanpa suara
-
-### Hari 9 — Selasa, 15 Sep
-`Foundation Models`
-
-- [ ] Integrasi Foundation Models: progression → komentar natural
-- [ ] Test beberapa progression (I-V-vi-IV, 12-bar, dll)
-- [ ] Rapikan alur end-to-end: rekam → chart → komentar
+- [ ] Convert PyTorch → Core ML pakai coremltools
+- [ ] Verifikasi output Core ML sama dengan PyTorch di input yang sama (bandingin numerik)
+- [ ] Setup project SwiftUI macOS + camera permission
+- [ ] Vision face detection + Core ML prediksi, emosi live ke layar
 
 ### Hari 10 — Rabu, 16 Sep
 `Core ML`
 
-- [ ] Test di iPhone fisik, bukan simulator
-- [ ] Rekam test set sendiri, ukur akurasi di kondisi nyata
-- [ ] Perbaiki bug: mic gain, noise ruangan, jarak gitar
+- [ ] Siapin sample audio: kick.wav, snare.wav, hihat.wav
+- [ ] Audio engine: BPM clock + sequencer token → suara, loop mulus
+- [ ] Mapping emosi → beat pattern (rule-based, tabel biasa)
+- [ ] Ekspresi ganti → pattern ganti di step berikutnya, bukan restart loop
+- [ ] **Rekam demo video cadangan sore ini** — free mode aja udah cukup
+- [ ] *(stretch)* Quest: 1–2 target sequence hardcoded + score sequence match
 
 ## Cooldown
 
-### Hari 11 — Kamis, 17 Sep
+### Hari 11 — Kamis, 17 Sep *(submit)*
 
-- [ ] Rekam video demo (30–60 detik)
-- [ ] Tulis model card: dataset, arsitektur, metrik, keterbatasan
-- [ ] Kumpulkan screenshot & catatan proses
+- [ ] Polish seadanya: benerin yang paling kerasa ganggu, jangan nambah fitur
+- [ ] Finalisasi model card + rapikan `docs/experiments.md` jadi cerita
+- [ ] Rekam demo final (kalau yang Rabu udah cukup, pakai itu)
+- [ ] Submit ke Academy + refleksi
 
-### Hari 12 — Jumat, 18 Sep
+## Opsional (cuma kalau semua di atas kelar)
 
-- [ ] Review & polish terakhir
-- [ ] Submit ke Academy
-- [ ] Refleksi: apa yang dipelajari, apa langkah berikutnya
+- [ ] Quest + scoring lengkap (timing accuracy, 3 level kesulitan)
+- [ ] Foundation Models: sequence + score → komentar natural
+- [ ] Emotion intensity buat ngendaliin BPM / density

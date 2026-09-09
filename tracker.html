@@ -1,7 +1,7 @@
 <!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Guitar Chord Chart Sprint</title>
+<title>Emotion-to-Beatbox Sprint</title>
 <style>
 :root{--bg:#faf9f7;--card:#fff;--ink:#1c1a17;--dim:#6b665f;
       --line:#e5e1db;--accent:#c2410c;--done:#15803d}
@@ -35,121 +35,125 @@ code{font-size:.9em;background:var(--line);padding:1px 5px;border-radius:4px}
 footer{margin-top:40px;font-size:12px;color:var(--dim)}
 </style>
 <div class="wrap">
-<h1>Guitar Chord Chart Sprint</h1>
-<p class="sub">Solo challenge Academy · 7–18 September 2026<br>Ingredient: Foundation Models &amp; native AI (3★) · Training models with PyTorch (4★, ganti Create ML) · Integrating models with Core ML (3★)<br>&gt; Learn how to train a model that listens to my guitar playing and automatically turns it into a chord chart.<br>Pipeline: <code>mic (AVAudioEngine) → mel-spectrogram → CNN (PyTorch) → coremltools → Core ML on-device → chord sequence → chord chart UI → Foundation Models komentar progression</code><br>Konteks lengkap + riwayat pivot: lihat <code>CLAUDE.md</code>.<br><strong>Asumsi yang masih bisa diubah:</strong> vocabulary mulai dari 5–6 open chord; dataset public dulu, rekaman sendiri buat test set.<br>- <strong>Preprocessing parity.</strong> Mel-spectrogram di Swift harus persis sama dengan training di PyTorch. Beda window / hop / normalisasi = akurasi anjlok tanpa error apa pun. Penyebab kegagalan nomor satu.<br>- <strong>Segmentasi sequence.</strong> Chord chart butuh tahu <em>kapan</em> chord ganti, bukan cuma chord apa. Sliding window + dedupe berurutan; onset detection kalau perlu.<br>- <strong>Chord mirip.</strong> C vs Am vs Em beda tipis secara harmonik. Confusion matrix wajib dilihat, bukan cuma akurasi total.<br>- <strong>Domain gap.</strong> Dataset public direkam beda mic dan ruangan dari iPhone kamu.</p>
+<h1>Emotion-to-Beatbox Sprint</h1>
+<p class="sub">Solo challenge Academy · 7–17 September 2026 · <strong>submit Kamis 17 Sep</strong><br>Ingredient: Training models with PyTorch (inti) · Integrating models with Core ML (jalur wajib ke app) · Foundation Models &amp; native AI (opsional, kalau sempat)<br>&gt; Ekspresi wajah jadi alat musik. Muka user ngendaliin beatbox, terus ada quest yang minta user niruin urutan ekspresi buat ngerecreate satu beat.<br><strong>Tujuan belajar utama: ngerti cara training model, dengan banyak opsi yang beneran diutak-atik dan dibandingin</strong> — arsitektur, hyperparameter, augmentation, class balance, transfer learning. Bukan sekadar dapet satu model yang jalan. Aplikasi macOS tetap dibuat karena itu bagian dari challenge, tapi sengaja dibikin simple.<br>Pipeline: <code>webcam → Vision face detect → CNN ekspresi (PyTorch) → coremltools → Core ML on-device → emosi → beat token (K/H/S) → AVFoundation audio → quest → score</code><br>Konteks lengkap + riwayat pivot: lihat <code>CLAUDE.md</code>. Spec teknis penuh: <code>docs/spec-emotion-beatbox.md</code>. Hasil tiap eksperimen training: <code>docs/experiments.md</code>.<br><strong>Pembagian hari:</strong> Hari 3–8 training (6 hari, inti). Hari 9–10 app macOS (2 hari, simple). Hari 11 submit. Deadline maju sehari dari rencana awal — yang dipotong app, bukan training.<br><strong>Asumsi yang masih bisa diubah:</strong> mulai 4 kelas emosi (happy/neutral/angry/surprise); dataset public (FER2013 dkk); beat generator rule-based, ML beat generator dibuang.<br><strong>Catatan jadwal:</strong> Hari 1–2 kepakai arah lama (guitar chord), deadline maju ke Kamis 17 Sep. Rencana 12 hari di spec dipadatkan jadi 9 hari, Hari 3–11.<br>- Satu run = satu baris di <code>docs/experiments.md</code>. Config, metrik, catatan. Kalau nggak dicatat, nggak kehitung.<br>- Ganti satu variabel per run. Ganti dua, nggak akan tau mana yang ngefek.<br>- Seed dikunci, split dikunci. Kalau dua-duanya berubah tiap run, angkanya nggak bisa dibandingin.<br>- Test set dibuka sekali di akhir. Semua tuning pakai val set.<br>- <strong>Ngoprek tanpa nyatet.</strong> Risiko nomor satu buat tujuan belajar ini. 20 run tanpa tabel hasil = nggak belajar apa-apa, cuma sibuk.<br>- <strong>Prediksi kedip-kedip.</strong> Frame-by-frame prediksi loncat-loncat walau muka diem. Temporal smoothing (majority vote + confidence threshold) wajib.<br>- <strong>Preprocessing parity.</strong> Crop, resize, normalisasi di Swift harus persis sama dengan training PyTorch. Beda dikit = akurasi anjlok tanpa error apa pun.<br>- <strong>Emosi mirip.</strong> Angry vs disgust, fear vs surprise gampang ketuker. Lihat confusion matrix, bukan cuma akurasi total. Kelas yang jelek dibuang dari mapping.<br>- <strong>App nyedot waktu training.</strong> App cuma dapat 2 hari. Kalau melar, potong quest, jangan potong hari training.<br>- <strong>Hari terakhir gak punya buffer.</strong> Hari 11 itu hari submit, bukan hari kerja. Model card didraft Hari 8, demo direkam Hari 10 sebagai cadangan. Jangan numpuk apa pun di Kamis.</p>
 <div class="bar"><i id="fill"></i></div>
 <div class="count" id="count"></div>
+<h2>Aturan eksperimen</h2>
+<ul>
+<li class="note">Satu run = satu baris di <code>docs/experiments.md</code>. Config, metrik, catatan. Kalau nggak dicatat, nggak kehitung.</li>
+<li class="note">Ganti satu variabel per run. Ganti dua, nggak akan tau mana yang ngefek.</li>
+<li class="note">Seed dikunci, split dikunci. Kalau dua-duanya berubah tiap run, angkanya nggak bisa dibandingin.</li>
+<li class="note">Test set dibuka sekali di akhir. Semua tuning pakai val set.</li>
+</ul>
 <h2>Risiko utama</h2>
 <ul>
-<li class="note"><strong>Preprocessing parity.</strong> Mel-spectrogram di Swift harus persis sama dengan training di PyTorch. Beda window / hop / normalisasi = akurasi anjlok tanpa error apa pun. Penyebab kegagalan nomor satu.</li>
-<li class="note"><strong>Segmentasi sequence.</strong> Chord chart butuh tahu <em>kapan</em> chord ganti, bukan cuma chord apa. Sliding window + dedupe berurutan; onset detection kalau perlu.</li>
-<li class="note"><strong>Chord mirip.</strong> C vs Am vs Em beda tipis secara harmonik. Confusion matrix wajib dilihat, bukan cuma akurasi total.</li>
-<li class="note"><strong>Domain gap.</strong> Dataset public direkam beda mic dan ruangan dari iPhone kamu.</li>
+<li class="note"><strong>Ngoprek tanpa nyatet.</strong> Risiko nomor satu buat tujuan belajar ini. 20 run tanpa tabel hasil = nggak belajar apa-apa, cuma sibuk.</li>
+<li class="note"><strong>Prediksi kedip-kedip.</strong> Frame-by-frame prediksi loncat-loncat walau muka diem. Temporal smoothing (majority vote + confidence threshold) wajib.</li>
+<li class="note"><strong>Preprocessing parity.</strong> Crop, resize, normalisasi di Swift harus persis sama dengan training PyTorch. Beda dikit = akurasi anjlok tanpa error apa pun.</li>
+<li class="note"><strong>Emosi mirip.</strong> Angry vs disgust, fear vs surprise gampang ketuker. Lihat confusion matrix, bukan cuma akurasi total. Kelas yang jelek dibuang dari mapping.</li>
+<li class="note"><strong>App nyedot waktu training.</strong> App cuma dapat 2 hari. Kalau melar, potong quest, jangan potong hari training.</li>
+<li class="note"><strong>Hari terakhir gak punya buffer.</strong> Hari 11 itu hari submit, bukan hari kerja. Model card didraft Hari 8, demo direkam Hari 10 sebagai cadangan. Jangan numpuk apa pun di Kamis.</li>
 </ul>
-<h2>Engage</h2>
-<section class="day" data-date="2026-09-07"><header><h3>Hari 1 — Senin, 7 Sep</h3>
-<span class="tag">Foundation Models</span>
-</header><ul>
-<li><input type="checkbox" id="t0"><label for="t0">Kunci scope: chord chart dari rekaman, 5–6 open chord</label></li>
-<li><input type="checkbox" id="t1"><label for="t1">Tulis 1 paragraf problem statement / use-case</label></li>
-<li><input type="checkbox" id="t2"><label for="t2">Coba Foundation Models framework — 1 prompt sederhana</label></li>
-<li><input type="checkbox" id="t3"><label for="t3">Setup env Python: PyTorch, torchaudio, coremltools</label></li>
-</ul>
-</section>
 <h2>Investigate</h2>
-<section class="day" data-date="2026-09-08"><header><h3>Hari 2 — Selasa, 8 Sep</h3>
-<span class="tag">PyTorch</span>
-</header><ul>
-<li><input type="checkbox" id="t4"><label for="t4">Pilih &amp; verifikasi dataset chord (cek lisensi + jumlah sample per kelas)</label></li>
-<li><input type="checkbox" id="t5"><label for="t5">Load 1 file audio, render mel-spectrogram, cek bentuk tensor</label></li>
-<li><input type="checkbox" id="t6"><label for="t6">Kunci parameter audio: sample rate, durasi window, n_mels, hop length</label></li>
-<li><input type="checkbox" id="t7"><label for="t7">Riset batasan nyata Foundation Models (bukan cuma dokumentasi)</label></li>
-</ul>
-</section>
 <section class="day" data-date="2026-09-09"><header><h3>Hari 3 — Rabu, 9 Sep</h3>
 <span class="tag">PyTorch</span>
 </header><ul>
-<li><input type="checkbox" id="t8"><label for="t8">Bangun Dataset + DataLoader + preprocessing pipeline</label></li>
-<li><input type="checkbox" id="t9"><label for="t9">Sanity check: CNN kecil, overfit 1 batch dulu</label></li>
-<li><input type="checkbox" id="t10"><label for="t10">Training kecil 2 kelas, pastikan loss turun end-to-end</label></li>
-<li><input type="checkbox" id="t11"><label for="t11">Putuskan: lanjut apa adanya, atau ubah fitur/arsitektur</label></li>
+<li><input type="checkbox" id="t0"><label for="t0">Setup env: venv, PyTorch, torchvision, opencv, requirements.txt</label></li>
+<li><input type="checkbox" id="t1"><label for="t1">Pilih &amp; download dataset ekspresi (FER2013 / RAF-DB) — cek lisensi + jumlah sample per kelas</label></li>
+<li><input type="checkbox" id="t2"><label for="t2">Bikin Dataset + DataLoader, render 1 batch buat verifikasi label bener</label></li>
+<li><input type="checkbox" id="t3"><label for="t3">Kunci 4 kelas emosi (tes di depan kamera dulu, mana yang bisa dipasang on-demand) + mapping ke K/H/S</label></li>
+<li><input type="checkbox" id="t4"><label for="t4">Kunci seed + split train/val/test, simpan split-nya ke file biar konsisten antar run</label></li>
 </ul>
 </section>
 <h2>Act — Minggu 1</h2>
 <section class="day" data-date="2026-09-10"><header><h3>Hari 4 — Kamis, 10 Sep</h3>
 <span class="tag">PyTorch</span>
 </header><ul>
-<li><input type="checkbox" id="t12"><label for="t12">Finalisasi 5–6 chord yang dipakai</label></li>
-<li><input type="checkbox" id="t13"><label for="t13">Split dataset train/val/test, cek balance per kelas</label></li>
-<li><input type="checkbox" id="t14"><label for="t14">Tambah augmentation: noise, gain, time shift</label></li>
-<li><input type="checkbox" id="t15"><label for="t15">Training penuh, catat baseline akurasi</label></li>
+<li><input type="checkbox" id="t5"><label for="t5">Tulis training loop sendiri: forward, loss, backward, step, eval per epoch</label></li>
+<li><input type="checkbox" id="t6"><label for="t6">Sanity check: overfit 1 batch sampai loss mendekati nol</label></li>
+<li><input type="checkbox" id="t7"><label for="t7">Run baseline: CNN kecil, setting default, catat akurasi val</label></li>
+<li><input type="checkbox" id="t8"><label for="t8">Bikin <code>docs/experiments.md</code>, isi baris pertama = baseline</label></li>
+<li><input type="checkbox" id="t9"><label for="t9">Bikin script train yang baca config, biar ganti opsi nggak perlu edit kode</label></li>
 </ul>
 </section>
 <section class="day" data-date="2026-09-11"><header><h3>Hari 5 — Jumat, 11 Sep</h3>
 <span class="tag">PyTorch</span>
 </header><ul>
-<li><input type="checkbox" id="t16"><label for="t16">Analisis confusion matrix</label></li>
-<li><input type="checkbox" id="t17"><label for="t17">Catat chord yang sering ketuker + kenapa</label></li>
-<li><input type="checkbox" id="t18"><label for="t18">Tuning: learning rate / arsitektur / data untuk kelas lemah</label></li>
-<li><input type="checkbox" id="t19"><label for="t19">Simpan checkpoint v1 dan v2, bandingkan</label></li>
+<li><input type="checkbox" id="t10"><label for="t10">Eksperimen arsitektur: CNN kecil vs CNN lebih dalam</label></li>
+<li><input type="checkbox" id="t11"><label for="t11">Eksperimen arsitektur: ResNet18 pretrained (fine-tune)</label></li>
+<li><input type="checkbox" id="t12"><label for="t12">Eksperimen arsitektur: MobileNet pretrained (fine-tune)</label></li>
+<li><input type="checkbox" id="t13"><label for="t13">Bandingin akurasi vs jumlah parameter vs waktu training, catat semua</label></li>
+<li><input type="checkbox" id="t14"><label for="t14">Simpulin: from-scratch vs transfer learning, menang mana dan kenapa</label></li>
 </ul>
 </section>
-<section class="day" data-date="2026-09-12"><header><h3>Hari 6 — Sabtu, 12 Sep <em>(buffer)</em></h3>
-<span class="tag">Core ML</span>
+<section class="day" data-date="2026-09-12"><header><h3>Hari 6 — Sabtu, 12 Sep</h3>
+<span class="tag">PyTorch</span>
 </header><ul>
-<li><input type="checkbox" id="t20"><label for="t20">Convert PyTorch → Core ML pakai coremltools</label></li>
-<li><input type="checkbox" id="t21"><label for="t21">Verifikasi output Core ML sama dengan PyTorch (bandingkan numerik)</label></li>
-<li><input type="checkbox" id="t22"><label for="t22">Setup project SwiftUI baru + mic permission + AVAudioEngine</label></li>
+<li><input type="checkbox" id="t15"><label for="t15">Eksperimen learning rate: 3 nilai, lihat kurva loss-nya</label></li>
+<li><input type="checkbox" id="t16"><label for="t16">Eksperimen optimizer: SGD+momentum vs Adam vs AdamW</label></li>
+<li><input type="checkbox" id="t17"><label for="t17">Eksperimen scheduler: tanpa scheduler vs StepLR vs CosineAnnealing</label></li>
+<li><input type="checkbox" id="t18"><label for="t18">Eksperimen batch size + efeknya ke lr</label></li>
+<li><input type="checkbox" id="t19"><label for="t19">Catat semua, tandai kombinasi terbaik sejauh ini</label></li>
 </ul>
 </section>
-<section class="day" data-date="2026-09-13"><header><h3>Hari 7 — Minggu, 13 Sep <em>(buffer)</em></h3>
-<span class="tag">Core ML</span>
+<section class="day" data-date="2026-09-13"><header><h3>Hari 7 — Minggu, 13 Sep</h3>
+<span class="tag">PyTorch</span>
 </header><ul>
-<li><input type="checkbox" id="t23"><label for="t23">Replikasi mel-spectrogram di Swift, cocokkan dengan output PyTorch</label></li>
-<li><input type="checkbox" id="t24"><label for="t24">Jalankan prediksi per window, print chord stream ke console</label></li>
-<li><input type="checkbox" id="t25"><label for="t25">Dedupe chord berurutan jadi sequence (C C C G G → C G)</label></li>
+<li><input type="checkbox" id="t20"><label for="t20">Eksperimen augmentation: tanpa augment vs flip vs flip+rotate+brightness</label></li>
+<li><input type="checkbox" id="t21"><label for="t21">Eksperimen class imbalance: tanpa penanganan vs class weight vs oversample</label></li>
+<li><input type="checkbox" id="t22"><label for="t22">Eksperimen image size (48 vs 96 vs 224) — akurasi naik seberapa, latency naik seberapa</label></li>
+<li><input type="checkbox" id="t23"><label for="t23">Eksperimen regularisasi: dropout / weight decay / early stopping</label></li>
+<li><input type="checkbox" id="t24"><label for="t24">Update tabel eksperimen, lihat pola mana yang konsisten</label></li>
+</ul>
+</section>
+<section class="day" data-date="2026-09-14"><header><h3>Hari 8 — Senin, 14 Sep</h3>
+<span class="tag">PyTorch</span>
+</header><ul>
+<li><input type="checkbox" id="t25"><label for="t25">Pilih config final dari tabel, training penuh sekali lagi</label></li>
+<li><input type="checkbox" id="t26"><label for="t26">Buka test set — sekali ini aja. Catat accuracy, precision, recall, F1</label></li>
+<li><input type="checkbox" id="t27"><label for="t27">Confusion matrix: kelas mana yang ketuker, buang dari mapping kalau parah</label></li>
+<li><input type="checkbox" id="t28"><label for="t28">Pipeline realtime Python: webcam → face detect → model → emosi + temporal smoothing</label></li>
+<li><input type="checkbox" id="t29"><label for="t29">Ukur latency per frame, pastikan cukup buat realtime</label></li>
+<li><input type="checkbox" id="t30"><label for="t30">Draft model card selagi angkanya masih anget (dataset, arsitektur, metrik, keterbatasan)</label></li>
 </ul>
 </section>
 <h2>Act — Minggu 2</h2>
-<section class="day" data-date="2026-09-14"><header><h3>Hari 8 — Senin, 14 Sep</h3>
+<section class="day" data-date="2026-09-15"><header><h3>Hari 9 — Selasa, 15 Sep</h3>
 <span class="tag">Core ML</span>
 </header><ul>
-<li><input type="checkbox" id="t26"><label for="t26">UI rekam session: start / stop, indikator listening</label></li>
-<li><input type="checkbox" id="t27"><label for="t27">Render chord chart dari sequence hasil deteksi</label></li>
-<li><input type="checkbox" id="t28"><label for="t28">Confidence threshold + handle window tanpa suara</label></li>
-</ul>
-</section>
-<section class="day" data-date="2026-09-15"><header><h3>Hari 9 — Selasa, 15 Sep</h3>
-<span class="tag">Foundation Models</span>
-</header><ul>
-<li><input type="checkbox" id="t29"><label for="t29">Integrasi Foundation Models: progression → komentar natural</label></li>
-<li><input type="checkbox" id="t30"><label for="t30">Test beberapa progression (I-V-vi-IV, 12-bar, dll)</label></li>
-<li><input type="checkbox" id="t31"><label for="t31">Rapikan alur end-to-end: rekam → chart → komentar</label></li>
+<li><input type="checkbox" id="t31"><label for="t31">Convert PyTorch → Core ML pakai coremltools</label></li>
+<li><input type="checkbox" id="t32"><label for="t32">Verifikasi output Core ML sama dengan PyTorch di input yang sama (bandingin numerik)</label></li>
+<li><input type="checkbox" id="t33"><label for="t33">Setup project SwiftUI macOS + camera permission</label></li>
+<li><input type="checkbox" id="t34"><label for="t34">Vision face detection + Core ML prediksi, emosi live ke layar</label></li>
 </ul>
 </section>
 <section class="day" data-date="2026-09-16"><header><h3>Hari 10 — Rabu, 16 Sep</h3>
 <span class="tag">Core ML</span>
 </header><ul>
-<li><input type="checkbox" id="t32"><label for="t32">Test di iPhone fisik, bukan simulator</label></li>
-<li><input type="checkbox" id="t33"><label for="t33">Rekam test set sendiri, ukur akurasi di kondisi nyata</label></li>
-<li><input type="checkbox" id="t34"><label for="t34">Perbaiki bug: mic gain, noise ruangan, jarak gitar</label></li>
+<li><input type="checkbox" id="t35"><label for="t35">Siapin sample audio: kick.wav, snare.wav, hihat.wav</label></li>
+<li><input type="checkbox" id="t36"><label for="t36">Audio engine: BPM clock + sequencer token → suara, loop mulus</label></li>
+<li><input type="checkbox" id="t37"><label for="t37">Mapping emosi → beat pattern (rule-based, tabel biasa)</label></li>
+<li><input type="checkbox" id="t38"><label for="t38">Ekspresi ganti → pattern ganti di step berikutnya, bukan restart loop</label></li>
+<li><input type="checkbox" id="t39"><label for="t39"><strong>Rekam demo video cadangan sore ini</strong> — free mode aja udah cukup</label></li>
+<li><input type="checkbox" id="t40"><label for="t40"><em>(stretch)</em> Quest: 1–2 target sequence hardcoded + score sequence match</label></li>
 </ul>
 </section>
 <h2>Cooldown</h2>
-<section class="day" data-date="2026-09-17"><header><h3>Hari 11 — Kamis, 17 Sep</h3>
+<section class="day" data-date="2026-09-17"><header><h3>Hari 11 — Kamis, 17 Sep <em>(submit)</em></h3>
 </header><ul>
-<li><input type="checkbox" id="t35"><label for="t35">Rekam video demo (30–60 detik)</label></li>
-<li><input type="checkbox" id="t36"><label for="t36">Tulis model card: dataset, arsitektur, metrik, keterbatasan</label></li>
-<li><input type="checkbox" id="t37"><label for="t37">Kumpulkan screenshot &amp; catatan proses</label></li>
+<li><input type="checkbox" id="t41"><label for="t41">Polish seadanya: benerin yang paling kerasa ganggu, jangan nambah fitur</label></li>
+<li><input type="checkbox" id="t42"><label for="t42">Finalisasi model card + rapikan <code>docs/experiments.md</code> jadi cerita</label></li>
+<li><input type="checkbox" id="t43"><label for="t43">Rekam demo final (kalau yang Rabu udah cukup, pakai itu)</label></li>
+<li><input type="checkbox" id="t44"><label for="t44">Submit ke Academy + refleksi</label></li>
 </ul>
 </section>
-<section class="day" data-date="2026-09-18"><header><h3>Hari 12 — Jumat, 18 Sep</h3>
-</header><ul>
-<li><input type="checkbox" id="t38"><label for="t38">Review &amp; polish terakhir</label></li>
-<li><input type="checkbox" id="t39"><label for="t39">Submit ke Academy</label></li>
-<li><input type="checkbox" id="t40"><label for="t40">Refleksi: apa yang dipelajari, apa langkah berikutnya</label></li>
+<h2>Opsional (cuma kalau semua di atas kelar)</h2>
+<ul>
+<li><input type="checkbox" id="t45"><label for="t45">Quest + scoring lengkap (timing accuracy, 3 level kesulitan)</label></li>
+<li><input type="checkbox" id="t46"><label for="t46">Foundation Models: sequence + score → komentar natural</label></li>
+<li><input type="checkbox" id="t47"><label for="t47">Emotion intensity buat ngendaliin BPM / density</label></li>
 </ul>
-</section>
 <footer>Generated from <code>CHALLENGE.md</code> by <code>build_tracker.py</code>.
 Centang di browser tidak tersimpan — minta Claude Code edit markdown-nya, lalu regenerate.</footer>
 </div>
