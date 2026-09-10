@@ -80,7 +80,10 @@ def get_args():
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--augment", action="store_true")
     p.add_argument("--save", default=None)
+    p.add_argument("--optimizer", default="adam", choices=["adam", "adamw", "sgd"])
+    p.add_argument("--weight-decay", type=float, default=0.0)
     return p.parse_args()
+    
 
 
 # What each architecture needs as input. The pretrained ones were trained on
@@ -109,6 +112,14 @@ def build_model(arch, n_classes=len(CLASSES)):
     raise ValueError(f"Unknown architecture: {arch}")
 
 
+def build_optimizer(name, params, lr, weight_decay):
+    if name == "adam":
+        return torch.optim.Adam(params, lr=lr, weight_decay=weight_decay)
+    if name == "adamw":
+        return torch.optim.AdamW(params, lr=lr, weight_decay=weight_decay)
+    if name == "sgd":
+        return torch.optim.SGD(params, lr=lr, momentum=0.9, weight_decay=weight_decay)
+
 if __name__ == "__main__":
     args = get_args()
     torch.manual_seed(args.seed)
@@ -127,7 +138,7 @@ if __name__ == "__main__":
     valid_loader = DataLoader(FER2013("valid", transform=valid_tf), batch_size=args.batch_size, shuffle=False)
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+    optimizer = build_optimizer(args.optimizer, model.parameters(), args.lr, args.weight_decay)
 
     best = 0.0
     for epoch in range(1, args.epochs + 1):
@@ -152,5 +163,6 @@ if __name__ == "__main__":
 
     n_par = sum(q.numel() for q in model.parameters())
     aug = "flip+rot+jitter" if args.augment else "Tanpa"
-    print(f"| ? | {args.arch} | {n_par:,} | {spec['size']} | {args.lr} | Adam | Tanpa |"
+    opt = f"{args.optimizer} wd{args.weight_decay}" if args.weight_decay else args.optimizer
+    print(f"| ? | {args.arch} ({n_par} par) | {spec['size']} | {args.lr} | {opt} | Tanpa | "
           f"{args.batch_size} | {aug} | Tanpa | {args.epochs} | {best:.3f} | |")
