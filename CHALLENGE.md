@@ -66,10 +66,10 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 ### Hari 5 — Jumat, 11 Sep
 `PyTorch` · wajah
 
-- [ ] Eksperimen arsitektur: CNN kecil vs CNN lebih dalam
-- [ ] Eksperimen arsitektur: ResNet18 pretrained (fine-tune)
-- [ ] Eksperimen arsitektur: MobileNet pretrained (fine-tune)
-- [ ] Bandingin akurasi vs jumlah parameter vs waktu training, catat semua
+- [x] Eksperimen arsitektur: CNN kecil vs CNN lebih dalam
+- [x] Eksperimen arsitektur: ResNet18 pretrained (fine-tune)
+- [x] Eksperimen arsitektur: MobileNet pretrained (fine-tune)
+- [x] Bandingin akurasi vs jumlah parameter vs waktu training, catat semua
 - [ ] Simpulin: from-scratch vs transfer learning, menang mana dan kenapa
 
 ### Hari 6 — Sabtu, 12 Sep

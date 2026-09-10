@@ -11,6 +11,30 @@ Patokan: tebak acak 4 kelas = 0.25. Akurasi manusia di FER2013 (7 kelas) ~0.65.
 | 1 | 10 Sep | TinyCNN (sama) | 48 | **1e-2** | Adam | tanpa | 64 | tanpa | tanpa | 2 | 0.373 | lr 10x baseline. macet: loss diem di 1.339 (≈ ln 4 = 1.386), akurasi gak gerak antar epoch. bukan lambat — kelewatan. |
 | 2 | 10 Sep | **DeepCNN** (3 conv, 111.108 par) | 48 | 1e-3 | Adam | tanpa | 64 | tanpa | tanpa | 5 | **0.678** | +9 poin dari baseline, 10x parameter, 17 detik. train 0.694 vs valid 0.678 — gap mulai kebuka dikit tapi masih sehat. loss valid mulai mendatar di epoch 5 (0.819 → 0.813). |
 | 3 | 10 Sep | **MobileNetV3-S pretrained** (1,52 jt par) | **224** | 1e-3 | Adam | tanpa | 64 | tanpa | tanpa | 5 | **0.813** | +13,5 poin dari DeepCNN, 198 detik. epoch 1 udah 0.732 — di atas nilai akhir DeepCNN, tanda transfer learning. **overfitting pertama:** loss valid terendah di epoch 3 (0.544) lalu naik, train 0.900 vs valid 0.810 di epoch 5. terbaik di epoch 4. dua variabel berubah (arsitektur + ukuran 224) — gak bisa dipisah di run ini. |
+| 4 | 10 Sep | **ResNet18 pretrained** (11,2 jt par) | **224** | 1e-3 | Adam | tanpa | 64 | tanpa | tanpa | 5 | 0.797 | **kalah dari MobileNet** walau 7x parameter & 2,5x lebih lama (498 detik). overfit lebih cepat: loss valid terendah udah di epoch 2 (0.567), terus naik sampai 0.630. train 0.882 vs valid 0.797. |
+
+## Temuan Hari 5 — arsitektur
+
+Semua run: lr 1e-3, Adam, batch 64, 5 epoch, seed 42. Cuma arsitektur (dan ukuran input buat yang pretrained) yang beda.
+
+| arsitektur | parameter | input | val acc | waktu | loss valid terendah di epoch |
+|---|---|---|---|---|---|
+| TinyCNN | 10 rb | 48 | 0.588 | 13 dtk | 5 (masih turun) |
+| DeepCNN | 111 rb | 48 | 0.678 | 17 dtk | 5 (mulai datar) |
+| MobileNetV3-S pretrained | 1,52 jt | 224 | **0.813** | 198 dtk | 3 |
+| ResNet18 pretrained | 11,2 jt | 224 | 0.797 | 498 dtk | 2 |
+
+Yang kelihatan dari data:
+
+- **Pretrained ngalahin from-scratch jauh** — +12 sampai +13,5 poin. Epoch pertama pretrained udah di atas nilai akhir DeepCNN.
+- **Lebih besar ≠ lebih bagus.** ResNet18 kalah dari MobileNet padahal 7x parameter.
+- **Dua-duanya pretrained overfit cepat** — model kecil masih underfitting di epoch 5, model pretrained udah lewat puncaknya di epoch 2–3.
+- **Waktunya jomplang.** MobileNet 15x lebih lama dari DeepCNN, ResNet 38x.
+
+Yang **belum** bisa disimpulkan, dan kenapa:
+
+- **Kemenangan pretrained bisa sebagian dari ukuran 224, bukan cuma bobotnya.** Dua variabel berubah bareng. Run pembanding yang bisa misahin: DeepCNN di 224.
+- **lr 1e-3 kemungkinan kegedean buat fine-tuning.** Itu bisa jadi alasan model pretrained cepat overfit, dan kenapa ResNet (lebih banyak bobot buat dirusak) kalah. Diuji Hari 6: lr 1e-4.
 
 ## Hasil akhir (test set — isi Hari 8)
 
