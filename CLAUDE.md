@@ -136,6 +136,13 @@ accounts, a database, a progression system, 3D graphics.
   predictions have margins far wider than 1e-2; only genuinely ambiguous
   faces could flip, and temporal smoothing absorbs those. Shipping float32
   instead is a one-flag change if it ever matters.
+- **Upscaled training images, sharp webcam images.** FER2013 faces are 48x48
+  and the pretrained models see them resized up to 224x224 — soft, blurry
+  inputs. A webcam face crop resized straight to 224 is sharp, which is not
+  what the model learned from. The Swift pipeline must reproduce the training
+  path, not merely the final size: crop, grayscale, **down to 48x48 first**,
+  then up to 224x224, repeat to three channels, ImageNet-normalise. Skipping
+  the 48 step would drop accuracy with no error to show for it.
 - **The app eating the training.** Days 9–11 are hard-capped. Cut app scope,
   never training days.
 - **The second model eating the first.** Face experiments dropped from three

@@ -42,6 +42,10 @@ Yang **belum** bisa disimpulkan, dan kenapa:
 - **Kemenangan pretrained bisa sebagian dari ukuran 224, bukan cuma bobotnya.** Dua variabel berubah bareng. Run pembanding yang bisa misahin: DeepCNN di 224.
 - ~~**lr 1e-3 kemungkinan kegedean buat fine-tuning.**~~ **Diuji di run #5, dugaan salah.** lr 1e-4 overfit dengan pola yang sama persis, cuma lebih lambat. Overfitting-nya bukan dari lr — model pretrained emang gampang hafal 16 ribu foto. Obat yang tersisa: augmentation dan regularisasi (Hari 6).
 
+### Kesimpulan Hari 5 (Pafras)
+
+**Pretrained menang telak** (+12–13,5 poin), karena bobot ImageNet udah ngerti bentuk dasar gambar — MobileNet di epoch 1 aja udah ngalahin nilai akhir DeepCNN. **Lebih besar gak berarti lebih baik:** ResNet18 kalah dari MobileNet walau 7x parameter, karena mulai menghafal lebih awal (epoch 2 vs 3). **Yang belum bisa disimpulkan:** kemenangan pretrained sebagian mungkin datang dari ukuran input 224 dibanding 48, karena dua hal itu berubah bersamaan.
+
 ## Hasil akhir (test set — isi Hari 8)
 
 | Metrik | Nilai |

@@ -70,7 +70,7 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [x] Eksperimen arsitektur: ResNet18 pretrained (fine-tune)
 - [x] Eksperimen arsitektur: MobileNet pretrained (fine-tune)
 - [x] Bandingin akurasi vs jumlah parameter vs waktu training, catat semua
-- [ ] Simpulin: from-scratch vs transfer learning, menang mana dan kenapa
+- [x] Simpulin: from-scratch vs transfer learning, menang mana dan kenapa
 
 ### Hari 6 — Sabtu, 12 Sep
 `PyTorch` · wajah
