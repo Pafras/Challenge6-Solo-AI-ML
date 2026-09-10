@@ -13,11 +13,15 @@ CSV = Path("data/splits/fer2013_4class.csv")
 CLASSES = ["angry", "happy", "neutral", "surprise"]
 
 
-def build_transform(image_size=48, channels=1):
+def build_transform(image_size=48, channels=1, augment=False):
     steps = []
     if image_size != 48:
         steps.append(transforms.Resize((image_size, image_size)))
     steps.append(transforms.ToTensor())
+    if augment:
+        steps.append(transforms.RandomHorizontalFlip())
+        steps.append(transforms.RandomRotation(10))
+        steps.append(transforms.ColorJitter(brightness=0.2, contrast=0.2))
     if channels == 3:
         # Pretrained ImageNet models expect 3 channels on ImageNet's scale.
         steps.append(transforms.Lambda(lambda x: x.repeat(3, 1, 1)))
@@ -67,6 +71,11 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.savefig("docs/batch-check.png", dpi=90)
     print("Wrote docs/batch-check.png")
-    big = FER2013("train", transform=build_transform(224, 3))
-    img, _ = big[0]
-    print("Bentuk Gambar Besar:",tuple(img.shape))
+    aug = build_transform(augment=True)
+    raw = Image.open(ds.rows[0]["path"])
+    fig, axes = plt. subplots(1, 8, figsize=(12, 2))
+    for ax in axes:
+        ax.imshow(aug(raw).squeeze(), cmap="gray")
+        ax.axis("off")
+    plt.savefig("docs/augment-check.png", dpi=90)
+    print("Wrote docs/augment-check.png")
