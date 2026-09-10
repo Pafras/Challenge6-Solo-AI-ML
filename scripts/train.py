@@ -77,6 +77,7 @@ def get_args():
     p.add_argument("--epochs", type=int, default=5)
     p.add_argument("--batch-size", type=int, default=64)
     p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--augment", action="store_true")
     return p.parse_args()
 
 
@@ -117,12 +118,11 @@ if __name__ == "__main__":
     # ARCH lookup below never sees a bad key.
     model = build_model(args.arch).to(device)
 
-    spec = ARCH[args.arch]
-    tf = build_transform(spec["size"], spec["channels"])
-    train_loader = DataLoader(FER2013("train", transform=tf),
-                              batch_size=args.batch_size, shuffle=True)
-    valid_loader = DataLoader(FER2013("valid", transform=tf),
-                              batch_size=args.batch_size, shuffle=False)
+    spec =  ARCH[args.arch]
+    train_tf = build_transform(image_size=spec["size"], channels=spec["channels"], augment=args.augment)
+    valid_tf = build_transform(spec["size"], spec["channels"])
+    train_loader = DataLoader(FER2013("train", transform=train_tf), batch_size=args.batch_size, shuffle=True) 
+    valid_loader = DataLoader(FER2013("valid", transform=valid_tf), batch_size=args.batch_size, shuffle=False)
 
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
@@ -136,6 +136,6 @@ if __name__ == "__main__":
               f"valid {va_loss:.4f} / {va_acc:.3f}")
 
     n_par = sum(q.numel() for q in model.parameters())
-    print(f"\nVal Acc Terbaik : {best:.3f}")
-    print(f"| ? | {args.arch} ({n_par} par) | {spec['size']} | {args.lr} | Adam | Tanpa | "
-          f"{args.batch_size} | Tanpa | Tanpa | {args.epochs} | {best:.3f} | |")
+    aug = "flip+rot+jitter" if args.augment else "Tanpa"
+    print(f"| ? | {args.arch} | {n_par:,} | {spec['size']} | {args.lr} | Adam | Tanpa |"
+          f"{args.batch_size} | {aug} | Tanpa | {args.epochs} | {best:.3f} | |")
