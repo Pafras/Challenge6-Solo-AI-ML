@@ -4,6 +4,7 @@ import torch.nn as nn
 import math
 from torch.utils.data import DataLoader
 from torchvision import models
+from pathlib import Path
 
 from show_batch import CLASSES, FER2013, build_transform
 
@@ -78,6 +79,7 @@ def get_args():
     p.add_argument("--batch-size", type=int, default=64)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--augment", action="store_true")
+    p.add_argument("--save", default=None)
     return p.parse_args()
 
 
@@ -131,7 +133,20 @@ if __name__ == "__main__":
     for epoch in range(1, args.epochs + 1):
         tr_loss, tr_acc = run_epoch(model, train_loader, criterion=criterion, optimizer=optimizer, device=device)
         va_loss, va_acc = evaluate(model, valid_loader, criterion=criterion, device=device)
-        best = max(best, va_acc)
+        if va_acc > best:
+            best = va_acc
+            if args.save:
+                Path(args.save).parent.mkdir(parents=True, exist_ok=True)
+                torch.save({
+                    "arch" : args.arch,
+                    "classes" : CLASSES,
+                    "image_size" : spec["size"],
+                    "channels": spec["channels"],
+                    "epoch" : epoch,
+                    "val_acc" : va_acc,
+                    "state_dict" : model.state_dict(),
+                }, args.save)
+                print(f"  -> Disimpan (epoch {epoch}, valid {va_acc:.3f})")
         print(f"Epoch {epoch:2} train {tr_loss:.4f} / {tr_acc:.3f}   "
               f"valid {va_loss:.4f} / {va_acc:.3f}")
 
