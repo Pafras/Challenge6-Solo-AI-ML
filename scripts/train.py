@@ -88,6 +88,7 @@ def get_args():
     p.add_argument("--scheduler", default="none", choices=["none", "cosine"])
     p.add_argument("--class-weight", action="store_true")
     p.add_argument("--dropout", type=float, default=None)
+    p.add_argument("--label-smoothing", type=float, default=0.0)
     return p.parse_args()
     
 
@@ -148,13 +149,16 @@ if __name__ == "__main__":
     criterion = nn.CrossEntropyLoss()
     # Class weights reshape the training loss only. Validation keeps the plain
     # loss, or its numbers would stop meaning the same thing as every run before.
-    train_criterion = criterion
+    weight = None
     if args.class_weight:
         counts = Counter(int(r["label"]) for r in load_rows("train"))
         total = sum(counts.values())
         weights = torch.tensor([total / (len(CLASSES) * counts[i]) for i in range(len(CLASSES))])
         print("class weight:", {c: round(float(w), 2) for c, w in zip(CLASSES, weights)})
-        train_criterion = nn.CrossEntropyLoss(weight=weights.to(device))
+        weight = weights.to(device)
+    # Label smoothing trains towards [0.925, 0.025, ...] instead of [1, 0, ...],
+    # so the model is never taught to be certain — useful when some labels are wrong.
+    train_criterion = nn.CrossEntropyLoss(weight=weight, label_smoothing=args.label_smoothing)
     optimizer = build_optimizer(args.optimizer, model.parameters(), args.lr, args.weight_decay)
 
     # Cosine decays lr from its starting value to ~0 over the run: large steps
@@ -197,6 +201,8 @@ if __name__ == "__main__":
     cw = "balanced" if args.class_weight else "Tanpa"
     if args.dropout is not None:
         aug += f" · dropout {args.dropout}"
+    if args.label_smoothing:
+        aug += f" · label smoothing {args.label_smoothing}"
     opt = f"{args.optimizer} wd{args.weight_decay}" if args.weight_decay else args.optimizer
     print(f"| ? | {args.arch} ({n_par} par) | {spec['size']} | {args.lr} | {opt} | {args.scheduler} | "
           f"{args.batch_size} | {aug} | {cw} | {args.epochs} | {best:.3f} | |")
