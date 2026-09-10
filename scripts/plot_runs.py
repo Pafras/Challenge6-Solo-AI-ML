@@ -65,7 +65,8 @@ def _style(ax, ylabel):
 
 
 def _end_label(ax, x, y, text):
-    ax.annotate(text, (x, y), xytext=(6, 0), textcoords="offset points",
+    # 11pt clears the 9pt best-epoch ring when the best epoch is the last one.
+    ax.annotate(text, (x, y), xytext=(11, 0), textcoords="offset points",
                 va="center", fontsize=9, color=INK_2)
 
 

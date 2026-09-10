@@ -1,0 +1,87 @@
+{
+  "name": "run09-mobilenet-cosine",
+  "source": "transkrip output terminal",
+  "summary": "MobileNet pretrained \u00b7 lr 0.001 \u00b7 adamw wd 0.01 \u00b7 scheduler cosine \u00b7 augment \u00b7 10 epoch \u00b7 valid terbaik 0.827",
+  "epochs": [
+    {
+      "epoch": 1,
+      "lr": 0.001,
+      "train_loss": 0.7227,
+      "train_acc": 0.711,
+      "valid_loss": 0.6331,
+      "valid_acc": 0.757
+    },
+    {
+      "epoch": 2,
+      "lr": 0.00098,
+      "train_loss": 0.5555,
+      "train_acc": 0.786,
+      "valid_loss": 0.6323,
+      "valid_acc": 0.775
+    },
+    {
+      "epoch": 3,
+      "lr": 0.0009,
+      "train_loss": 0.4871,
+      "train_acc": 0.817,
+      "valid_loss": 0.5732,
+      "valid_acc": 0.799
+    },
+    {
+      "epoch": 4,
+      "lr": 0.00079,
+      "train_loss": 0.4319,
+      "train_acc": 0.838,
+      "valid_loss": 0.5069,
+      "valid_acc": 0.825
+    },
+    {
+      "epoch": 5,
+      "lr": 0.00065,
+      "train_loss": 0.3773,
+      "train_acc": 0.859,
+      "valid_loss": 0.5257,
+      "valid_acc": 0.81
+    },
+    {
+      "epoch": 6,
+      "lr": 0.0005,
+      "train_loss": 0.3189,
+      "train_acc": 0.881,
+      "valid_loss": 0.5976,
+      "valid_acc": 0.802
+    },
+    {
+      "epoch": 7,
+      "lr": 0.00035,
+      "train_loss": 0.2557,
+      "train_acc": 0.905,
+      "valid_loss": 0.5326,
+      "valid_acc": 0.822
+    },
+    {
+      "epoch": 8,
+      "lr": 0.00021,
+      "train_loss": 0.1964,
+      "train_acc": 0.928,
+      "valid_loss": 0.5943,
+      "valid_acc": 0.823
+    },
+    {
+      "epoch": 9,
+      "lr": 9.5e-05,
+      "train_loss": 0.1599,
+      "train_acc": 0.942,
+      "valid_loss": 0.5869,
+      "valid_acc": 0.826
+    },
+    {
+      "epoch": 10,
+      "lr": 2.4e-05,
+      "train_loss": 0.1285,
+      "train_acc": 0.954,
+      "valid_loss": 0.6019,
+      "valid_acc": 0.827
+    }
+  ]
+}
