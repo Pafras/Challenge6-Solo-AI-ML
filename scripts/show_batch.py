@@ -11,7 +11,22 @@ from torchvision import transforms
 CSV = Path("data/splits/fer2013_4class.csv")
 
 CLASSES = ["angry", "happy", "neutral", "surprise"]
-TRANSFORM = transforms.ToTensor()  # convert PIL image to torch tensor, scale to [0,1]
+
+
+def build_transform(image_size=48, channels=1):
+    steps = []
+    if image_size != 48:
+        steps.append(transforms.Resize((image_size, image_size)))
+    steps.append(transforms.ToTensor())
+    if channels == 3:
+        # Pretrained ImageNet models expect 3 channels on ImageNet's scale.
+        steps.append(transforms.Lambda(lambda x: x.repeat(3, 1, 1)))
+        steps.append(transforms.Normalize(
+            mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]))
+    return transforms.Compose(steps)
+
+
+TRANSFORM = build_transform()
 
 
 def load_rows(split):
@@ -22,15 +37,16 @@ def load_rows(split):
 
 
 class FER2013(Dataset):
-    def __init__(self, split):
+    def __init__(self, split, transform=TRANSFORM):
         self.rows = load_rows(split)
+        self.transform = transform
 
     def __len__(self):
         return len(self.rows)
 
     def __getitem__(self, i):
         row = self.rows[i]
-        image = TRANSFORM(Image.open(row["path"]))
+        image = self.transform(Image.open(row["path"]))
         label = int(row["label"])
         return image, label
 
@@ -51,3 +67,6 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.savefig("docs/batch-check.png", dpi=90)
     print("Wrote docs/batch-check.png")
+    big = FER2013("train", transform=build_transform(224, 3))
+    img, _ = big[0]
+    print("Bentuk Gambar Besar:",tuple(img.shape))
