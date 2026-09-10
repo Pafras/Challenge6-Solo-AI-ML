@@ -49,13 +49,25 @@ Yang **belum** bisa disimpulkan, dan kenapa:
 
 **Pretrained menang telak** (+12–13,5 poin), karena bobot ImageNet udah ngerti bentuk dasar gambar — MobileNet di epoch 1 aja udah ngalahin nilai akhir DeepCNN. **Lebih besar gak berarti lebih baik:** ResNet18 kalah dari MobileNet walau 7x parameter, karena mulai menghafal lebih awal (epoch 2 vs 3). **Yang belum bisa disimpulkan:** kemenangan pretrained sebagian mungkin datang dari ukuran input 224 dibanding 48, karena dua hal itu berubah bersamaan.
 
-## Model final wajah — run #11
+## Model final wajah — run #13
 
-`models/mobilenet-cw.pt` · MobileNetV3-Small pretrained · 224 · AdamW lr 1e-3 wd 0.05 · cosine · augmentation · class weight · 10 epoch · val 0.840
+`models/mobilenet-ls.pt` · MobileNetV3-Small pretrained · 224 · AdamW lr 1e-3 wd 0.05 · cosine · augmentation · class weight · label smoothing 0.1 · 10 epoch · val 0.839
 
-Run #10, #11 dan #12 seri di akurasi total (0.836–0.840, selisih ~12 foto dari 2.902). Pemilihnya keseimbangan antar kelas: #11 satu-satunya yang ngangkat kelas terlemah (angry 0.748 → 0.770) dan menyempitkan jarak kelas terbaik–terlemah dari 16 ke 11 poin. Di app, keempat ekspresi dipakai sama rata dan masing-masing memicu beat sendiri — ekspresi yang gagal dikenali artinya satu bunyi yang gak pernah main. Ongkosnya: happy turun 0.908 → 0.884, tetap kelas terkuat.
+**Kenapa #13, bukan #11 (pilihan sebelumnya).** Akurasi seri (0.839 vs 0.840) dan per kelas seri. Yang beda: keyakinan model. Di app, keyakinan dipakai langsung — beat cuma ganti kalau model cukup yakin. Model #11 sering yakin sama jawaban salah (181 salah dengan >90% yakin); #13 cuma 56. Di tingkat responsif yang sama (~83% tebakan lolos), #13 mainin 27 bunyi salah lebih sedikit. Kenapa class weight tetap dipakai: satu-satunya yang ngangkat kelas terlemah (angry).
 
-Catatan kejujuran: model ini dipilih pakai val set, jadi angka 0.840 sedikit optimis. Angka yang jujur datang dari test set, Hari 8.
+**Threshold keyakinan: mulai dari 0,7, disetel ulang di Hari 8.** Diukur di val set:
+
+| threshold | tebakan lolos | akurasi yang lolos | salah yang lolos |
+|---|---|---|---|
+| 0.5 | 95,8% | 86,0% | 389 |
+| 0.6 | 89,4% | 88,6% | 297 |
+| **0.7** | **82,8%** | **90,6%** | **225** |
+| 0.8 | 71,5% | 92,8% | 149 |
+| 0.9 | 33,3% | 94,2% | 56 |
+
+Di bawah ~0,5 threshold udah gak nyaring apa-apa. Di 0,9 model cuma didengerin sepertiga waktu. Tebakan yang gak lolos gak bikin musik berhenti — beat lanjut main pola yang sekarang, cuma gak ganti. Angka ini per foto FER2013; di app ada smoothing ~10 frame sebelumnya dan wajah webcam, jadi nilai final disetel di tes realtime Hari 8.
+
+Catatan kejujuran: model ini dipilih pakai val set, jadi 0.839 sedikit optimis. Angka yang jujur datang dari test set, Hari 8.
 
 ## Hasil akhir (test set — isi Hari 8)
 

@@ -129,7 +129,10 @@ accounts, a database, a progression system, 3D graphics.
 - **Prediction jitter.** Real-time predictions flicker between frames even
   when the user holds still. Temporal smoothing (majority vote over a short
   window + confidence threshold) is mandatory. Number-one cause of the demo
-  feeling broken.
+  feeling broken. The final model (run 13) is trained with label smoothing,
+  so its confidence is honest but rarely above ~92%: start the threshold at
+  0.7, not 0.9 (at 0.9 it would accept only a third of frames), and tune it
+  in the Day 8 webcam test. Measured thresholds are in `docs/experiments.md`.
 - **Preprocessing parity.** Face crop, resize and normalisation in Swift
   must match training in PyTorch exactly. A mismatch drops accuracy
   silently, with no error. Note that Core ML ML Program runs float16 by
@@ -164,11 +167,11 @@ accounts, a database, a progression system, 3D graphics.
 
 ## What's still open
 
-- Dataset choice (FER2013 vs RAF-DB vs CK+). Decide fast, don't hunt for the
-  perfect one. Day 3.
-- Final emotion class list. Starts at 4 (happy / neutral / angry / surprise),
-  chosen for what a user can actually perform on demand in front of a webcam,
-  not for what scores best.
+- Settled on 10 Sep: FER2013, four classes (angry / happy / neutral /
+  surprise), and run 13 as the final face model — `models/mobilenet-ls.pt`,
+  0.839 on validation. The reasoning and the full run log are in
+  `docs/experiments.md`. Still unproven: the test set (Day 8, once) and real
+  faces through the MacBook webcam.
 - Whether the mentor counts transfer learning as "training a model" — worth
   asking, but the plan compares scratch and pretrained either way, so the
   answer changes framing rather than work.
