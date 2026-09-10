@@ -78,7 +78,7 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [ ] Eksperimen learning rate: 3 nilai, lihat kurva loss-nya
 - [ ] Eksperimen optimizer: SGD+momentum vs Adam vs AdamW
 - [ ] Eksperimen augmentation: tanpa vs flip vs flip+rotate+brightness
-- [ ] Eksperimen class weight buat imbalance 2.28x
+- [x] Eksperimen class weight buat imbalance 2.28x
 - [ ] Pilih config final model wajah, catat di tabel
 
 ### Hari 7 — Minggu, 13 Sep

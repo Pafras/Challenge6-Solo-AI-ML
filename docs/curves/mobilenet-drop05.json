@@ -1,0 +1,100 @@
+{
+  "name": "mobilenet-drop05",
+  "config": {
+    "arch": "mobilenet",
+    "lr": 0.001,
+    "epochs": 10,
+    "batch_size": 64,
+    "seed": 42,
+    "augment": true,
+    "save": "models/mobilenet-drop05.pt",
+    "optimizer": "adamw",
+    "weight_decay": 0.05,
+    "scheduler": "cosine",
+    "class_weight": false,
+    "dropout": 0.5
+  },
+  "summary": "mobilenet \u00b7 lr 0.001 \u00b7 adamw wd0.05 \u00b7 scheduler cosine \u00b7 augment flip+rot+jitter \u00b7 dropout 0.5 \u00b7 class weight Tanpa \u00b7 10 epoch \u00b7 valid terbaik 0.836",
+  "epochs": [
+    {
+      "epoch": 1,
+      "lr": 0.001,
+      "train_loss": 0.7430886449502988,
+      "train_acc": 0.7034176599367551,
+      "valid_loss": 0.7449634307668096,
+      "valid_acc": 0.71157822191592
+    },
+    {
+      "epoch": 2,
+      "lr": 0.0009755282581475768,
+      "train_loss": 0.5705123281455684,
+      "train_acc": 0.7839941620043785,
+      "valid_loss": 0.5570681183852466,
+      "valid_acc": 0.7891109579600276
+    },
+    {
+      "epoch": 3,
+      "lr": 0.0009045084971874736,
+      "train_loss": 0.5017522529974613,
+      "train_acc": 0.8114813913889565,
+      "valid_loss": 0.5866400934267997,
+      "valid_acc": 0.7891109579600276
+    },
+    {
+      "epoch": 4,
+      "lr": 0.0007938926261462366,
+      "train_loss": 0.4562472004984394,
+      "train_acc": 0.8294210654342009,
+      "valid_loss": 0.5653957296329725,
+      "valid_acc": 0.79565816678153
+    },
+    {
+      "epoch": 5,
+      "lr": 0.0006545084971874737,
+      "train_loss": 0.4032196511290886,
+      "train_acc": 0.8503405497445877,
+      "valid_loss": 0.5246819816812164,
+      "valid_acc": 0.8077188146106133
+    },
+    {
+      "epoch": 6,
+      "lr": 0.0005,
+      "train_loss": 0.34575472792782247,
+      "train_acc": 0.872415470688397,
+      "valid_loss": 0.621535271570487,
+      "valid_acc": 0.7939352170916609
+    },
+    {
+      "epoch": 7,
+      "lr": 0.00034549150281252633,
+      "train_loss": 0.28780108222674927,
+      "train_acc": 0.8935782048163464,
+      "valid_loss": 0.5302166684506927,
+      "valid_acc": 0.8252929014472777
+    },
+    {
+      "epoch": 8,
+      "lr": 0.0002061073738537635,
+      "train_loss": 0.2309356947662592,
+      "train_acc": 0.9157139382145464,
+      "valid_loss": 0.5702812811327671,
+      "valid_acc": 0.8283942108890421
+    },
+    {
+      "epoch": 9,
+      "lr": 9.549150281252634e-05,
+      "train_loss": 0.19417543647658125,
+      "train_acc": 0.926842617368037,
+      "valid_loss": 0.5638234239459284,
+      "valid_acc": 0.8332184700206754
+    },
+    {
+      "epoch": 10,
+      "lr": 2.4471741852423235e-05,
+      "train_loss": 0.16062165465821202,
+      "train_acc": 0.9445998540501095,
+      "valid_loss": 0.5845407945464021,
+      "valid_acc": 0.8359751895244659
+    }
+  ]
+}
