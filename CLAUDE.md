@@ -127,8 +127,15 @@ accounts, a database, a progression system, 3D graphics.
 - **Preprocessing parity.** Face crop, resize and normalisation in Swift
   must match training in PyTorch exactly. A mismatch drops accuracy
   silently, with no error. Note that Core ML ML Program runs float16 by
-  default, so a gap around 1e-4 against PyTorch is expected and is not the
-  bug you are looking for — `scripts/test_conversion.py` measures it.
+  default, so some gap against PyTorch is expected and is not the bug you
+  are looking for. How much depends on depth: around 1e-4 for the toy CNN
+  (`scripts/test_conversion.py`), around 1e-2 on the logits for MobileNetV3
+  (`scripts/check_coreml.py`), because a deep network compounds rounding
+  across many layers. Float32 conversion of MobileNetV3 matches to ~1e-7, so
+  the operations translate faithfully. A trained model's confident
+  predictions have margins far wider than 1e-2; only genuinely ambiguous
+  faces could flip, and temporal smoothing absorbs those. Shipping float32
+  instead is a one-flag change if it ever matters.
 - **The app eating the training.** Days 9–11 are hard-capped. Cut app scope,
   never training days.
 - **The second model eating the first.** Face experiments dropped from three
