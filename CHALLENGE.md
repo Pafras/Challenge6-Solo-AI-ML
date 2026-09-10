@@ -71,6 +71,9 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [x] Eksperimen arsitektur: MobileNet pretrained (fine-tune)
 - [x] Bandingin akurasi vs jumlah parameter vs waktu training, catat semua
 - [x] Simpulin: from-scratch vs transfer learning, menang mana dan kenapa
+- [ ] Tes webcam realtime (Python): webcam → crop wajah → 48 → 224 → model #13 → emosi + smoothing *(dimajuin dari Hari 8)*
+- [ ] Ukur di muka beneran: tiap ekspresi kebaca? threshold 0,7 kerasa pas?
+- [ ] Putuskan: perlu fine-tune pakai muka sendiri atau enggak
 
 ### Hari 6 — Sabtu, 12 Sep
 `PyTorch` · wajah
@@ -80,6 +83,8 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [ ] Eksperimen augmentation: tanpa vs flip vs flip+rotate+brightness
 - [x] Eksperimen class weight buat imbalance 2.28x
 - [x] Pilih config final model wajah, catat di tabel
+- [ ] *(kalau perlu)* Rekam muka sendiri + 2–3 teman (izin dulu), 4 ekspresi × ~60 frame
+- [ ] *(kalau perlu)* Fine-tune model #13, uji pakai orang yang GAK ikut dilatih
 
 ### Hari 7 — Minggu, 13 Sep
 `PyTorch` · audio
@@ -95,8 +100,7 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 
 - [ ] Training penuh model audio, 2–3 eksperimen (arsitektur / n_mels / augmentation)
 - [ ] Buka test set model audio, confusion matrix
-- [ ] Buka test set model wajah — sekali ini aja. Accuracy, precision, recall, F1
-- [ ] Pipeline realtime Python wajah: webcam → face detect → model → emosi + smoothing
+- [ ] Buka test set model wajah — sekali ini aja, SETELAH fine-tune (kalau ada). Accuracy, precision, recall, F1
 - [ ] Draft dua model card selagi angkanya masih anget
 
 ## Act — Minggu 2
