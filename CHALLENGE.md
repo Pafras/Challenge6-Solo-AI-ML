@@ -130,6 +130,12 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 
 ## Opsional (cuma kalau semua di atas kelar)
 
+Tiga pintu masuk ke generator beat yang sama. Realtime kamera itu P0; dua di
+bawahnya cuma ngeganti sumber emosinya, generator dan audio engine gak
+disentuh sama sekali.
+
+- [ ] **Input gambar** — pilih foto dari galeri, lewat pipeline yang sama (~30 menit)
+- [ ] **Input teks + Foundation Models** — kalimat → emosi → beat (~2–3 jam). Ini yang ngasih ingredient 3★ pekerjaan beneran, bukan tempelan komentar.
 - [ ] Quest + scoring lengkap (timing accuracy, 3 level kesulitan)
 - [ ] Foundation Models: sequence + score → komentar natural
 - [ ] Emotion intensity buat ngendaliin BPM / density
