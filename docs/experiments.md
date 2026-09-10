@@ -48,6 +48,14 @@ Yang **belum** bisa disimpulkan, dan kenapa:
 
 **Pretrained menang telak** (+12–13,5 poin), karena bobot ImageNet udah ngerti bentuk dasar gambar — MobileNet di epoch 1 aja udah ngalahin nilai akhir DeepCNN. **Lebih besar gak berarti lebih baik:** ResNet18 kalah dari MobileNet walau 7x parameter, karena mulai menghafal lebih awal (epoch 2 vs 3). **Yang belum bisa disimpulkan:** kemenangan pretrained sebagian mungkin datang dari ukuran input 224 dibanding 48, karena dua hal itu berubah bersamaan.
 
+## Model final wajah — run #11
+
+`models/mobilenet-cw.pt` · MobileNetV3-Small pretrained · 224 · AdamW lr 1e-3 wd 0.05 · cosine · augmentation · class weight · 10 epoch · val 0.840
+
+Run #10, #11 dan #12 seri di akurasi total (0.836–0.840, selisih ~12 foto dari 2.902). Pemilihnya keseimbangan antar kelas: #11 satu-satunya yang ngangkat kelas terlemah (angry 0.748 → 0.770) dan menyempitkan jarak kelas terbaik–terlemah dari 16 ke 11 poin. Di app, keempat ekspresi dipakai sama rata dan masing-masing memicu beat sendiri — ekspresi yang gagal dikenali artinya satu bunyi yang gak pernah main. Ongkosnya: happy turun 0.908 → 0.884, tetap kelas terkuat.
+
+Catatan kejujuran: model ini dipilih pakai val set, jadi angka 0.840 sedikit optimis. Angka yang jujur datang dari test set, Hari 8.
+
 ## Hasil akhir (test set — isi Hari 8)
 
 | Metrik | Nilai |

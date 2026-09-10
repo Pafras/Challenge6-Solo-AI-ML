@@ -63,7 +63,13 @@ brief's star rating):
 
 ## Technical approach
 
-- **Input:** webcam frame → face detection → face crop.
+- **Input:** webcam frame → face detection → face crop. Decided 10 Sep: the
+  crop comes from Vision's `VNDetectFaceRectanglesRequest` on every frame, not
+  a fixed centre box. FER2013 faces are cropped tight from forehead to chin,
+  and a fixed box drifts from that as soon as the user leans or sits further
+  back. The same crop is what the app displays, so the screen shows only the
+  face. A fixed box with an on-screen guide is the fallback if Day 9 runs out
+  of time.
 - **Two models, on the mentor's advice (10 Sep).** First: a
   facial-expression classifier, image to emotion, which ships in the app.
   Second: a beatbox audio classifier, sound to kick/hihats/snare/clap,

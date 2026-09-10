@@ -79,7 +79,7 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [ ] Eksperimen optimizer: SGD+momentum vs Adam vs AdamW
 - [ ] Eksperimen augmentation: tanpa vs flip vs flip+rotate+brightness
 - [x] Eksperimen class weight buat imbalance 2.28x
-- [ ] Pilih config final model wajah, catat di tabel
+- [x] Pilih config final model wajah, catat di tabel
 
 ### Hari 7 — Minggu, 13 Sep
 `PyTorch` · audio
