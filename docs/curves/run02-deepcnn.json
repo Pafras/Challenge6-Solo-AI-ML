@@ -1,0 +1,47 @@
+{
+  "name": "run02-deepcnn",
+  "summary": "DeepCNN \u00b7 lr 0.001 \u00b7 adam \u00b7 tanpa augment \u00b7 5 epoch \u00b7 valid terbaik 0.678",
+  "source": "data/runs/day5-deepcnn.log",
+  "epochs": [
+    {
+      "epoch": 1,
+      "train_loss": 1.2286,
+      "train_acc": 0.44,
+      "valid_loss": 1.0835,
+      "valid_acc": 0.537,
+      "lr": 0.001
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.0163,
+      "train_acc": 0.58,
+      "valid_loss": 0.9701,
+      "valid_acc": 0.605,
+      "lr": 0.001
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.9126,
+      "train_acc": 0.633,
+      "valid_loss": 0.888,
+      "valid_acc": 0.64,
+      "lr": 0.001
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.8371,
+      "train_acc": 0.67,
+      "valid_loss": 0.8193,
+      "valid_acc": 0.672,
+      "lr": 0.001
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.7821,
+      "train_acc": 0.694,
+      "valid_loss": 0.8129,
+      "valid_acc": 0.678,
+      "lr": 0.001
+    }
+  ]
+}

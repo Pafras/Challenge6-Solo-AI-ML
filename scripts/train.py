@@ -1,4 +1,5 @@
 import argparse
+import json
 import torch
 import torch.nn as nn
 import math
@@ -7,6 +8,7 @@ from torchvision import models
 from pathlib import Path
 
 from show_batch import CLASSES, FER2013, build_transform
+from plot_runs import plot_run
 
 
 class TinyCNN(nn.Module):
@@ -149,6 +151,7 @@ if __name__ == "__main__":
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
 
     best = 0.0
+    history = []
     for epoch in range(1, args.epochs + 1):
         lr_now = optimizer.param_groups[0]["lr"]
         tr_loss, tr_acc = run_epoch(model, train_loader, criterion=criterion, optimizer=optimizer, device=device)
@@ -169,6 +172,9 @@ if __name__ == "__main__":
                 print(f"  -> Disimpan (epoch {epoch}, valid {va_acc:.3f})")
         print(f"Epoch {epoch:2} lr {lr_now:.1e}  train {tr_loss:.4f} / {tr_acc:.3f}   "
               f"valid {va_loss:.4f} / {va_acc:.3f}")
+        history.append({"epoch": epoch, "lr": lr_now,
+                        "train_loss": tr_loss, "train_acc": tr_acc,
+                        "valid_loss": va_loss, "valid_acc": va_acc})
         if scheduler:
             scheduler.step()   # after the epoch's training, never inside run_epoch
 
@@ -177,3 +183,19 @@ if __name__ == "__main__":
     opt = f"{args.optimizer} wd{args.weight_decay}" if args.weight_decay else args.optimizer
     print(f"| ? | {args.arch} ({n_par} par) | {spec['size']} | {args.lr} | {opt} | {args.scheduler} | "
           f"{args.batch_size} | {aug} | Tanpa | {args.epochs} | {best:.3f} | |")
+
+    # Every run leaves a picture of its curves and the numbers behind it.
+    # The JSON is the table view of the chart; plot_runs.py can overlay several.
+    name = Path(args.save).stem if args.save else args.arch
+    curves = Path("docs/curves")
+    curves.mkdir(parents=True, exist_ok=True)
+    record = {
+        "name": name,
+        "config": vars(args),
+        "summary": (f"{args.arch} · lr {args.lr} · {opt} · scheduler {args.scheduler} · "
+                    f"augment {aug} · {args.epochs} epoch · valid terbaik {best:.3f}"),
+        "epochs": history,
+    }
+    (curves / f"{name}.json").write_text(json.dumps(record, indent=2))
+    plot_run(record, curves / f"{name}.png")
+    print(f"grafik: {curves / name}.png")

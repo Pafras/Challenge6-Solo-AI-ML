@@ -1,0 +1,47 @@
+{
+  "name": "run00-tinycnn",
+  "summary": "TinyCNN \u00b7 lr 0.001 \u00b7 adam \u00b7 tanpa augment \u00b7 5 epoch \u00b7 valid terbaik 0.588",
+  "source": "data/runs/day5-tinycnn.log",
+  "epochs": [
+    {
+      "epoch": 1,
+      "train_loss": 1.2388,
+      "train_acc": 0.44,
+      "valid_loss": 1.1415,
+      "valid_acc": 0.497,
+      "lr": 0.001
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.1125,
+      "train_acc": 0.534,
+      "valid_loss": 1.0799,
+      "valid_acc": 0.555,
+      "lr": 0.001
+    },
+    {
+      "epoch": 3,
+      "train_loss": 1.0601,
+      "train_acc": 0.562,
+      "valid_loss": 1.0604,
+      "valid_acc": 0.557,
+      "lr": 0.001
+    },
+    {
+      "epoch": 4,
+      "train_loss": 1.0212,
+      "train_acc": 0.584,
+      "valid_loss": 1.0307,
+      "valid_acc": 0.577,
+      "lr": 0.001
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.9861,
+      "train_acc": 0.597,
+      "valid_loss": 1.0041,
+      "valid_acc": 0.588,
+      "lr": 0.001
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "name": "run04-resnet18",
+  "summary": "ResNet18 pretrained \u00b7 lr 0.001 \u00b7 adam \u00b7 tanpa augment \u00b7 5 epoch \u00b7 valid terbaik 0.797",
+  "source": "data/runs/day5-resnet18.log",
+  "epochs": [
+    {
+      "epoch": 1,
+      "train_loss": 0.7284,
+      "train_acc": 0.712,
+      "valid_loss": 0.6035,
+      "valid_acc": 0.772,
+      "lr": 0.001
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.5544,
+      "train_acc": 0.788,
+      "valid_loss": 0.5665,
+      "valid_acc": 0.788,
+      "lr": 0.001
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.464,
+      "train_acc": 0.827,
+      "valid_loss": 0.5816,
+      "valid_acc": 0.792,
+      "lr": 0.001
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.3988,
+      "train_acc": 0.848,
+      "valid_loss": 0.5887,
+      "valid_acc": 0.789,
+      "lr": 0.001
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.3171,
+      "train_acc": 0.882,
+      "valid_loss": 0.6301,
+      "valid_acc": 0.797,
+      "lr": 0.001
+    }
+  ]
+}
