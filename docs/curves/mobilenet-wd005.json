@@ -1,0 +1,98 @@
+{
+  "name": "mobilenet-wd005",
+  "config": {
+    "arch": "mobilenet",
+    "lr": 0.001,
+    "epochs": 10,
+    "batch_size": 64,
+    "seed": 42,
+    "augment": true,
+    "save": "models/mobilenet-wd005.pt",
+    "optimizer": "adamw",
+    "weight_decay": 0.05,
+    "scheduler": "cosine"
+  },
+  "summary": "mobilenet \u00b7 lr 0.001 \u00b7 adamw wd0.05 \u00b7 scheduler cosine \u00b7 augment flip+rot+jitter \u00b7 10 epoch \u00b7 valid terbaik 0.837",
+  "epochs": [
+    {
+      "epoch": 1,
+      "lr": 0.001,
+      "train_loss": 0.7234309536063506,
+      "train_acc": 0.7119314035514474,
+      "valid_loss": 0.6494028355482115,
+      "valid_acc": 0.7460372157133012
+    },
+    {
+      "epoch": 2,
+      "lr": 0.0009755282581475768,
+      "train_loss": 0.5568308590885729,
+      "train_acc": 0.7877645341765994,
+      "valid_loss": 0.6991443823815049,
+      "valid_acc": 0.7512060647829083
+    },
+    {
+      "epoch": 3,
+      "lr": 0.0009045084971874736,
+      "train_loss": 0.48644322191703293,
+      "train_acc": 0.8171977621016784,
+      "valid_loss": 0.5655135086780577,
+      "valid_acc": 0.7898001378359751
+    },
+    {
+      "epoch": 4,
+      "lr": 0.0007938926261462366,
+      "train_loss": 0.4374011943909235,
+      "train_acc": 0.8363536852347361,
+      "valid_loss": 0.5063282657211851,
+      "valid_acc": 0.8239145416953825
+    },
+    {
+      "epoch": 5,
+      "lr": 0.0006545084971874737,
+      "train_loss": 0.3797186805627202,
+      "train_acc": 0.8579421065434201,
+      "valid_loss": 0.5382201250958327,
+      "valid_acc": 0.8063404548587181
+    },
+    {
+      "epoch": 6,
+      "lr": 0.0005,
+      "train_loss": 0.32302350550346265,
+      "train_acc": 0.8790440282169788,
+      "valid_loss": 0.5902994295221456,
+      "valid_acc": 0.8056512749827704
+    },
+    {
+      "epoch": 7,
+      "lr": 0.00034549150281252633,
+      "train_loss": 0.2635382903851723,
+      "train_acc": 0.9002067623449282,
+      "valid_loss": 0.5272155886966553,
+      "valid_acc": 0.8208132322536182
+    },
+    {
+      "epoch": 8,
+      "lr": 0.0002061073738537635,
+      "train_loss": 0.20526348046072207,
+      "train_acc": 0.9246533690099732,
+      "valid_loss": 0.5637841361050439,
+      "valid_acc": 0.8342522398345968
+    },
+    {
+      "epoch": 9,
+      "lr": 9.549150281252634e-05,
+      "train_loss": 0.16505077022744685,
+      "train_acc": 0.9412551690586232,
+      "valid_loss": 0.5909936009892753,
+      "valid_acc": 0.8349414197105445
+    },
+    {
+      "epoch": 10,
+      "lr": 2.4471741852423235e-05,
+      "train_loss": 0.13241314378367003,
+      "train_acc": 0.954147409389443,
+      "valid_loss": 0.6007576349847978,
+      "valid_acc": 0.8373535492763611
+    }
+  ]
+}
