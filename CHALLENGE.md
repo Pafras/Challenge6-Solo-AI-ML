@@ -46,22 +46,22 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 ### Hari 3 — Rabu, 9 Sep
 `PyTorch`
 
-- [ ] Setup env: venv, PyTorch, torchvision, opencv, requirements.txt
-- [ ] Pilih & download dataset ekspresi (FER2013 / RAF-DB) — cek lisensi + jumlah sample per kelas
-- [ ] Bikin Dataset + DataLoader, render 1 batch buat verifikasi label bener
+- [x] Setup env: venv, PyTorch, torchvision, opencv, requirements.txt
+- [x] Pilih & download dataset ekspresi (FER2013 / RAF-DB) — cek lisensi + jumlah sample per kelas
+- [x] Bikin Dataset + DataLoader, render 1 batch buat verifikasi label bener
 - [ ] Kunci 4 kelas emosi (tes di depan kamera dulu, mana yang bisa dipasang on-demand) + mapping ke K/H/S
-- [ ] Kunci seed + split train/val/test, simpan split-nya ke file biar konsisten antar run
+- [x] Kunci seed + split train/val/test, simpan split-nya ke file biar konsisten antar run
 
 ## Act — Minggu 1
 
 ### Hari 4 — Kamis, 10 Sep
 `PyTorch`
 
-- [ ] Tulis training loop sendiri: forward, loss, backward, step, eval per epoch
-- [ ] Sanity check: overfit 1 batch sampai loss mendekati nol
-- [ ] Run baseline: CNN kecil, setting default, catat akurasi val
-- [ ] Bikin `docs/experiments.md`, isi baris pertama = baseline
-- [ ] Bikin script train yang baca config, biar ganti opsi nggak perlu edit kode
+- [x] Tulis training loop sendiri: forward, loss, backward, step, eval per epoch
+- [x] Sanity check: overfit 1 batch sampai loss mendekati nol
+- [x] Run baseline: CNN kecil, setting default, catat akurasi val
+- [x] Bikin `docs/experiments.md`, isi baris pertama = baseline
+- [x] Bikin script train yang baca config, biar ganti opsi nggak perlu edit kode
 
 ### Hari 5 — Jumat, 11 Sep
 `PyTorch` · wajah

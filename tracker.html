@@ -59,22 +59,22 @@ footer{margin-top:40px;font-size:12px;color:var(--dim)}
 <section class="day" data-date="2026-09-09"><header><h3>Hari 3 — Rabu, 9 Sep</h3>
 <span class="tag">PyTorch</span>
 </header><ul>
-<li><input type="checkbox" id="t0"><label for="t0">Setup env: venv, PyTorch, torchvision, opencv, requirements.txt</label></li>
-<li><input type="checkbox" id="t1"><label for="t1">Pilih &amp; download dataset ekspresi (FER2013 / RAF-DB) — cek lisensi + jumlah sample per kelas</label></li>
-<li><input type="checkbox" id="t2"><label for="t2">Bikin Dataset + DataLoader, render 1 batch buat verifikasi label bener</label></li>
+<li><input type="checkbox" id="t0" checked><label for="t0">Setup env: venv, PyTorch, torchvision, opencv, requirements.txt</label></li>
+<li><input type="checkbox" id="t1" checked><label for="t1">Pilih &amp; download dataset ekspresi (FER2013 / RAF-DB) — cek lisensi + jumlah sample per kelas</label></li>
+<li><input type="checkbox" id="t2" checked><label for="t2">Bikin Dataset + DataLoader, render 1 batch buat verifikasi label bener</label></li>
 <li><input type="checkbox" id="t3"><label for="t3">Kunci 4 kelas emosi (tes di depan kamera dulu, mana yang bisa dipasang on-demand) + mapping ke K/H/S</label></li>
-<li><input type="checkbox" id="t4"><label for="t4">Kunci seed + split train/val/test, simpan split-nya ke file biar konsisten antar run</label></li>
+<li><input type="checkbox" id="t4" checked><label for="t4">Kunci seed + split train/val/test, simpan split-nya ke file biar konsisten antar run</label></li>
 </ul>
 </section>
 <h2>Act — Minggu 1</h2>
 <section class="day" data-date="2026-09-10"><header><h3>Hari 4 — Kamis, 10 Sep</h3>
 <span class="tag">PyTorch</span>
 </header><ul>
-<li><input type="checkbox" id="t5"><label for="t5">Tulis training loop sendiri: forward, loss, backward, step, eval per epoch</label></li>
-<li><input type="checkbox" id="t6"><label for="t6">Sanity check: overfit 1 batch sampai loss mendekati nol</label></li>
-<li><input type="checkbox" id="t7"><label for="t7">Run baseline: CNN kecil, setting default, catat akurasi val</label></li>
-<li><input type="checkbox" id="t8"><label for="t8">Bikin <code>docs/experiments.md</code>, isi baris pertama = baseline</label></li>
-<li><input type="checkbox" id="t9"><label for="t9">Bikin script train yang baca config, biar ganti opsi nggak perlu edit kode</label></li>
+<li><input type="checkbox" id="t5" checked><label for="t5">Tulis training loop sendiri: forward, loss, backward, step, eval per epoch</label></li>
+<li><input type="checkbox" id="t6" checked><label for="t6">Sanity check: overfit 1 batch sampai loss mendekati nol</label></li>
+<li><input type="checkbox" id="t7" checked><label for="t7">Run baseline: CNN kecil, setting default, catat akurasi val</label></li>
+<li><input type="checkbox" id="t8" checked><label for="t8">Bikin <code>docs/experiments.md</code>, isi baris pertama = baseline</label></li>
+<li><input type="checkbox" id="t9" checked><label for="t9">Bikin script train yang baca config, biar ganti opsi nggak perlu edit kode</label></li>
 </ul>
 </section>
 <section class="day" data-date="2026-09-11"><header><h3>Hari 5 — Jumat, 11 Sep</h3>

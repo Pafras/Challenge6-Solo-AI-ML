@@ -1,3 +1,4 @@
+import argparse
 import torch
 import torch.nn as nn
 import math
@@ -49,20 +50,45 @@ def evaluate(model, loader, criterion, device):
         total_n += len(labels)
     return total_loss / total_n, total_correct / total_n
 
+def get_args():
+    p = argparse.ArgumentParser()
+    p.add_argument("--arch", default="tinycnn")
+    p.add_argument("--lr", type=float, default=1e-3)
+    p.add_argument("--epochs", type=int, default=5)
+    p.add_argument("--batch-size", type=int, default=64)
+    p.add_argument("--seed", type=int, default=42)
+    return p.parse_args()
+
+def build_model(arch):
+    if arch == "tinycnn":
+        return TinyCNN()
+    else:
+        raise ValueError(f"Unknown architecture: {arch}")
+
 
 if __name__ == "__main__":
-    torch.manual_seed(42)
+    args = get_args()
+    torch.manual_seed(args.seed)
     device = "mps" if torch.backends.mps.is_available() else "cpu"
-    print("device:", device)
+    print(f"device {device} . arch {args.arch} . lr {args.lr} ."
+          f"batch {args.batch_size} . epochs {args.epochs} . seed {args.seed}")
 
-    train_loader = DataLoader(FER2013("train"), batch_size=64, shuffle=True)
-    valid_loader = DataLoader(FER2013("valid"), batch_size=64, shuffle=False)
+    train_loader = DataLoader(FER2013("train"), batch_size=args.batch_size, shuffle=True)
+    valid_loader = DataLoader(FER2013("valid"), batch_size=args.batch_size, shuffle=False)
 
-    model = TinyCNN().to(device)
+    model = build_model(args.arch).to(device) 
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
-
-    for epoch in range(1, 6):
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+    
+    best = 0.0
+    for epoch in range(1, args.epochs + 1):
         tr_loss, tr_acc = run_epoch(model, train_loader, criterion=criterion, optimizer=optimizer, device=device)
         va_loss, va_acc = evaluate(model, valid_loader, criterion=criterion, device=device)
-        print(f"Epoch {epoch}:  Train: {tr_loss:.4f}, Train Acc: {tr_acc:.3f}" f"Valid: {va_loss:.4f} / {va_acc:.3f}")
+        best = max(best, va_acc)
+        print(f"Epoch {epoch:2} train {tr_loss:.4f} / {tr_acc:.3f}" 
+              f"valid {va_loss:.4f} / {va_acc:.3f}" )
+
+    n_par = sum (q.numel() for q in model.parameters())
+    print(f"\nVal Acc Terbaik : {best:.3f}")
+    print(f"| ? | {args.arch} ({n_par} par) | 48 | {args.lr} | Adam | Tanpa | "
+          f"{args.batch_size} | Tanpa| Tanpa | {args.epochs} | {best:.3f} | |")
