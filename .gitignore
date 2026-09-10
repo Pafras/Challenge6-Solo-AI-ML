@@ -6,6 +6,7 @@ venv/
 
 # Datasets, checkpoints and converted models — too big for git
 data/
+BeatboxAudioDataset/
 *.wav
 *.mp3
 !audio/samples/*.wav

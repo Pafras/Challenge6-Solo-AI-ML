@@ -85,7 +85,7 @@ footer{margin-top:40px;font-size:12px;color:var(--dim)}
 <li><input type="checkbox" id="t13" checked><label for="t13">Bandingin akurasi vs jumlah parameter vs waktu training, catat semua</label></li>
 <li><input type="checkbox" id="t14" checked><label for="t14">Simpulin: from-scratch vs transfer learning, menang mana dan kenapa</label></li>
 <li><input type="checkbox" id="t15"><label for="t15"><strong>Model audio</strong> — parse label dari nama file (<code>kick-050-a-6.wav</code> → <code>kick</code>), cek jumlah per kelas</label></li>
-<li><input type="checkbox" id="t16"><label for="t16"><strong>Model audio</strong> — split train/valid/test sendiri, seed dikunci (dataset ini gak punya split)</label></li>
+<li><input type="checkbox" id="t16"><label for="t16"><strong>Model audio</strong> — potong valid dari train <strong>per nomor rekaman</strong> (bukan per file), seed dikunci. Train/test dari bucket udah dipisah per rekaman, nol bocor</label></li>
 <li><input type="checkbox" id="t17"><label for="t17"><strong>Model audio</strong> — audio → mel-spectrogram, kunci parameternya (n_mels, hop, durasi)</label></li>
 <li><input type="checkbox" id="t18"><label for="t18"><strong>Model audio</strong> — render beberapa spectrogram, lihat kick dan hihat beda secara kasat mata</label></li>
 <li><input type="checkbox" id="t19"><label for="t19"><strong>Model audio</strong> — Dataset + DataLoader + overfit 1 batch</label></li>

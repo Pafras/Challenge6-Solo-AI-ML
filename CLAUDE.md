@@ -73,8 +73,13 @@ brief's star rating):
 - **Two models, on the mentor's advice (10 Sep).** First: a
   facial-expression classifier, image to emotion, which ships in the app.
   Second: a beatbox audio classifier, sound to kick/hihats/snare/clap,
-  trained as a second exercise from the 576 local wav files whose filename
-  prefix is the label. The audio model deliberately does **not** ship — the
+  trained as a second exercise from the Pafras/beatbox-bucket dataset in
+  `BeatboxAudioDataset/` (git-ignored): 5,058 train and 575 test clips across
+  clap / hihats / kick / snare, filename prefix is the label. Each recording
+  number appears as many near-identical variants, so every split must be by
+  recording number, never by file — the bucket's own train/test split already
+  is, with zero overlap. Mixed formats (a few clips at 44.1 kHz stereo) need
+  resampling to 22,050 Hz mono. The audio model deliberately does **not** ship — the
   app has no mic input, and adding one plus a second Core ML conversion
   costs a day that does not exist. Its deliverable is a model card and a row
   in the experiment table.
