@@ -1,7 +1,7 @@
 # Emotion-to-Beatbox Sprint
 
 Solo challenge Academy · 7–17 September 2026 · **submit Kamis 17 Sep**
-Ingredient: Training models with PyTorch (inti) · Integrating models with Core ML (jalur wajib ke app) · Foundation Models & native AI (opsional, kalau sempat)
+Ingredient: Training models with PyTorch (inti, **2 model**) · Integrating models with Core ML (jalur wajib ke app) · Foundation Models & native AI (opsional, kalau sempat)
 
 > Ekspresi wajah jadi alat musik. Muka user ngendaliin beatbox, terus ada quest yang minta user niruin urutan ekspresi buat ngerecreate satu beat.
 
@@ -11,7 +11,11 @@ Pipeline: `webcam → Vision face detect → CNN ekspresi (PyTorch) → coremlto
 
 Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spec-emotion-beatbox.md`. Hasil tiap eksperimen training: `docs/experiments.md`.
 
-**Pembagian hari:** Hari 3–8 training (6 hari, inti). Hari 9–10 app macOS (2 hari, simple). Hari 11 submit. Deadline maju sehari dari rencana awal — yang dipotong app, bukan training.
+**Dua model** (arahan mentor, 10 Sep):
+1. **Ekspresi wajah** — gambar 48×48 → 4 emosi. Dipakai di app.
+2. **Klasifikasi audio beatbox** — suara → kick/hihats/snare/clap. Latihan training kedua, **tidak dipakai di app** (app gak punya input mic). Deliverable-nya model card + tabel eksperimen.
+
+**Pembagian hari:** Hari 4–6 training model wajah. Hari 7–8 training model audio + finalisasi dua-duanya. Hari 9–10 app macOS (2 hari, simple). Hari 11 submit.
 
 **Asumsi yang masih bisa diubah:** mulai 4 kelas emosi (happy/neutral/angry/surprise); dataset public (FER2013 dkk); beat generator rule-based, ML beat generator dibuang.
 
@@ -60,7 +64,7 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [ ] Bikin script train yang baca config, biar ganti opsi nggak perlu edit kode
 
 ### Hari 5 — Jumat, 11 Sep
-`PyTorch`
+`PyTorch` · wajah
 
 - [ ] Eksperimen arsitektur: CNN kecil vs CNN lebih dalam
 - [ ] Eksperimen arsitektur: ResNet18 pretrained (fine-tune)
@@ -69,32 +73,31 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [ ] Simpulin: from-scratch vs transfer learning, menang mana dan kenapa
 
 ### Hari 6 — Sabtu, 12 Sep
-`PyTorch`
+`PyTorch` · wajah
 
 - [ ] Eksperimen learning rate: 3 nilai, lihat kurva loss-nya
 - [ ] Eksperimen optimizer: SGD+momentum vs Adam vs AdamW
-- [ ] Eksperimen scheduler: tanpa scheduler vs StepLR vs CosineAnnealing
-- [ ] Eksperimen batch size + efeknya ke lr
-- [ ] Catat semua, tandai kombinasi terbaik sejauh ini
+- [ ] Eksperimen augmentation: tanpa vs flip vs flip+rotate+brightness
+- [ ] Eksperimen class weight buat imbalance 2.28x
+- [ ] Pilih config final model wajah, catat di tabel
 
 ### Hari 7 — Minggu, 13 Sep
-`PyTorch`
+`PyTorch` · audio
 
-- [ ] Eksperimen augmentation: tanpa augment vs flip vs flip+rotate+brightness
-- [ ] Eksperimen class imbalance: tanpa penanganan vs class weight vs oversample
-- [ ] Eksperimen image size (48 vs 96 vs 224) — akurasi naik seberapa, latency naik seberapa
-- [ ] Eksperimen regularisasi: dropout / weight decay / early stopping
-- [ ] Update tabel eksperimen, lihat pola mana yang konsisten
+- [ ] Parse label dari nama file (`kick-050-a-6.wav` → `kick`), cek jumlah per kelas
+- [ ] Split train/valid/test sendiri, seed dikunci (dataset ini gak punya split)
+- [ ] Audio → mel-spectrogram pakai torchaudio, kunci parameternya (n_mels, hop, durasi)
+- [ ] Render beberapa spectrogram, lihat apa kick dan hihat beda secara kasat mata
+- [ ] Dataset + DataLoader + overfit 1 batch
 
 ### Hari 8 — Senin, 14 Sep
-`PyTorch`
+`PyTorch` · dua-duanya
 
-- [ ] Pilih config final dari tabel, training penuh sekali lagi
-- [ ] Buka test set — sekali ini aja. Catat accuracy, precision, recall, F1
-- [ ] Confusion matrix: kelas mana yang ketuker, buang dari mapping kalau parah
-- [ ] Pipeline realtime Python: webcam → face detect → model → emosi + temporal smoothing
-- [ ] Ukur latency per frame, pastikan cukup buat realtime
-- [ ] Draft model card selagi angkanya masih anget (dataset, arsitektur, metrik, keterbatasan)
+- [ ] Training penuh model audio, 2–3 eksperimen (arsitektur / n_mels / augmentation)
+- [ ] Buka test set model audio, confusion matrix
+- [ ] Buka test set model wajah — sekali ini aja. Accuracy, precision, recall, F1
+- [ ] Pipeline realtime Python wajah: webcam → face detect → model → emosi + smoothing
+- [ ] Draft dua model card selagi angkanya masih anget
 
 ## Act — Minggu 2
 

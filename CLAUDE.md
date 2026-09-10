@@ -64,9 +64,16 @@ brief's star rating):
 ## Technical approach
 
 - **Input:** webcam frame → face detection → face crop.
-- **Model:** facial-expression classifier trained in PyTorch. The
-  architecture is not pre-decided — comparing small CNN vs ResNet18 vs
-  MobileNet, from-scratch vs fine-tuned, *is* the exercise.
+- **Two models, on the mentor's advice (10 Sep).** First: a
+  facial-expression classifier, image to emotion, which ships in the app.
+  Second: a beatbox audio classifier, sound to kick/hihats/snare/clap,
+  trained as a second exercise from the 576 local wav files whose filename
+  prefix is the label. The audio model deliberately does **not** ship — the
+  app has no mic input, and adding one plus a second Core ML conversion
+  costs a day that does not exist. Its deliverable is a model card and a row
+  in the experiment table.
+- **Architecture is not pre-decided** for either — comparing small CNN vs
+  ResNet18 vs MobileNet, from-scratch vs fine-tuned, *is* the exercise.
 - **Training loop:** hand-written, not `Trainer`-wrapped. Config-driven so
   swapping an option doesn't mean editing code.
 - **Conversion:** `coremltools` PyTorch path → `.mlpackage`, verified
@@ -95,7 +102,8 @@ This is where the learning actually happens, so it has rules:
 ## Scope discipline
 
 **P0:** the training experiments and the log; expression recognition working
-in real time; a simple app where an expression changes the sound.
+in real time; a simple app where an expression changes the sound; the audio
+classifier trained and measured.
 
 **P1:** quest + scoring — now a stretch goal on Day 10, not a scheduled
 deliverable. Free mode (expression changes the sound live) carries the demo
@@ -123,6 +131,10 @@ accounts, a database, a progression system, 3D graphics.
   bug you are looking for — `scripts/test_conversion.py` measures it.
 - **The app eating the training.** Days 9–11 are hard-capped. Cut app scope,
   never training days.
+- **The second model eating the first.** Face experiments dropped from three
+  days to two to make room. If the audio model overruns on Day 7, cut its
+  experiments rather than the face model's — one audio model that merely
+  works beats two half-finished ones.
 - **Two days lost to the pivot, one to the deadline.** Days 1–2 went to the
   previous direction, and submission moved up to the 17th. The spec's 12 days
   are compressed into 9 (Days 3–11). The app absorbed the cut, not training.
