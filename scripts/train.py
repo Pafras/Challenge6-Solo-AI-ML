@@ -7,7 +7,8 @@ from torch.utils.data import DataLoader
 from torchvision import models
 from pathlib import Path
 
-from show_batch import CLASSES, FER2013, build_transform
+from collections import Counter
+from show_batch import CLASSES, FER2013, build_transform, load_rows
 from plot_runs import plot_run
 
 
@@ -85,6 +86,8 @@ def get_args():
     p.add_argument("--optimizer", default="adam", choices=["adam", "adamw", "sgd"])
     p.add_argument("--weight-decay", type=float, default=0.0)
     p.add_argument("--scheduler", default="none", choices=["none", "cosine"])
+    p.add_argument("--class-weight", action="store_true")
+    p.add_argument("--dropout", type=float, default=None)
     return p.parse_args()
     
 
@@ -99,7 +102,7 @@ ARCH = {
 }
 
 
-def build_model(arch, n_classes=len(CLASSES)):
+def build_model(arch, n_classes=len(CLASSES), dropout=None):
     if arch == "tinycnn":
         return TinyCNN(n_classes)
     if arch == "deepcnn":
@@ -111,6 +114,8 @@ def build_model(arch, n_classes=len(CLASSES)):
     if arch == "mobilenet":
         m = models.mobilenet_v3_small(weights=models.MobileNet_V3_Small_Weights.DEFAULT)
         m.classifier[-1] = nn.Linear(m.classifier[-1].in_features, n_classes)
+        if dropout is not None:
+            m.classifier[2].p = dropout   # MobileNetV3's own head dropout, 0.2 by default
         return m
     raise ValueError(f"Unknown architecture: {arch}")
 
@@ -132,7 +137,7 @@ if __name__ == "__main__":
 
     # Built before the loaders: build_model rejects an unknown arch, so the
     # ARCH lookup below never sees a bad key.
-    model = build_model(args.arch).to(device)
+    model = build_model(args.arch, dropout=args.dropout).to(device)
 
     spec =  ARCH[args.arch]
     train_tf = build_transform(image_size=spec["size"], channels=spec["channels"], augment=args.augment)
@@ -141,6 +146,15 @@ if __name__ == "__main__":
     valid_loader = DataLoader(FER2013("valid", transform=valid_tf), batch_size=args.batch_size, shuffle=False)
 
     criterion = nn.CrossEntropyLoss()
+    # Class weights reshape the training loss only. Validation keeps the plain
+    # loss, or its numbers would stop meaning the same thing as every run before.
+    train_criterion = criterion
+    if args.class_weight:
+        counts = Counter(int(r["label"]) for r in load_rows("train"))
+        total = sum(counts.values())
+        weights = torch.tensor([total / (len(CLASSES) * counts[i]) for i in range(len(CLASSES))])
+        print("class weight:", {c: round(float(w), 2) for c, w in zip(CLASSES, weights)})
+        train_criterion = nn.CrossEntropyLoss(weight=weights.to(device))
     optimizer = build_optimizer(args.optimizer, model.parameters(), args.lr, args.weight_decay)
 
     # Cosine decays lr from its starting value to ~0 over the run: large steps
@@ -154,7 +168,7 @@ if __name__ == "__main__":
     history = []
     for epoch in range(1, args.epochs + 1):
         lr_now = optimizer.param_groups[0]["lr"]
-        tr_loss, tr_acc = run_epoch(model, train_loader, criterion=criterion, optimizer=optimizer, device=device)
+        tr_loss, tr_acc = run_epoch(model, train_loader, criterion=train_criterion, optimizer=optimizer, device=device)
         va_loss, va_acc = evaluate(model, valid_loader, criterion=criterion, device=device)
         if va_acc > best:
             best = va_acc
@@ -180,9 +194,12 @@ if __name__ == "__main__":
 
     n_par = sum(q.numel() for q in model.parameters())
     aug = "flip+rot+jitter" if args.augment else "Tanpa"
+    cw = "balanced" if args.class_weight else "Tanpa"
+    if args.dropout is not None:
+        aug += f" · dropout {args.dropout}"
     opt = f"{args.optimizer} wd{args.weight_decay}" if args.weight_decay else args.optimizer
     print(f"| ? | {args.arch} ({n_par} par) | {spec['size']} | {args.lr} | {opt} | {args.scheduler} | "
-          f"{args.batch_size} | {aug} | Tanpa | {args.epochs} | {best:.3f} | |")
+          f"{args.batch_size} | {aug} | {cw} | {args.epochs} | {best:.3f} | |")
 
     # Every run leaves a picture of its curves and the numbers behind it.
     # The JSON is the table view of the chart; plot_runs.py can overlay several.
@@ -193,7 +210,7 @@ if __name__ == "__main__":
         "name": name,
         "config": vars(args),
         "summary": (f"{args.arch} · lr {args.lr} · {opt} · scheduler {args.scheduler} · "
-                    f"augment {aug} · {args.epochs} epoch · valid terbaik {best:.3f}"),
+                    f"augment {aug} · class weight {cw} · {args.epochs} epoch · valid terbaik {best:.3f}"),
         "epochs": history,
     }
     (curves / f"{name}.json").write_text(json.dumps(record, indent=2))

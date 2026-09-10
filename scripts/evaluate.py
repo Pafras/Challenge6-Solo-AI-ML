@@ -26,3 +26,17 @@ if __name__ == "__main__":
     print(f"Checkpoint : {ckpt['arch']}, epoch {ckpt['epoch']}, "
            f"Valid Waktu Disimpan {ckpt['val_acc']:.3f}")
     print(f"{args.split:10} : loss {loss:.4f} acc {acc:.3f}")
+
+    # Total accuracy hides which emotions the model gets wrong. Per class,
+    # a gain on a small class can be seen even when it costs a large one.
+    model.eval()
+    correct, seen = [0] * len(ckpt["classes"]), [0] * len(ckpt["classes"])
+    with torch.no_grad():
+        for images, labels in loader:
+            pred = model(images.to(device)).argmax(1).cpu()
+            for y, yhat in zip(labels.tolist(), pred.tolist()):
+                seen[y] += 1
+                correct[y] += int(y == yhat)
+    print("per kelas  :", "  ".join(
+        f"{c} {correct[i] / seen[i]:.3f}" for i, c in enumerate(ckpt["classes"])))
+
