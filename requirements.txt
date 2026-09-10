@@ -5,6 +5,10 @@
 # Re-check when a newer coremltools ships: if it covers 2.8, unpinning is free.
 torch==2.7.0
 torchvision
+# Audio model. torchaudio pinned to match torch; on macOS it has no backend
+# of its own for reading .wav, and soundfile supplies one (bundles libsndfile).
+torchaudio==2.7.0
+soundfile
 coremltools
 numpy
 matplotlib

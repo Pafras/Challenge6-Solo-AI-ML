@@ -84,76 +84,80 @@ footer{margin-top:40px;font-size:12px;color:var(--dim)}
 <li><input type="checkbox" id="t12" checked><label for="t12">Eksperimen arsitektur: MobileNet pretrained (fine-tune)</label></li>
 <li><input type="checkbox" id="t13" checked><label for="t13">Bandingin akurasi vs jumlah parameter vs waktu training, catat semua</label></li>
 <li><input type="checkbox" id="t14" checked><label for="t14">Simpulin: from-scratch vs transfer learning, menang mana dan kenapa</label></li>
-<li><input type="checkbox" id="t15"><label for="t15">Tes webcam realtime (Python): webcam → crop wajah → 48 → 224 → model #13 → emosi + smoothing <em>(dimajuin dari Hari 8)</em></label></li>
-<li><input type="checkbox" id="t16"><label for="t16">Ukur di muka beneran: tiap ekspresi kebaca? threshold 0,7 kerasa pas?</label></li>
-<li><input type="checkbox" id="t17"><label for="t17">Putuskan: perlu fine-tune pakai muka sendiri atau enggak</label></li>
+<li><input type="checkbox" id="t15"><label for="t15"><strong>Model audio</strong> — parse label dari nama file (<code>kick-050-a-6.wav</code> → <code>kick</code>), cek jumlah per kelas</label></li>
+<li><input type="checkbox" id="t16"><label for="t16"><strong>Model audio</strong> — split train/valid/test sendiri, seed dikunci (dataset ini gak punya split)</label></li>
+<li><input type="checkbox" id="t17"><label for="t17"><strong>Model audio</strong> — audio → mel-spectrogram, kunci parameternya (n_mels, hop, durasi)</label></li>
+<li><input type="checkbox" id="t18"><label for="t18"><strong>Model audio</strong> — render beberapa spectrogram, lihat kick dan hihat beda secara kasat mata</label></li>
+<li><input type="checkbox" id="t19"><label for="t19"><strong>Model audio</strong> — Dataset + DataLoader + overfit 1 batch</label></li>
+<li><input type="checkbox" id="t20"><label for="t20"><strong>Model audio</strong> — training penuh + 2–3 eksperimen, checkpoint + grafik</label></li>
 </ul>
 </section>
 <section class="day" data-date="2026-09-12"><header><h3>Hari 6 — Sabtu, 12 Sep</h3>
 </header><ul>
-<li><input type="checkbox" id="t18"><label for="t18">Eksperimen learning rate: 3 nilai, lihat kurva loss-nya</label></li>
-<li><input type="checkbox" id="t19"><label for="t19">Eksperimen optimizer: SGD+momentum vs Adam vs AdamW</label></li>
-<li><input type="checkbox" id="t20"><label for="t20">Eksperimen augmentation: tanpa vs flip vs flip+rotate+brightness</label></li>
-<li><input type="checkbox" id="t21" checked><label for="t21">Eksperimen class weight buat imbalance 2.28x</label></li>
-<li><input type="checkbox" id="t22" checked><label for="t22">Pilih config final model wajah, catat di tabel</label></li>
-<li><input type="checkbox" id="t23"><label for="t23"><em>(kalau perlu)</em> Rekam muka sendiri + 2–3 teman (izin dulu), 4 ekspresi × ~60 frame</label></li>
-<li><input type="checkbox" id="t24"><label for="t24"><em>(kalau perlu)</em> Fine-tune model #13, uji pakai orang yang GAK ikut dilatih</label></li>
+<li><input type="checkbox" id="t21"><label for="t21">Eksperimen learning rate: 3 nilai, lihat kurva loss-nya</label></li>
+<li><input type="checkbox" id="t22"><label for="t22">Eksperimen optimizer: SGD+momentum vs Adam vs AdamW</label></li>
+<li><input type="checkbox" id="t23"><label for="t23">Eksperimen augmentation: tanpa vs flip vs flip+rotate+brightness</label></li>
+<li><input type="checkbox" id="t24" checked><label for="t24">Eksperimen class weight buat imbalance 2.28x</label></li>
+<li><input type="checkbox" id="t25" checked><label for="t25">Pilih config final model wajah, catat di tabel</label></li>
+<li><input type="checkbox" id="t26"><label for="t26">Tes webcam realtime (Python): webcam → crop wajah → 48 → 224 → model #13 → emosi + smoothing <em>(dimajuin dari Hari 8)</em></label></li>
+<li><input type="checkbox" id="t27"><label for="t27">Ukur di muka beneran: tiap ekspresi kebaca? threshold 0,7 kerasa pas?</label></li>
+<li><input type="checkbox" id="t28"><label for="t28">Putuskan: perlu fine-tune pakai muka sendiri atau enggak</label></li>
+<li><input type="checkbox" id="t29"><label for="t29"><em>(kalau perlu)</em> Rekam muka sendiri + 2–3 teman (izin dulu), 4 ekspresi × ~60 frame</label></li>
+<li><input type="checkbox" id="t30"><label for="t30"><em>(kalau perlu)</em> Fine-tune model #13, uji pakai orang yang GAK ikut dilatih</label></li>
 </ul>
 </section>
 <section class="day" data-date="2026-09-13"><header><h3>Hari 7 — Minggu, 13 Sep</h3>
+<span class="tag">cadangan</span>
 </header><ul>
-<li><input type="checkbox" id="t25"><label for="t25">Parse label dari nama file (<code>kick-050-a-6.wav</code> → <code>kick</code>), cek jumlah per kelas</label></li>
-<li><input type="checkbox" id="t26"><label for="t26">Split train/valid/test sendiri, seed dikunci (dataset ini gak punya split)</label></li>
-<li><input type="checkbox" id="t27"><label for="t27">Audio → mel-spectrogram pakai torchaudio, kunci parameternya (n_mels, hop, durasi)</label></li>
-<li><input type="checkbox" id="t28"><label for="t28">Render beberapa spectrogram, lihat apa kick dan hihat beda secara kasat mata</label></li>
-<li><input type="checkbox" id="t29"><label for="t29">Dataset + DataLoader + overfit 1 batch</label></li>
+<li><input type="checkbox" id="t31"><label for="t31">Sisa model audio kalau Jumat molor</label></li>
+<li><input type="checkbox" id="t32"><label for="t32">Sisa fine-tune muka sendiri kalau Sabtu molor</label></li>
+<li><input type="checkbox" id="t33"><label for="t33"><em>(opsional)</em> DeepCNN di 224 — misahin efek ukuran gambar vs bobot ImageNet</label></li>
 </ul>
 </section>
 <section class="day" data-date="2026-09-14"><header><h3>Hari 8 — Senin, 14 Sep</h3>
 </header><ul>
-<li><input type="checkbox" id="t30"><label for="t30">Training penuh model audio, 2–3 eksperimen (arsitektur / n_mels / augmentation)</label></li>
-<li><input type="checkbox" id="t31"><label for="t31">Buka test set model audio, confusion matrix</label></li>
-<li><input type="checkbox" id="t32"><label for="t32">Buka test set model wajah — sekali ini aja, SETELAH fine-tune (kalau ada). Accuracy, precision, recall, F1</label></li>
-<li><input type="checkbox" id="t33"><label for="t33">Draft dua model card selagi angkanya masih anget</label></li>
+<li><input type="checkbox" id="t34"><label for="t34">Buka test set model audio, confusion matrix</label></li>
+<li><input type="checkbox" id="t35"><label for="t35">Buka test set model wajah — sekali ini aja, SETELAH fine-tune (kalau ada). Accuracy, precision, recall, F1</label></li>
+<li><input type="checkbox" id="t36"><label for="t36">Draft dua model card selagi angkanya masih anget</label></li>
 </ul>
 </section>
 <h2>Act — Minggu 2</h2>
 <section class="day" data-date="2026-09-15"><header><h3>Hari 9 — Selasa, 15 Sep</h3>
 <span class="tag">Core ML</span>
 </header><ul>
-<li><input type="checkbox" id="t34"><label for="t34">Convert PyTorch → Core ML pakai coremltools</label></li>
-<li><input type="checkbox" id="t35"><label for="t35">Verifikasi output Core ML sama dengan PyTorch di input yang sama (bandingin numerik)</label></li>
-<li><input type="checkbox" id="t36"><label for="t36">Setup project SwiftUI macOS + camera permission</label></li>
-<li><input type="checkbox" id="t37"><label for="t37">Vision face detection + Core ML prediksi, emosi live ke layar</label></li>
+<li><input type="checkbox" id="t37"><label for="t37">Convert PyTorch → Core ML pakai coremltools</label></li>
+<li><input type="checkbox" id="t38"><label for="t38">Verifikasi output Core ML sama dengan PyTorch di input yang sama (bandingin numerik)</label></li>
+<li><input type="checkbox" id="t39"><label for="t39">Setup project SwiftUI macOS + camera permission</label></li>
+<li><input type="checkbox" id="t40"><label for="t40">Vision face detection + Core ML prediksi, emosi live ke layar</label></li>
 </ul>
 </section>
 <section class="day" data-date="2026-09-16"><header><h3>Hari 10 — Rabu, 16 Sep</h3>
 <span class="tag">Core ML</span>
 </header><ul>
-<li><input type="checkbox" id="t38"><label for="t38">Siapin sample audio: kick.wav, snare.wav, hihat.wav</label></li>
-<li><input type="checkbox" id="t39"><label for="t39">Audio engine: BPM clock + sequencer token → suara, loop mulus</label></li>
-<li><input type="checkbox" id="t40"><label for="t40">Mapping emosi → beat pattern (rule-based, tabel biasa)</label></li>
-<li><input type="checkbox" id="t41"><label for="t41">Ekspresi ganti → pattern ganti di step berikutnya, bukan restart loop</label></li>
-<li><input type="checkbox" id="t42"><label for="t42"><strong>Rekam demo video cadangan sore ini</strong> — free mode aja udah cukup</label></li>
-<li><input type="checkbox" id="t43"><label for="t43"><em>(stretch)</em> Quest: 1–2 target sequence hardcoded + score sequence match</label></li>
+<li><input type="checkbox" id="t41"><label for="t41">Siapin sample audio: kick.wav, snare.wav, hihat.wav</label></li>
+<li><input type="checkbox" id="t42"><label for="t42">Audio engine: BPM clock + sequencer token → suara, loop mulus</label></li>
+<li><input type="checkbox" id="t43"><label for="t43">Mapping emosi → beat pattern (rule-based, tabel biasa)</label></li>
+<li><input type="checkbox" id="t44"><label for="t44">Ekspresi ganti → pattern ganti di step berikutnya, bukan restart loop</label></li>
+<li><input type="checkbox" id="t45"><label for="t45"><strong>Rekam demo video cadangan sore ini</strong> — free mode aja udah cukup</label></li>
+<li><input type="checkbox" id="t46"><label for="t46"><em>(stretch)</em> Quest: 1–2 target sequence hardcoded + score sequence match</label></li>
 </ul>
 </section>
 <h2>Cooldown</h2>
 <section class="day" data-date="2026-09-17"><header><h3>Hari 11 — Kamis, 17 Sep <em>(submit)</em></h3>
 </header><ul>
-<li><input type="checkbox" id="t44"><label for="t44">Polish seadanya: benerin yang paling kerasa ganggu, jangan nambah fitur</label></li>
-<li><input type="checkbox" id="t45"><label for="t45">Finalisasi model card + rapikan <code>docs/experiments.md</code> jadi cerita</label></li>
-<li><input type="checkbox" id="t46"><label for="t46">Rekam demo final (kalau yang Rabu udah cukup, pakai itu)</label></li>
-<li><input type="checkbox" id="t47"><label for="t47">Submit ke Academy + refleksi</label></li>
+<li><input type="checkbox" id="t47"><label for="t47">Polish seadanya: benerin yang paling kerasa ganggu, jangan nambah fitur</label></li>
+<li><input type="checkbox" id="t48"><label for="t48">Finalisasi model card + rapikan <code>docs/experiments.md</code> jadi cerita</label></li>
+<li><input type="checkbox" id="t49"><label for="t49">Rekam demo final (kalau yang Rabu udah cukup, pakai itu)</label></li>
+<li><input type="checkbox" id="t50"><label for="t50">Submit ke Academy + refleksi</label></li>
 </ul>
 </section>
 <h2>Opsional (cuma kalau semua di atas kelar)</h2>
 <ul>
-<li><input type="checkbox" id="t48"><label for="t48"><strong>Input gambar</strong> — pilih foto dari galeri, lewat pipeline yang sama (~30 menit)</label></li>
-<li><input type="checkbox" id="t49"><label for="t49"><strong>Input teks + Foundation Models</strong> — kalimat → emosi → beat (~2–3 jam). Ini yang ngasih ingredient 3★ pekerjaan beneran, bukan tempelan komentar.</label></li>
-<li><input type="checkbox" id="t50"><label for="t50">Quest + scoring lengkap (timing accuracy, 3 level kesulitan)</label></li>
-<li><input type="checkbox" id="t51"><label for="t51">Foundation Models: sequence + score → komentar natural</label></li>
-<li><input type="checkbox" id="t52"><label for="t52">Emotion intensity buat ngendaliin BPM / density</label></li>
+<li><input type="checkbox" id="t51"><label for="t51"><strong>Input gambar</strong> — pilih foto dari galeri, lewat pipeline yang sama (~30 menit)</label></li>
+<li><input type="checkbox" id="t52"><label for="t52"><strong>Input teks + Foundation Models</strong> — kalimat → emosi → beat (~2–3 jam). Ini yang ngasih ingredient 3★ pekerjaan beneran, bukan tempelan komentar.</label></li>
+<li><input type="checkbox" id="t53"><label for="t53">Quest + scoring lengkap (timing accuracy, 3 level kesulitan)</label></li>
+<li><input type="checkbox" id="t54"><label for="t54">Foundation Models: sequence + score → komentar natural</label></li>
+<li><input type="checkbox" id="t55"><label for="t55">Emotion intensity buat ngendaliin BPM / density</label></li>
 </ul>
 <footer>Generated from <code>CHALLENGE.md</code> by <code>build_tracker.py</code>.
 Centang di browser tidak tersimpan — minta Claude Code edit markdown-nya, lalu regenerate.</footer>

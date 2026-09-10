@@ -64,16 +64,19 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [x] Bikin script train yang baca config, biar ganti opsi nggak perlu edit kode
 
 ### Hari 5 — Jumat, 11 Sep
-`PyTorch` · wajah
+`PyTorch` · wajah → **audio**
 
 - [x] Eksperimen arsitektur: CNN kecil vs CNN lebih dalam
 - [x] Eksperimen arsitektur: ResNet18 pretrained (fine-tune)
 - [x] Eksperimen arsitektur: MobileNet pretrained (fine-tune)
 - [x] Bandingin akurasi vs jumlah parameter vs waktu training, catat semua
 - [x] Simpulin: from-scratch vs transfer learning, menang mana dan kenapa
-- [ ] Tes webcam realtime (Python): webcam → crop wajah → 48 → 224 → model #13 → emosi + smoothing *(dimajuin dari Hari 8)*
-- [ ] Ukur di muka beneran: tiap ekspresi kebaca? threshold 0,7 kerasa pas?
-- [ ] Putuskan: perlu fine-tune pakai muka sendiri atau enggak
+- [ ] **Model audio** — parse label dari nama file (`kick-050-a-6.wav` → `kick`), cek jumlah per kelas
+- [ ] **Model audio** — split train/valid/test sendiri, seed dikunci (dataset ini gak punya split)
+- [ ] **Model audio** — audio → mel-spectrogram, kunci parameternya (n_mels, hop, durasi)
+- [ ] **Model audio** — render beberapa spectrogram, lihat kick dan hihat beda secara kasat mata
+- [ ] **Model audio** — Dataset + DataLoader + overfit 1 batch
+- [ ] **Model audio** — training penuh + 2–3 eksperimen, checkpoint + grafik
 
 ### Hari 6 — Sabtu, 12 Sep
 `PyTorch` · wajah
@@ -83,22 +86,22 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [ ] Eksperimen augmentation: tanpa vs flip vs flip+rotate+brightness
 - [x] Eksperimen class weight buat imbalance 2.28x
 - [x] Pilih config final model wajah, catat di tabel
+- [ ] Tes webcam realtime (Python): webcam → crop wajah → 48 → 224 → model #13 → emosi + smoothing *(dimajuin dari Hari 8)*
+- [ ] Ukur di muka beneran: tiap ekspresi kebaca? threshold 0,7 kerasa pas?
+- [ ] Putuskan: perlu fine-tune pakai muka sendiri atau enggak
 - [ ] *(kalau perlu)* Rekam muka sendiri + 2–3 teman (izin dulu), 4 ekspresi × ~60 frame
 - [ ] *(kalau perlu)* Fine-tune model #13, uji pakai orang yang GAK ikut dilatih
 
 ### Hari 7 — Minggu, 13 Sep
-`PyTorch` · audio
+`cadangan`
 
-- [ ] Parse label dari nama file (`kick-050-a-6.wav` → `kick`), cek jumlah per kelas
-- [ ] Split train/valid/test sendiri, seed dikunci (dataset ini gak punya split)
-- [ ] Audio → mel-spectrogram pakai torchaudio, kunci parameternya (n_mels, hop, durasi)
-- [ ] Render beberapa spectrogram, lihat apa kick dan hihat beda secara kasat mata
-- [ ] Dataset + DataLoader + overfit 1 batch
+- [ ] Sisa model audio kalau Jumat molor
+- [ ] Sisa fine-tune muka sendiri kalau Sabtu molor
+- [ ] *(opsional)* DeepCNN di 224 — misahin efek ukuran gambar vs bobot ImageNet
 
 ### Hari 8 — Senin, 14 Sep
 `PyTorch` · dua-duanya
 
-- [ ] Training penuh model audio, 2–3 eksperimen (arsitektur / n_mels / augmentation)
 - [ ] Buka test set model audio, confusion matrix
 - [ ] Buka test set model wajah — sekali ini aja, SETELAH fine-tune (kalau ada). Accuracy, precision, recall, F1
 - [ ] Draft dua model card selagi angkanya masih anget
