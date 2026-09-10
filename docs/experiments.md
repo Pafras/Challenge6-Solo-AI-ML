@@ -8,6 +8,7 @@ Patokan: tebak acak 4 kelas = 0.25. Akurasi manusia di FER2013 (7 kelas) ~0.65.
 | # | Tanggal | Arsitektur | Image size | LR | Optimizer | Scheduler | Batch | Augmentation | Class weight | Epoch | Val acc | Catatan |
 |---|---------|-----------|-----------|-----|-----------|-----------|-------|--------------|--------------|-------|---------|---------|
 | 0 | 10 Sep | TinyCNN (2 conv, 10.468 par) | 48 | 1e-3 | Adam | tanpa | 64 | tanpa | tanpa | 5 | **0.588** | baseline. train 0.597 — nyaris nempel, jadi underfitting, bukan overfitting. loss valid masih turun, belum konvergen. |
+| 1 | 10 Sep | TinyCNN (sama) | 48 | **1e-2** | Adam | tanpa | 64 | tanpa | tanpa | 2 | 0.373 | lr 10x baseline. macet: loss diem di 1.339 (≈ ln 4 = 1.386), akurasi gak gerak antar epoch. bukan lambat — kelewatan. |
 
 ## Hasil akhir (test set — isi Hari 8)
 
