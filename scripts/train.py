@@ -82,6 +82,7 @@ def get_args():
     p.add_argument("--save", default=None)
     p.add_argument("--optimizer", default="adam", choices=["adam", "adamw", "sgd"])
     p.add_argument("--weight-decay", type=float, default=0.0)
+    p.add_argument("--scheduler", default="none", choices=["none", "cosine"])
     return p.parse_args()
     
 
@@ -140,8 +141,16 @@ if __name__ == "__main__":
     criterion = nn.CrossEntropyLoss()
     optimizer = build_optimizer(args.optimizer, model.parameters(), args.lr, args.weight_decay)
 
+    # Cosine decays lr from its starting value to ~0 over the run: large steps
+    # early to learn fast, small steps late to settle instead of wobbling.
+    # T_max counts scheduler steps, and step() runs once per epoch below.
+    scheduler = None
+    if args.scheduler == "cosine":
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
+
     best = 0.0
     for epoch in range(1, args.epochs + 1):
+        lr_now = optimizer.param_groups[0]["lr"]
         tr_loss, tr_acc = run_epoch(model, train_loader, criterion=criterion, optimizer=optimizer, device=device)
         va_loss, va_acc = evaluate(model, valid_loader, criterion=criterion, device=device)
         if va_acc > best:
@@ -158,11 +167,13 @@ if __name__ == "__main__":
                     "state_dict" : model.state_dict(),
                 }, args.save)
                 print(f"  -> Disimpan (epoch {epoch}, valid {va_acc:.3f})")
-        print(f"Epoch {epoch:2} train {tr_loss:.4f} / {tr_acc:.3f}   "
+        print(f"Epoch {epoch:2} lr {lr_now:.1e}  train {tr_loss:.4f} / {tr_acc:.3f}   "
               f"valid {va_loss:.4f} / {va_acc:.3f}")
+        if scheduler:
+            scheduler.step()   # after the epoch's training, never inside run_epoch
 
     n_par = sum(q.numel() for q in model.parameters())
     aug = "flip+rot+jitter" if args.augment else "Tanpa"
     opt = f"{args.optimizer} wd{args.weight_decay}" if args.weight_decay else args.optimizer
-    print(f"| ? | {args.arch} ({n_par} par) | {spec['size']} | {args.lr} | {opt} | Tanpa | "
+    print(f"| ? | {args.arch} ({n_par} par) | {spec['size']} | {args.lr} | {opt} | {args.scheduler} | "
           f"{args.batch_size} | {aug} | Tanpa | {args.epochs} | {best:.3f} | |")
