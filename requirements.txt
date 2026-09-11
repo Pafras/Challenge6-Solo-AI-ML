@@ -12,4 +12,9 @@ soundfile
 coremltools
 numpy
 matplotlib
+# Camera and drawing only. 5.x dropped the Haar face detector; pin <5 only
+# if the webcam test has to fall back from Vision to Haar.
 opencv-python
+# Face detection in the webcam test: Apple Vision, the detector the app
+# uses, called from Python. 12.0 does not support this venv's Python 3.9.
+pyobjc-framework-Vision==11.1
