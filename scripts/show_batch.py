@@ -33,16 +33,16 @@ def build_transform(image_size=48, channels=1, augment=False):
 TRANSFORM = build_transform()
 
 
-def load_rows(split):
+def load_rows(split, csv_path=CSV):
     """Return a list of (path, label) for the given split."""
-    with CSV.open() as fh:
+    with Path(csv_path).open() as fh:
         reader = csv.DictReader(fh)
         return [row for row in reader if row["split"] == split]
 
 
 class FER2013(Dataset):
-    def __init__(self, split, transform=TRANSFORM):
-        self.rows = load_rows(split)
+    def __init__(self, split, transform=TRANSFORM, csv_path=CSV):
+        self.rows = load_rows(split, csv_path)
         self.transform = transform
 
     def __len__(self):

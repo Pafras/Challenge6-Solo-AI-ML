@@ -21,6 +21,7 @@ Patokan: tebak acak 4 kelas = 0.25. Akurasi manusia di FER2013 (7 kelas) ~0.65.
 | 11 | 10 Sep | MobileNetV3-S pretrained | 224 | 1e-3 | AdamW wd 0.05 | cosine | 64 | flip+rot+jitter | **balanced** | 10 | **0.840** | beda dari #10 cuma class weight (angry 1.21, happy 0.67, neutral 0.97, surprise 1.53). total +0,3 — berisik. **per kelas yang berubah:** angry 0.748→0.770, neutral 0.803→0.817, surprise 0.845→0.863, happy 0.908→0.884. selisih kelas terbaik–terlemah 16 → 11 poin: model berhenti pilih kasih ke kelas terbanyak. loss valid akhir 0.571 (vs 0.601). checkpoint `models/mobilenet-cw.pt`. |
 | 12 | 10 Sep | MobileNetV3-S pretrained | 224 | 1e-3 | AdamW wd 0.05 | cosine | 64 | flip+rot+jitter · **dropout 0.5** | tanpa | 10 | 0.836 | beda dari #10 cuma dropout kepala 0.2 → 0.5. **praktis gak ngefek:** per kelas nyaris identik (angry 0.741, happy 0.906, neutral 0.803, surprise 0.849), total sama. train epoch 10 0.945 vs 0.954 — rem hafalan ada tapi tipis. checkpoint `models/mobilenet-drop05.pt`. |
 | 13 | 10 Sep | MobileNetV3-S pretrained | 224 | 1e-3 | AdamW wd 0.05 | cosine | 64 | flip+rot+jitter · **label smoothing 0.1** | balanced | 10 | 0.839 | beda dari #11 cuma label smoothing. akurasi & per kelas seri (angry 0.766, happy 0.884, neutral 0.813, surprise 0.868). **pertama kali loss valid gak naik lagi:** turun terus sampai epoch 10 (0.490), lebih rendah dari titik terendah run mana pun. **salah tapi >90% yakin: 181 → 56 foto.** yakin rata-rata waktu salah 78,7% → 68,7%, waktu benar 94,2% → 85,0%. hafalan (train 0.950) tetap — yang berubah cara salahnya, bukan jumlahnya. threshold keyakinan di app harus lebih rendah (~0,6–0,7). checkpoint `models/mobilenet-ls.pt`. |
+| 14 | 12 Sep | MobileNetV3-S pretrained | 224 | 1e-3 | AdamW wd 0.05 | cosine | 64 | flip+rot+jitter · label smoothing 0.1 · **5 kelas (+sad)** | balanced | 10 | 0.770 | beda dari #13 cuma nambah sad. split 4 kelas identik (24.142 baris sama persis), sad di urutan terakhir. per kelas: angry 0.676 (#13: 0.766) · happy 0.877 · neutral **0.679** (#13: 0.813) · surprise 0.874 · sad 0.713. **gagal kriteria yang dipasang sebelum run:** sad ≥ 0,70 lolos tipis, neutral ≥ 0,78 gagal (turun 13 poin). sad nyedot dari dua kelas: neutral→sad 0.176, angry→sad 0.177, dan sad→neutral 0.149. 0.770 gak bisa dibandingin langsung sama 0.839 (5 kelas, tebak acak 0.20 vs 0.25). loss valid masih turun di epoch 10 (0.690), gak overfit. checkpoint `models/mobilenet-ls-sad.pt`. |
 
 ## Temuan Hari 5 — arsitektur
 
@@ -68,6 +69,24 @@ Yang **belum** bisa disimpulkan, dan kenapa:
 Di bawah ~0,5 threshold udah gak nyaring apa-apa. Di 0,9 model cuma didengerin sepertiga waktu. Tebakan yang gak lolos gak bikin musik berhenti — beat lanjut main pola yang sekarang, cuma gak ganti. Angka ini per foto FER2013; di app ada smoothing ~10 frame sebelumnya dan wajah webcam, jadi nilai final disetel di tes realtime Hari 8.
 
 Catatan kejujuran: model ini dipilih pakai val set, jadi 0.839 sedikit optimis. Angka yang jujur datang dari test set, Hari 8.
+
+## Tes webcam #1 — 12 Sep, model #13, margin none
+
+`scripts/webcam_test.py`: Vision → crop → grayscale → 48 → `build_transform` → model. Pose ditandain pakai tombol, tiap frame dicatat.
+
+| log | kamera | pose | frame | benar | ditebak neutral | lolos 0,7 | benar\|lolos |
+|---|---|---|---|---|---|---|---|
+| 000717 (7,5 mnt) | iPhone lalu MacBook | angry | 3154 | 0.20 | 0.71 | 0.45 | 0.09 |
+| 000717 | | happy | 533 | 0.08 | 0.84 | 0.53 | 0.00 |
+| 001948 (1,9 mnt) | MacBook | angry | 1629 | **0.06** | **0.93** | 0.83 | 0.02 |
+
+Log 000717 kotor: awalnya pakai kamera iPhone (Continuity Camera ngambil alih `--camera 0`), dan ada frame senyum yang kecatat pose angry. Log 001948 bersih: kamera MacBook, alis jelas berkerut.
+
+**Model nyerah ke neutral.** Angry 93% ditebak neutral, dan 83% frame-nya lolos threshold 0,7, jadi model *yakin* salah. Happy juga 84% neutral. Arahnya sama dengan kelemahan terbesar di val (angry→neutral 0.149), tapi jauh lebih parah.
+
+**Pipanya bukan penyebab.** Wajah FER2013 train lewat pipa yang sama persis (Vision → 48 → model) kebaca 0.62–0.95 per kelas, happy 0.90–0.95. Yang beda di webcam cuma muka dan kameranya.
+
+Belum dites: margin `fer`, pose neutral dan surprise, kamera setinggi mata. Kamera masih dari bawah (plafon kelihatan).
 
 ## Hasil akhir (test set — isi Hari 8)
 

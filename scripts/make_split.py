@@ -12,6 +12,7 @@ the filesystem happens to return.
 """
 import csv
 import random
+import sys
 from pathlib import Path
 
 ROOT = Path("data/fer2013")
@@ -21,6 +22,15 @@ OUT = Path("data/splits/fer2013_4class.csv")
 # The model's output neuron 0 means "angry" because of THIS line. Reorder it
 # later and every saved checkpoint starts lying about what it predicts.
 CLASSES = ["angry", "happy", "neutral", "surprise"]
+
+# python scripts/make_split.py --with-sad  ->  data/splits/fer2013_5class.csv
+# Sad goes at the END, so neurons 0-3 mean what they mean in every 4-class
+# checkpoint. And because the classes are shuffled in order with one seeded
+# generator, the first four classes get exactly the same train/valid split
+# as the 4-class CSV: the images under runs #0-#13 do not move.
+if "--with-sad" in sys.argv:
+    CLASSES = CLASSES + ["sad"]
+    OUT = Path("data/splits/fer2013_5class.csv")
 
 VAL_FRACTION = 0.15
 SEED = 42

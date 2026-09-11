@@ -89,6 +89,7 @@ def get_args():
     p.add_argument("--class-weight", action="store_true")
     p.add_argument("--dropout", type=float, default=None)
     p.add_argument("--label-smoothing", type=float, default=0.0)
+    p.add_argument("--classes", type=int, default=4, choices=[4, 5])
     return p.parse_args()
     
 
@@ -138,20 +139,27 @@ if __name__ == "__main__":
 
     # Built before the loaders: build_model rejects an unknown arch, so the
     # ARCH lookup below never sees a bad key.
-    model = build_model(args.arch, dropout=args.dropout).to(device)
+    # --classes 5 adds sad (run #14). It sits at the end of the list, so
+    # neurons 0-3 keep their meaning; rebinding CLASSES here carries the new
+    # list into the class weights and the checkpoint below.
+    csv_path = "data/splits/fer2013_4class.csv"
+    if args.classes == 5:
+        CLASSES = CLASSES + ["sad"]
+        csv_path = "data/splits/fer2013_5class.csv"
+    model = build_model(args.arch, n_classes=len(CLASSES), dropout=args.dropout).to(device)
 
     spec =  ARCH[args.arch]
     train_tf = build_transform(image_size=spec["size"], channels=spec["channels"], augment=args.augment)
     valid_tf = build_transform(spec["size"], spec["channels"])
-    train_loader = DataLoader(FER2013("train", transform=train_tf), batch_size=args.batch_size, shuffle=True) 
-    valid_loader = DataLoader(FER2013("valid", transform=valid_tf), batch_size=args.batch_size, shuffle=False)
+    train_loader = DataLoader(FER2013("train", transform=train_tf, csv_path=csv_path), batch_size=args.batch_size, shuffle=True) 
+    valid_loader = DataLoader(FER2013("valid", transform=valid_tf, csv_path=csv_path), batch_size=args.batch_size, shuffle=False)
 
     criterion = nn.CrossEntropyLoss()
     # Class weights reshape the training loss only. Validation keeps the plain
     # loss, or its numbers would stop meaning the same thing as every run before.
     weight = None
     if args.class_weight:
-        counts = Counter(int(r["label"]) for r in load_rows("train"))
+        counts = Counter(int(r["label"]) for r in load_rows("train", csv_path))
         total = sum(counts.values())
         weights = torch.tensor([total / (len(CLASSES) * counts[i]) for i in range(len(CLASSES))])
         print("class weight:", {c: round(float(w), 2) for c, w in zip(CLASSES, weights)})
