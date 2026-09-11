@@ -109,55 +109,57 @@ footer{margin-top:40px;font-size:12px;color:var(--dim)}
 <section class="day" data-date="2026-09-13"><header><h3>Hari 7 — Minggu, 13 Sep</h3>
 <span class="tag">cadangan</span>
 </header><ul>
-<li><input type="checkbox" id="t31"><label for="t31">Sisa model audio kalau Jumat molor</label></li>
-<li><input type="checkbox" id="t32"><label for="t32">Sisa fine-tune muka sendiri kalau Sabtu molor</label></li>
-<li><input type="checkbox" id="t33"><label for="t33"><em>(opsional)</em> DeepCNN di 224 — misahin efek ukuran gambar vs bobot ImageNet</label></li>
+<li><input type="checkbox" id="t31"><label for="t31">Sisa fine-tune muka sendiri kalau Sabtu molor</label></li>
+<li><input type="checkbox" id="t32"><label for="t32"><strong>Model audio</strong> — assert normalisasi (fitur train harus mean ≈0 / std ≈1) + flag <code>--seeds</code></label></li>
+<li><input type="checkbox" id="t33"><label for="t33"><strong>Model audio</strong> — ulang A2b vs A3 pakai 3 seed, laporin rata-rata ± simpangan. Selisih mereka 2–3 poin, masih dalam goyangan → pilih model final dari sini</label></li>
+<li><input type="checkbox" id="t34"><label for="t34"><strong>Model audio</strong> <em>(kalau sempat)</em> — latih pakai sebagian orang AVP: 7 dari 14 orang <code>avp-valid</code> jadi <code>avp-train</code>, 7 sisanya tetap valid, <code>avp-test</code> gak disentuh. Hitung ulang run lama di valid 7 orang pakai checkpoint yang ada</label></li>
+<li><input type="checkbox" id="t35"><label for="t35"><em>(opsional)</em> DeepCNN di 224 — misahin efek ukuran gambar vs bobot ImageNet</label></li>
 </ul>
 </section>
 <section class="day" data-date="2026-09-14"><header><h3>Hari 8 — Senin, 14 Sep</h3>
 </header><ul>
-<li><input type="checkbox" id="t34"><label for="t34">Buka test set model audio, confusion matrix</label></li>
-<li><input type="checkbox" id="t35"><label for="t35">Buka test set model wajah — sekali ini aja, SETELAH fine-tune (kalau ada). Accuracy, precision, recall, F1</label></li>
-<li><input type="checkbox" id="t36"><label for="t36">Draft dua model card selagi angkanya masih anget</label></li>
+<li><input type="checkbox" id="t36"><label for="t36">Buka test set model audio sekali — <strong><code>avp-test</code> itu angka jujurnya</strong> (14 orang yang gak pernah dipakai). Test bucket dilaporin juga, tapi dengan catatan: pasti ~1,0 (varian nyaris kembar) dan clap cuma 2 rekaman. Confusion matrix + recall per label AVP (<code>hhc</code>/<code>hho</code> terpisah)</label></li>
+<li><input type="checkbox" id="t37"><label for="t37">Buka test set model wajah — sekali ini aja, SETELAH fine-tune (kalau ada). Accuracy, precision, recall, F1</label></li>
+<li><input type="checkbox" id="t38"><label for="t38">Draft dua model card selagi angkanya masih anget</label></li>
 </ul>
 </section>
 <h2>Act — Minggu 2</h2>
 <section class="day" data-date="2026-09-15"><header><h3>Hari 9 — Selasa, 15 Sep</h3>
 <span class="tag">Core ML</span>
 </header><ul>
-<li><input type="checkbox" id="t37"><label for="t37">Convert PyTorch → Core ML pakai coremltools</label></li>
-<li><input type="checkbox" id="t38"><label for="t38">Verifikasi output Core ML sama dengan PyTorch di input yang sama (bandingin numerik)</label></li>
-<li><input type="checkbox" id="t39"><label for="t39">Setup project SwiftUI macOS + camera permission</label></li>
-<li><input type="checkbox" id="t40"><label for="t40">Vision face detection + Core ML prediksi, emosi live ke layar</label></li>
+<li><input type="checkbox" id="t39"><label for="t39">Convert PyTorch → Core ML pakai coremltools</label></li>
+<li><input type="checkbox" id="t40"><label for="t40">Verifikasi output Core ML sama dengan PyTorch di input yang sama (bandingin numerik)</label></li>
+<li><input type="checkbox" id="t41"><label for="t41">Setup project SwiftUI macOS + camera permission</label></li>
+<li><input type="checkbox" id="t42"><label for="t42">Vision face detection + Core ML prediksi, emosi live ke layar</label></li>
 </ul>
 </section>
 <section class="day" data-date="2026-09-16"><header><h3>Hari 10 — Rabu, 16 Sep</h3>
 <span class="tag">Core ML</span>
 </header><ul>
-<li><input type="checkbox" id="t41"><label for="t41">Siapin sample audio: kick.wav, snare.wav, hihat.wav</label></li>
-<li><input type="checkbox" id="t42"><label for="t42">Audio engine: BPM clock + sequencer token → suara, loop mulus</label></li>
-<li><input type="checkbox" id="t43"><label for="t43">Mapping emosi → beat pattern (rule-based, tabel biasa)</label></li>
-<li><input type="checkbox" id="t44"><label for="t44">Ekspresi ganti → pattern ganti di step berikutnya, bukan restart loop</label></li>
-<li><input type="checkbox" id="t45"><label for="t45"><strong>Rekam demo video cadangan sore ini</strong> — free mode aja udah cukup</label></li>
-<li><input type="checkbox" id="t46"><label for="t46"><em>(stretch)</em> Quest: 1–2 target sequence hardcoded + score sequence match</label></li>
+<li><input type="checkbox" id="t43"><label for="t43">Siapin sample audio: kick.wav, snare.wav, hihat.wav</label></li>
+<li><input type="checkbox" id="t44"><label for="t44">Audio engine: BPM clock + sequencer token → suara, loop mulus</label></li>
+<li><input type="checkbox" id="t45"><label for="t45">Mapping emosi → beat pattern (rule-based, tabel biasa)</label></li>
+<li><input type="checkbox" id="t46"><label for="t46">Ekspresi ganti → pattern ganti di step berikutnya, bukan restart loop</label></li>
+<li><input type="checkbox" id="t47"><label for="t47"><strong>Rekam demo video cadangan sore ini</strong> — free mode aja udah cukup</label></li>
+<li><input type="checkbox" id="t48"><label for="t48"><em>(stretch)</em> Quest: 1–2 target sequence hardcoded + score sequence match</label></li>
 </ul>
 </section>
 <h2>Cooldown</h2>
 <section class="day" data-date="2026-09-17"><header><h3>Hari 11 — Kamis, 17 Sep <em>(submit)</em></h3>
 </header><ul>
-<li><input type="checkbox" id="t47"><label for="t47">Polish seadanya: benerin yang paling kerasa ganggu, jangan nambah fitur</label></li>
-<li><input type="checkbox" id="t48"><label for="t48">Finalisasi model card + rapikan <code>docs/experiments.md</code> jadi cerita</label></li>
-<li><input type="checkbox" id="t49"><label for="t49">Rekam demo final (kalau yang Rabu udah cukup, pakai itu)</label></li>
-<li><input type="checkbox" id="t50"><label for="t50">Submit ke Academy + refleksi</label></li>
+<li><input type="checkbox" id="t49"><label for="t49">Polish seadanya: benerin yang paling kerasa ganggu, jangan nambah fitur</label></li>
+<li><input type="checkbox" id="t50"><label for="t50">Finalisasi model card + rapikan <code>docs/experiments.md</code> jadi cerita</label></li>
+<li><input type="checkbox" id="t51"><label for="t51">Rekam demo final (kalau yang Rabu udah cukup, pakai itu)</label></li>
+<li><input type="checkbox" id="t52"><label for="t52">Submit ke Academy + refleksi</label></li>
 </ul>
 </section>
 <h2>Opsional (cuma kalau semua di atas kelar)</h2>
 <ul>
-<li><input type="checkbox" id="t51"><label for="t51"><strong>Input gambar</strong> — pilih foto dari galeri, lewat pipeline yang sama (~30 menit)</label></li>
-<li><input type="checkbox" id="t52"><label for="t52"><strong>Input teks + Foundation Models</strong> — kalimat → emosi → beat (~2–3 jam). Ini yang ngasih ingredient 3★ pekerjaan beneran, bukan tempelan komentar.</label></li>
-<li><input type="checkbox" id="t53"><label for="t53">Quest + scoring lengkap (timing accuracy, 3 level kesulitan)</label></li>
-<li><input type="checkbox" id="t54"><label for="t54">Foundation Models: sequence + score → komentar natural</label></li>
-<li><input type="checkbox" id="t55"><label for="t55">Emotion intensity buat ngendaliin BPM / density</label></li>
+<li><input type="checkbox" id="t53"><label for="t53"><strong>Input gambar</strong> — pilih foto dari galeri, lewat pipeline yang sama (~30 menit)</label></li>
+<li><input type="checkbox" id="t54"><label for="t54"><strong>Input teks + Foundation Models</strong> — kalimat → emosi → beat (~2–3 jam). Ini yang ngasih ingredient 3★ pekerjaan beneran, bukan tempelan komentar.</label></li>
+<li><input type="checkbox" id="t55"><label for="t55">Quest + scoring lengkap (timing accuracy, 3 level kesulitan)</label></li>
+<li><input type="checkbox" id="t56"><label for="t56">Foundation Models: sequence + score → komentar natural</label></li>
+<li><input type="checkbox" id="t57"><label for="t57">Emotion intensity buat ngendaliin BPM / density</label></li>
 </ul>
 <footer>Generated from <code>CHALLENGE.md</code> by <code>build_tracker.py</code>.
 Centang di browser tidak tersimpan — minta Claude Code edit markdown-nya, lalu regenerate.</footer>
