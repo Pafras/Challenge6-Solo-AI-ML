@@ -34,23 +34,33 @@ HOP = 256           # ~12 ms step -> 44 frames for 0.5 s
 N_MELS = 64
 
 # Mean and std of the log-mel over the train split (4,014 clips), measured
-# once and pinned like ImageNet's. Train only: stats that saw valid would
-# leak a little of it into every input.
-MEAN = -32.0
-STD = 22.7
+# once per pipeline and pinned like ImageNet's. Train only: stats that saw
+# valid would leak a little of it into every input. Keyed by (pad, norm)
+# because both move the numbers: zero padding sits on the -80 dB floor and
+# drags the mean down, and run A2 was trained on the zero-padding stats by
+# mistake, its inputs centred near +0.56 instead of 0.
+STATS = {
+    ("zero", "none"): (-32.0, 22.7),
+    ("noise", "none"): (-19.2, 14.5),
+    ("noise", "peak"): (-9.4, 15.1),
+}
 
 MEL = torchaudio.transforms.MelSpectrogram(
     sample_rate=SR, n_fft=N_FFT, hop_length=HOP, n_mels=N_MELS)
 TO_DB = torchaudio.transforms.AmplitudeToDB(top_db=80)
 
 
-def load_clip(path, pad="zero"):
+def load_clip(path, pad="zero", norm="none"):
     """Mono, 22,050 Hz, exactly DURATION long. Returns a 1-D tensor."""
     x, sr = sf.read(path, dtype="float32", always_2d=True)
     x = torch.from_numpy(x).mean(dim=1)   # stereo -> mono
     if sr != SR:
         x = torchaudio.functional.resample(x, sr, SR)
     x = x[:N_SAMPLES]
+    if norm == "peak":
+        # Loudest sample to 1.0. AVP peaks at a median 0.12 against the
+        # bucket's 0.34, and every mic in the app will sit somewhere else again.
+        x = x / x.abs().max().clamp(min=1e-4)
     n = N_SAMPLES - len(x)
     if pad == "noise":
         # Zero padding is digital silence no microphone produces, and run A1
@@ -64,9 +74,11 @@ def load_clip(path, pad="zero"):
     return torch.cat([x, filler])
 
 
-def features(path, pad="zero"):
+def features(path, pad="zero", norm="none"):
     """(1, N_MELS, frames) normalised log-mel, one channel like a grayscale image."""
-    return ((TO_DB(MEL(load_clip(path, pad))) - MEAN) / STD).unsqueeze(0)
+    assert (pad, norm) in STATS, f"no pinned stats for pad={pad} norm={norm}; measure them first"
+    mean, std = STATS[(pad, norm)]
+    return ((TO_DB(MEL(load_clip(path, pad, norm))) - mean) / std).unsqueeze(0)
 
 
 def load_rows(split, csv_path=CSV):
@@ -77,9 +89,9 @@ def load_rows(split, csv_path=CSV):
 class BeatboxAudio(Dataset):
     """All features computed once up front: 4,014 clips take ~1.5 s."""
 
-    def __init__(self, split, csv_path=CSV, pad="zero"):
+    def __init__(self, split, csv_path=CSV, pad="zero", norm="none"):
         self.rows = load_rows(split, csv_path)
-        self.x = torch.stack([features(r["path"], pad) for r in self.rows])
+        self.x = torch.stack([features(r["path"], pad, norm) for r in self.rows])
         self.y = torch.tensor([int(r["label"]) for r in self.rows])
 
     def __len__(self):

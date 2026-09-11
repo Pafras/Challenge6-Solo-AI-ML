@@ -96,6 +96,7 @@ def get_args():
     p.add_argument("--scheduler", default="none", choices=["none", "cosine"])
     p.add_argument("--class-weight", action="store_true")
     p.add_argument("--pad", default="zero", choices=["zero", "noise"])
+    p.add_argument("--norm", default="none", choices=["none", "peak"])
     p.add_argument("--save", default=None)
     p.add_argument("--overfit", action="store_true")
     return p.parse_args()
@@ -108,19 +109,20 @@ if __name__ == "__main__":
     model = AudioCNN().to(device)
     n_par = sum(q.numel() for q in model.parameters())
     print(f"device {device} · AudioCNN ({n_par} par) · lr {args.lr} · batch {args.batch_size} · "
-          f"epochs {args.epochs} · pad {args.pad} · seed {args.seed}")
+          f"epochs {args.epochs} · pad {args.pad} · norm {args.norm} · seed {args.seed}")
 
-    # Every split goes through the same padding: it is part of the pipeline,
-    # not an augmentation, and the app would have to reproduce it too.
-    train_ds = BeatboxAudio("train", pad=args.pad)
+    # Every split goes through the same padding and normalisation: they are
+    # part of the pipeline, not augmentation, and the app has to reproduce them.
+    pipe = {"pad": args.pad, "norm": args.norm}
+    train_ds = BeatboxAudio("train", **pipe)
     train_loader = DataLoader(train_ds, batch_size=args.batch_size, shuffle=True)
 
     if args.overfit:
         overfit_one_batch(model, train_loader, device)
         raise SystemExit
 
-    bucket_ds = BeatboxAudio("valid", pad=args.pad)
-    avp_ds = BeatboxAudio("avp-valid", AVP_CSV, pad=args.pad)
+    bucket_ds = BeatboxAudio("valid", **pipe)
+    avp_ds = BeatboxAudio("avp-valid", AVP_CSV, **pipe)
     bucket_loader = DataLoader(bucket_ds, batch_size=args.batch_size, shuffle=False)
     avp_loader = DataLoader(avp_ds, batch_size=args.batch_size, shuffle=False)
 
@@ -157,23 +159,28 @@ if __name__ == "__main__":
             scheduler.step()
     seconds = time.time() - start
 
+    # The best epoch is picked on avp-valid and reported on it, which flatters
+    # it a little; the mean of the last 5 epochs is the steadier number.
+    last5 = sum(h["valid_acc"] for h in history[-5:]) / len(history[-5:])
     model.load_state_dict(best_state)
     bucket_recall = recall_by(model, bucket_ds, [CLASSES[y] for y in bucket_ds.y.tolist()], device)
     avp_recall = recall_by(model, avp_ds, [r["avp_label"] for r in avp_ds.rows], device)
-    print(f"terbaik epoch {best_epoch}: avp {best:.3f} · bucket {best_bucket:.3f} · {seconds:.0f} detik")
+    print(f"terbaik epoch {best_epoch}: avp {best:.3f} · bucket {best_bucket:.3f} · "
+          f"avp rata-rata 5 epoch terakhir {last5:.3f} · {seconds:.0f} detik")
     print("  bucket recall: " + " · ".join(f"{c} {r:.3f}" for c, r in bucket_recall.items()))
     print("  avp recall:    " + " · ".join(f"{c} {r:.3f}" for c, r in avp_recall.items()))
 
     if args.save:
         Path(args.save).parent.mkdir(parents=True, exist_ok=True)
-        torch.save({"arch": "audiocnn", "classes": CLASSES, "pad": args.pad, "epoch": best_epoch,
-                    "avp_acc": best, "bucket_acc": best_bucket, "state_dict": best_state}, args.save)
+        torch.save({"arch": "audiocnn", "classes": CLASSES, "pad": args.pad, "norm": args.norm,
+                    "epoch": best_epoch, "avp_acc": best, "bucket_acc": best_bucket,
+                    "state_dict": best_state}, args.save)
         print(f"disimpan: {args.save}")
 
     opt = f"{args.optimizer} wd{args.weight_decay}" if args.weight_decay else args.optimizer
     cw = "balanced" if args.class_weight else "tanpa"
-    print(f"| ? | AudioCNN ({n_par} par) | log-mel 64x44, pad {args.pad} | {args.lr} | {opt} | "
-          f"{args.scheduler} | {args.batch_size} | tanpa | {cw} | {args.epochs} | "
+    print(f"| ? | AudioCNN ({n_par} par) | log-mel 64x44, pad {args.pad}, norm {args.norm} | "
+          f"{args.lr} | {opt} | {args.scheduler} | {args.batch_size} | tanpa | {cw} | {args.epochs} | "
           f"{best:.3f} / {best_bucket:.3f} | |")
 
     name = Path(args.save).stem if args.save else "audiocnn"
@@ -182,11 +189,12 @@ if __name__ == "__main__":
     record = {
         "name": name,
         "config": vars(args),
-        "summary": (f"AudioCNN · pad {args.pad} · lr {args.lr} · {opt} · scheduler {args.scheduler} · "
-                    f"class weight {cw} · {args.epochs} epoch · valid = avp-valid, terbaik {best:.3f} "
-                    f"(bucket {best_bucket:.3f})"),
+        "summary": (f"AudioCNN · pad {args.pad} · norm {args.norm} · lr {args.lr} · {opt} · "
+                    f"scheduler {args.scheduler} · class weight {cw} · {args.epochs} epoch · "
+                    f"valid = avp-valid, terbaik {best:.3f}, 5 terakhir {last5:.3f} (bucket {best_bucket:.3f})"),
         "bucket_recall": bucket_recall,
         "avp_recall": avp_recall,
+        "avp_last5": last5,
         "epochs": history,
     }
     (curves / f"{name}.json").write_text(json.dumps(record, indent=2))
