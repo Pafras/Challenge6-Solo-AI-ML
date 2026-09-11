@@ -71,8 +71,8 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [x] Eksperimen arsitektur: MobileNet pretrained (fine-tune)
 - [x] Bandingin akurasi vs jumlah parameter vs waktu training, catat semua
 - [x] Simpulin: from-scratch vs transfer learning, menang mana dan kenapa
-- [ ] **Model audio** — parse label dari nama file (`kick-050-a-6.wav` → `kick`), cek jumlah per kelas
-- [ ] **Model audio** — potong valid dari train **per nomor rekaman** (bukan per file), seed dikunci. Train/test dari bucket udah dipisah per rekaman, nol bocor
+- [x] **Model audio** — parse label dari nama file (`kick-050-a-6.wav` → `kick`), cek jumlah per kelas
+- [x] **Model audio** — potong valid dari train **per nomor rekaman** (bukan per file), seed dikunci. Train/test dari bucket udah dipisah per rekaman, nol bocor
 - [ ] **Model audio** — audio → mel-spectrogram, kunci parameternya (n_mels, hop, durasi)
 - [ ] **Model audio** — render beberapa spectrogram, lihat kick dan hihat beda secara kasat mata
 - [ ] **Model audio** — Dataset + DataLoader + overfit 1 batch
