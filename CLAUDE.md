@@ -94,10 +94,21 @@ brief's star rating):
 - **Beat:** symbolic tokens (`K` kick, `H` hi-hat, `S` snare). Rule-based
   emotion → beat mapping, a plain lookup table. No ML beat generator — it
   would add nothing to the learning goal.
+- **One expression = one looping pattern, not one sound (decided 11 Sep).**
+  Each emotion maps to a whole pattern (e.g. happy → `K H H S K H H S`) that
+  loops on the BPM clock. A new stable emotion swaps the pattern at the start
+  of the next bar; below the confidence threshold the current pattern keeps
+  playing. Rejected: one expression = one hit (spec section 1, `Happy →
+  Hi-hat`). Smoothing alone takes ~0.33 s at 30 fps, before the user even
+  changes face, so hits would land every 0.5–1 s — too slow to be a beat —
+  and every jitter would sound as a wrong hit. Prediction jitter is the
+  number-one risk (see Known risks); patterns filter it, single hits
+  amplify it. The spec's section 1 still shows the rejected version.
 - **Audio engine:** sample playback on a BPM clock. Not AI, doesn't need
   to be.
-- **Quest:** 2–3 hardcoded target sequences, compared against the detected
-  sequence, scored on sequence match.
+- **Quest:** 2–3 hardcoded target sequences of expressions, each held for a
+  bar (e.g. happy → neutral → angry), compared against the detected
+  per-bar sequence, scored on sequence match.
 
 ## Experiment discipline
 
