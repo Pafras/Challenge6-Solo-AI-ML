@@ -73,8 +73,8 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [x] Simpulin: from-scratch vs transfer learning, menang mana dan kenapa
 - [x] **Model audio** — parse label dari nama file (`kick-050-a-6.wav` → `kick`), cek jumlah per kelas
 - [x] **Model audio** — potong valid dari train **per nomor rekaman** (bukan per file), seed dikunci. Train/test dari bucket udah dipisah per rekaman, nol bocor
-- [ ] **Model audio** — audio → mel-spectrogram, kunci parameternya (n_mels, hop, durasi)
-- [ ] **Model audio** — render beberapa spectrogram, lihat kick dan hihat beda secara kasat mata
+- [x] **Model audio** — audio → mel-spectrogram, kunci parameternya (n_mels, hop, durasi)
+- [x] **Model audio** — render beberapa spectrogram, lihat kick dan hihat beda secara kasat mata
 - [ ] **Model audio** — Dataset + DataLoader + overfit 1 batch
 - [ ] **Model audio** — training penuh + 2–3 eksperimen, checkpoint + grafik
 

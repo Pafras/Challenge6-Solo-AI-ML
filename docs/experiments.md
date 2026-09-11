@@ -78,3 +78,30 @@ Catatan kejujuran: model ini dipilih pakai val set, jadi 0.839 sedikit optimis. 
 | Latency / frame | |
 
 Kelas yang dibuang dari mapping + alasannya:
+
+---
+
+# Model audio — beatbox (clap / hihats / kick / snare)
+
+Data: Pafras/beatbox-bucket. Split per **rekaman**, bukan per file — tiap rekaman punya ~32 varian nyaris kembar (`scripts/make_audio_split.py`, seed 42, 20% rekaman per kelas ke valid).
+
+| | train | valid | test |
+|---|---|---|---|
+| clap | 480 (15 rek) | 129 (4 rek) | 68 (2 rek) |
+| hihats | 1222 (38 rek) | 323 (10 rek) | 161 (5 rek) |
+| kick | 1243 (38 rek) | 304 (10 rek) | 188 (6 rek) |
+| snare | 1069 (34 rek) | 288 (9 rek) | 158 (5 rek) |
+
+Valid clap cuma 4 rekaman: satu rekaman ≈ seperempat skor clap, jadi angka clap berisik antar run.
+
+Fitur (`scripts/audio_features.py`): mono 22.050 Hz, potong/pad ke 0,5 s, log-mel 64 × 44 (n_fft 1024, hop 256, top_db 80).
+
+**Patokan:**
+
+| tebakan | val acc | catatan |
+|---|---|---|
+| kelas terbanyak | 0.309 | |
+| **durasi clip doang** | **0.542** | Gaussian per kelas di log-durasi, fit di train. hihats recall 0.879, clap 0.783, kick 0.500, snare 0.101. Panjang clip bocorin label: hihats semua ≤0,28 s, clap semua ≥0,29 s. Zero padding bikin panjang itu kelihatan di spectrogram. Model yang cuma sampai ~0,55 belum tentu belajar bunyi. |
+
+| # | Tanggal | Arsitektur | Fitur | LR | Optimizer | Scheduler | Batch | Augmentation | Class weight | Epoch | Val acc | Catatan |
+|---|---------|-----------|-------|-----|-----------|-----------|-------|--------------|--------------|-------|---------|---------|
