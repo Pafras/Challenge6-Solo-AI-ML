@@ -75,7 +75,7 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [x] **Model audio** — potong valid dari train **per nomor rekaman** (bukan per file), seed dikunci. Train/test dari bucket udah dipisah per rekaman, nol bocor
 - [x] **Model audio** — audio → mel-spectrogram, kunci parameternya (n_mels, hop, durasi)
 - [x] **Model audio** — render beberapa spectrogram, lihat kick dan hihat beda secara kasat mata
-- [ ] **Model audio** — Dataset + DataLoader + overfit 1 batch
+- [x] **Model audio** — Dataset + DataLoader + overfit 1 batch
 - [ ] **Model audio** — training penuh + 2–3 eksperimen, checkpoint + grafik
 
 ### Hari 6 — Sabtu, 12 Sep
