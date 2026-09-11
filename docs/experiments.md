@@ -103,6 +103,24 @@ Fitur (`scripts/audio_features.py`): mono 22.050 Hz, potong/pad ke 0,5 s, log-me
 | kelas terbanyak | 0.309 | |
 | **durasi clip doang** | **0.542** | Gaussian per kelas di log-durasi, fit di train. hihats recall 0.879, clap 0.783, kick 0.500, snare 0.101. Panjang clip bocorin label: hihats semua ≤0,28 s, clap semua ≥0,29 s. Zero padding bikin panjang itu kelihatan di spectrogram. Model yang cuma sampai ~0,55 belum tentu belajar bunyi. |
 
-| # | Tanggal | Arsitektur | Fitur | LR | Optimizer | Scheduler | Batch | Augmentation | Class weight | Epoch | Val acc | Catatan |
+Mulai A2, **val acc = avp-valid / bucket valid**, dan epoch terbaik dipilih dari avp-valid. Lihat "Temuan AVP" di bawah tabel.
+
+| # | Tanggal | Arsitektur | Fitur | LR | Optimizer | Scheduler | Batch | Augmentation | Class weight | Epoch | Val acc (avp / bucket) | Catatan |
 |---|---------|-----------|-------|-----|-----------|-----------|-------|--------------|--------------|-------|---------|---------|
-| A1 | 11 Sep | AudioCNN (3 conv + BN, 23.780 par) | log-mel 64×44, 0,5 s | 1e-3 | Adam | tanpa | 32 | tanpa | tanpa | 15 | **0.997** | baseline audio, 8 detik. epoch 1 udah 0.902 — jauh di atas patokan durasi (0.542), jadi model dengerin bunyi, bukan cuma panjang. **cuma 3 dari 1044 clip salah**, semuanya hihat varian pitch-shift (`-p-`) ditebak snare dengan yakin rendah (0.50–0.77). clap/kick/snare recall 1.000, hihats 0.991. **valid goyang:** anjlok ke 0.882 di epoch 4 dan 0.953 di epoch 12 — valid cuma 33 rekaman, satu rekaman kebalik = ~30 clip = 3 poin. lr konstan, pola sama kayak wajah #8. terbaik epoch 10. **valid udah mentok:** eksperimen berikutnya gak bisa dibedain di sini (sisa 3 clip salah). checkpoint `models/audio-cnn.pt`. |
+| A1 | 11 Sep | AudioCNN (3 conv + BN, 23.780 par) | log-mel 64×44, 0,5 s, pad nol | 1e-3 | Adam | tanpa | 32 | tanpa | tanpa | 15 | 0.497 / **0.997** | baseline audio, 8 detik. epoch 1 udah 0.902 — jauh di atas patokan durasi (0.542), jadi model dengerin bunyi, bukan cuma panjang. **cuma 3 dari 1044 clip salah**, semuanya hihat varian pitch-shift (`-p-`) ditebak snare dengan yakin rendah (0.50–0.77). clap/kick/snare recall 1.000, hihats 0.991. **valid goyang:** anjlok ke 0.882 di epoch 4 dan 0.953 di epoch 12 — valid cuma 33 rekaman, satu rekaman kebalik = ~30 clip = 3 poin. lr konstan, pola sama kayak wajah #8. terbaik epoch 10. **valid udah mentok:** eksperimen berikutnya gak bisa dibedain di sini (sisa 3 clip salah). checkpoint `models/audio-cnn.pt`. |
+
+### Temuan AVP — 0.997 itu ngukur bucket, bukan beatbox
+
+**AVP** (Amateur Vocal Percussion v4, Zenodo): 28 orang awam yang bukan performer bucket, mic bawaan MacBook Pro. Dipotong per onset (`scripts/make_avp_split.py`): mulai 30 ms sebelum onset, berhenti di onset berikutnya atau 0,5 s. 9.773 clip. Split **per orang**, seed 42: 14 orang `avp-valid` (5.025 clip, buat bandingin eksperimen), 14 orang `avp-test` (dibuka sekali, Hari 8). Gak ada clap. `kd`→kick, `sd`→snare, `hhc`+`hho`→hihats, label asli tetap disimpan.
+
+| di avp-valid | acc |
+|---|---|
+| tebak "hihats" terus | 0.450 |
+| durasi clip doang (fit di bucket) | 0.229 — bocoran panjang gak kebawa, panjang clip AVP mirip di semua kelas |
+| **A1 (checkpoint bucket, tanpa latih ulang)** | **0.497** |
+
+A1 per label AVP — kd→kick 0.83, sd→snare 0.49, **hhc→hihats 0.29**, hho→hihats 0.26. 677 clip salah dengan yakin >0,9.
+
+**Penyebab 1 — padding nol.** Di valid bucket yang sama, padding nol diganti noise (level = 10 ms terakhir clip itu sendiri): akurasi 0.997 → 0.812, **recall hihat 0.991 → 0.502**, snare 1.000 → 0.878. A1 ngenalin hihat dari "bunyi pendek, lalu hening digital", dan mic beneran gak pernah ngasilin hening digital. Bisa dibenerin di training → run A2.
+
+**Penyebab 2 — gaya suara.** `docs/avp-spectrogram-check.png`: orang awam nyuarain bunyi pakai vokal (garis harmonik horizontal, "bum", "ka", "tsa") dan panjang. Bunyi bucket pendek dan bersih. Ini beda data, bukan beda setelan — gak bisa dibenerin dari sisi training bucket doang.

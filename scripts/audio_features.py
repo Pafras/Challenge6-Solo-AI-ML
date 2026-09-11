@@ -44,35 +44,42 @@ MEL = torchaudio.transforms.MelSpectrogram(
 TO_DB = torchaudio.transforms.AmplitudeToDB(top_db=80)
 
 
-def load_clip(path):
+def load_clip(path, pad="zero"):
     """Mono, 22,050 Hz, exactly DURATION long. Returns a 1-D tensor."""
     x, sr = sf.read(path, dtype="float32", always_2d=True)
     x = torch.from_numpy(x).mean(dim=1)   # stereo -> mono
     if sr != SR:
         x = torchaudio.functional.resample(x, sr, SR)
-    # ponytail: zero padding. The amount of padding tracks clip length, and
-    # length alone scores 0.542 on valid. Noise padding is the upgrade if the
-    # model turns out to be reading length instead of sound.
     x = x[:N_SAMPLES]
-    return torch.nn.functional.pad(x, (0, N_SAMPLES - len(x)))
+    n = N_SAMPLES - len(x)
+    if pad == "noise":
+        # Zero padding is digital silence no microphone produces, and run A1
+        # learned "short sound, then silence = hihat" from it: with noise
+        # padding on the same valid clips, hihat recall fell 0.991 -> 0.502.
+        # Filler at the level of the clip's own last 10 ms looks like the
+        # room the clip was recorded in.
+        filler = torch.randn(n) * x[-int(0.01 * SR):].std()
+    else:
+        filler = torch.zeros(n)
+    return torch.cat([x, filler])
 
 
-def features(path):
+def features(path, pad="zero"):
     """(1, N_MELS, frames) normalised log-mel, one channel like a grayscale image."""
-    return ((TO_DB(MEL(load_clip(path))) - MEAN) / STD).unsqueeze(0)
+    return ((TO_DB(MEL(load_clip(path, pad))) - MEAN) / STD).unsqueeze(0)
 
 
-def load_rows(split):
-    with CSV.open() as fh:
+def load_rows(split, csv_path=CSV):
+    with Path(csv_path).open() as fh:
         return [row for row in csv.DictReader(fh) if row["split"] == split]
 
 
 class BeatboxAudio(Dataset):
     """All features computed once up front: 4,014 clips take ~1.5 s."""
 
-    def __init__(self, split):
-        self.rows = load_rows(split)
-        self.x = torch.stack([features(r["path"]) for r in self.rows])
+    def __init__(self, split, csv_path=CSV, pad="zero"):
+        self.rows = load_rows(split, csv_path)
+        self.x = torch.stack([features(r["path"], pad) for r in self.rows])
         self.y = torch.tensor([int(r["label"]) for r in self.rows])
 
     def __len__(self):
