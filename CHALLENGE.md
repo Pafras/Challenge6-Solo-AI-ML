@@ -76,7 +76,7 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [x] **Model audio** — audio → mel-spectrogram, kunci parameternya (n_mels, hop, durasi)
 - [x] **Model audio** — render beberapa spectrogram, lihat kick dan hihat beda secara kasat mata
 - [x] **Model audio** — Dataset + DataLoader + overfit 1 batch
-- [ ] **Model audio** — training penuh + 2–3 eksperimen, checkpoint + grafik
+- [x] **Model audio** — training penuh + 2–3 eksperimen, checkpoint + grafik
 
 ### Hari 6 — Sabtu, 12 Sep
 `PyTorch` · wajah
