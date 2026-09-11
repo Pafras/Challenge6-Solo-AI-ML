@@ -103,7 +103,7 @@ brief's star rating):
   changes face, so hits would land every 0.5–1 s — too slow to be a beat —
   and every jitter would sound as a wrong hit. Prediction jitter is the
   number-one risk (see Known risks); patterns filter it, single hits
-  amplify it. The spec's section 1 still shows the rejected version.
+  amplify it. The spec follows this throughout (sections 1, 14–17, 34).
 - **Audio engine:** sample playback on a BPM clock. Not AI, doesn't need
   to be.
 - **Quest:** 2–3 hardcoded target sequences of expressions, each held for a

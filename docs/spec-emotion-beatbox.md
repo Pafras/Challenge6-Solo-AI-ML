@@ -46,19 +46,24 @@ The priority is a **working, fun, demonstrable prototype**, not state-of-the-art
 
 The application is an interactive **facial-expression beatbox game**.
 
-Instead of physically beatboxing with their mouth, the user uses their facial expressions to control different musical actions.
+Instead of physically beatboxing with their mouth, the user uses their facial expressions to choose which beat is playing.
 
-Example:
+**One expression selects one looping pattern, not one sound** (decided 11 Sep). Each emotion maps to a whole pattern that loops on the BPM clock:
 
 ```text
-😄 Happy   → Hi-hat
-😐 Neutral → Kick
-😠 Angry   → Snare
-😮 Surprise → Double/variation beat
-😢 Sad     → Low-energy beat
+😐 Neutral  → K - H - K - H -    (calm)
+😄 Happy    → K H H S K H H S    (groove)
+😠 Angry    → K K S - K K S S    (heavy)
+😮 Surprise → K H S H K S H S    (variation)
 ```
 
-The user can freely create a beat by changing expressions.
+The exact patterns and tempos are placeholders, settled on Day 10. Sad is not in the model: the face classifier has four classes (angry / happy / neutral / surprise).
+
+A new expression swaps the pattern at the start of the next bar, and only once the prediction is stable and confident. Below the confidence threshold the current pattern keeps playing, so the music never stops or stutters.
+
+Rejected: one expression = one hit (😄 → hi-hat, 😐 → kick, 😠 → snare). Temporal smoothing alone takes about 0.33 s at 30 fps before the user even changes face, so hits could land only every 0.5–1 s — too slow to be a beat — and every flicker in the prediction would sound as a wrong hit.
+
+The user can freely change the beat by changing expressions.
 
 The application can then provide quests such as:
 
@@ -67,14 +72,14 @@ The application can then provide quests such as:
 Example:
 
 ```text
-TARGET:
+TARGET (one expression per bar):
 
 😄 → 😐 → 😠 → 😄
 
-HH → K → S → HH
+groove → calm → heavy → groove
 ```
 
-The user must perform the corresponding facial expressions at approximately the correct timing.
+The user must hold each expression for its bar. The detected per-bar sequence is compared against the target.
 
 ---
 
@@ -527,14 +532,12 @@ The user should be able to freely control the music.
 Example:
 
 ```text
-User:
-😄 → 😄 → 😐 → 😠 → 😄
-
-System:
-HH → HH → K → S → HH
+User holds:  😄 ....... 😄 ....... 😐 ....... 😠
+Bar:         1          2          3          4
+Playing:     groove     groove     calm       heavy
 ```
 
-The generated beat changes in real time.
+The beat changes live: once a new expression is stable and confident, its pattern takes over at the start of the next bar. A flicker inside a bar changes nothing.
 
 This mode demonstrates the core AI interaction.
 
@@ -552,23 +555,23 @@ Example:
 Quest #01
 Happy Groove
 
-Target:
+Target (one expression per bar):
 😄 → 😐 → 😠 → 😄
 ```
 
-Equivalent beat:
+Equivalent beat (one pattern per bar):
 
 ```text
-HH → K → S → HH
+groove → calm → heavy → groove
 ```
 
-The user performs:
+The user holds each expression for its bar:
 
 ```text
 😄 → 😐 → 😠 → 😄
 ```
 
-The system recognizes the sequence and evaluates the result.
+The system records the expression detected in each bar and compares that sequence with the target.
 
 ---
 
@@ -585,25 +588,15 @@ Example:
   "difficulty": "easy",
   "bpm": 100,
   "steps": [
-    {
-      "emotion": "happy",
-      "beat": "H"
-    },
-    {
-      "emotion": "neutral",
-      "beat": "K"
-    },
-    {
-      "emotion": "angry",
-      "beat": "S"
-    },
-    {
-      "emotion": "happy",
-      "beat": "H"
-    }
+    { "emotion": "happy",   "pattern": "groove" },
+    { "emotion": "neutral", "pattern": "calm" },
+    { "emotion": "angry",   "pattern": "heavy" },
+    { "emotion": "happy",   "pattern": "groove" }
   ]
 }
 ```
+
+Each step lasts one bar. `pattern` names an entry in the emotion → pattern lookup table, so the quest file never repeats the tokens.
 
 This should remain simple and easy to modify.
 
@@ -618,11 +611,11 @@ QUEST
 
 Happy Groove
 
-Perform:
+Perform (one bar each):
 
-😄     😐     😠     😄
- ↓      ↓      ↓      ↓
-HH      K      S      HH
+😄        😐        😠        😄
+ ↓         ↓         ↓         ↓
+groove    calm      heavy     groove
 
 [ START ]
 ```
@@ -632,12 +625,12 @@ After starting:
 ```text
 Timeline:
 
-   😄      😐      😠      😄
-   ↓       ↓       ↓       ↓
-   ●───────●───────●───────●
+  bar 1     bar 2     bar 3     bar 4
+   😄        😐        😠        😄
+   |─────────|─────────|─────────|─────────|
 ```
 
-The user performs the expressions according to the timing.
+The user holds each expression through its bar and hears that bar's pattern.
 
 ---
 
@@ -1333,22 +1326,22 @@ Target:
 😄 → 😐 → 😠 → 😄
 ```
 
-Mapping:
+Mapping (one pattern per bar):
 
 ```text
-😄 → Hi-hat
-😐 → Kick
-😠 → Snare
-😄 → Hi-hat
+😄 → groove   K H H S K H H S
+😐 → calm     K - H - K - H -
+😠 → heavy    K K S - K K S S
+😄 → groove   K H H S K H H S
 ```
 
-User performs:
+User holds, one bar each:
 
 ```text
 😄 → 😐 → 😠 → 😄
 ```
 
-System detects:
+System detects, per bar:
 
 ```text
 Happy ✓
