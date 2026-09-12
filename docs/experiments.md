@@ -5,6 +5,45 @@ Test set cuma dibuka sekali, di Hari 8.
 
 Patokan: tebak acak 4 kelas = 0.25. Akurasi manusia di FER2013 (7 kelas) ~0.65.
 
+## Peta run — nama singkat
+
+Metodenya **one-factor-at-a-time (OFAT)**: tiap run cuma ngubah satu variabel dari run sebelumnya, jadi tiap perubahan hasil bisa dijelasin penyebabnya. Detail lengkap di tabel di bawah.
+
+**Model wajah**
+
+| # | nama | yang diubah | inti ceritanya |
+|---|---|---|---|
+| **Bab 1: Arsitektur** | | | |
+| 0 | TinyCNN (baseline) | titik awal | 0.588, patokan pertama |
+| 1 | LR kegedean | lr 1e-2 | macet, gak belajar |
+| 2 | DeepCNN | 3 lapis conv | 0.678, lebih dalam lebih baik |
+| 3 | MobileNet | pretrained ImageNet | 0.813, transfer learning menang jauh |
+| 4 | ResNet18 | pretrained, 7x lebih besar | 0.797, lebih besar ≠ lebih bagus |
+| **Bab 2: Melawan overfitting** | | | |
+| 5 | LR kecil | lr 1e-4 | overfit tetap, cuma lebih lambat |
+| 6 | Augmentasi | flip + rotasi + kecerahan | overfit tertunda |
+| 7 | Augmentasi panjang | 15 epoch | mentok ~0.81 |
+| 8 | AdamW | ganti optimizer | nyaris identik |
+| 9 | Cosine | LR turun pelan-pelan | goyangan hilang, 0.827 |
+| 10 | Weight decay | wd 0.05 | 0.837 |
+| 11 | Class weight | kelas kecil dibobotin | kelas terlemah (angry) naik |
+| 12 | Dropout | 0.2 → 0.5 | gak ngefek |
+| **Bab 3: Keyakinan** | | | |
+| 13 | **Label smoothing ⭐ (final)** | target 0.925, bukan 1 | salah-tapi-yakin 181 → 56 |
+| **Bab 4: Kelas** | | | |
+| 14 | +Sad | 5 kelas | sad nyedot neutral, gagal kriteria |
+
+**Model audio**
+
+| # | nama | inti ceritanya |
+|---|---|---|
+| — | Patokan durasi | panjang clip doang 0.542 → panjang = bocoran label |
+| A1 | Baseline audio | 0.997 di bucket, 0.497 di AVP |
+| A1b | Baseline, diukur jujur | epoch terbaik dipilih pakai AVP |
+| A2 | Padding noise | padding nol bikin model curang di hihat |
+| A2b | Padding noise (dibenerin) | statistik normalisasi dibetulin |
+| A3 | **Normalisasi volume ⭐** | paling seimbang antar kelas |
+
 | # | Tanggal | Arsitektur | Image size | LR | Optimizer | Scheduler | Batch | Augmentation | Class weight | Epoch | Val acc | Catatan |
 |---|---------|-----------|-----------|-----|-----------|-----------|-------|--------------|--------------|-------|---------|---------|
 | 0 | 10 Sep | TinyCNN (2 conv, 10.468 par) | 48 | 1e-3 | Adam | tanpa | 64 | tanpa | tanpa | 5 | **0.588** | baseline. train 0.597 — nyaris nempel, jadi underfitting, bukan overfitting. loss valid masih turun, belum konvergen. |
