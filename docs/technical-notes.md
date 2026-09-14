@@ -2,7 +2,7 @@
 
 Dokumen ini menjelaskan **apa yang dilatih, bagaimana, dan kenapa**: metode, setiap eksperimen beserta hasilnya, dan fungsi tiap file di `scripts/`. Angka mentah per run ada di [`experiments.md`](experiments.md); dokumen ini merangkum dan menjelaskannya.
 
-> Status per 14 Sep: model wajah 5 kelas di-fine-tune dengan wajah yang direkam (**Fine-tune bersih jadi model final**) dan diuji di webcam. **Test set sudah dibuka sekali (14 Sep)** — hasilnya di bagian 1 dan di `experiments.md`.
+> Status per 14 Sep: model wajah 5 kelas di-fine-tune dengan wajah yang direkam (**Fine-tune bersih jadi model final**) dan diuji di webcam. **Test set sudah dibuka sekali (14 Sep)** — hasilnya di bagian 1 dan di `experiments.md`. Model card: [wajah](model-card-face.md) · [audio](model-card-audio.md).
 
 ---
 
