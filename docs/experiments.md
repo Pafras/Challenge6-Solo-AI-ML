@@ -133,6 +133,36 @@ Log 000717 kotor: awalnya pakai kamera iPhone (Continuity Camera ngambil alih `-
 
 Belum dites: margin `fer`, pose neutral dan surprise, kamera setinggi mata. Kamera masih dari bawah (plafon kelihatan).
 
+## Tes webcam #2 — 14 Sep, model +Sad, margin none vs fer
+
+Log `log-20260914-090917` (14,1 menit, 6.093 frame). **Sebagian besar frame dari teman Pafras, bukan Pafras** — cuma 4 gambar emas pertama yang Pafras. Log gak nyimpen siapa orangnya, jadi angka di bawah campuran dua orang, dominan si teman. Justru bagus: model diuji di wajah yang gak pernah ia lihat.
+
+| pose | none: benar | none: paling sering ditebak | fer: benar | fer: paling sering ditebak |
+|---|---|---|---|---|
+| angry | 0.31 | neutral 0.51 | **0.80** | angry 0.80 · sad 0.17 |
+| happy | 0.98 | happy | 0.86 | happy · neutral 0.14 |
+| neutral | 1.00 | neutral | 0.86 | neutral · angry 0.14 |
+| surprise | 0.53 | surprise · happy 0.21 | **0.88** | surprise · neutral 0.11 |
+| sad | 0.59 | sad · neutral 0.21 | 0.55 | sad · angry 0.25 |
+| **semua frame** | 0.583 | | **0.754** | |
+| **rata-rata per pose** | 0.683 | | **0.787** | |
+
+**Margin `fer` menang, persis di kelas yang butuh alis.** Angry 0.31 → 0.80 dan surprise 0.53 → 0.88. Kotak Vision tanpa margin motong pas di alis (kelihatan di gambar emas), dan kerutan alis (angry) sama alis naik (surprise) ada di situ. Ongkosnya: neutral 1.00 → 0.86 dan happy 0.98 → 0.86 — dengan dahi kelihatan, sebagian muka datar kebaca angry. Sad gak kebantu (0.59 → 0.55), kesalahannya pindah dari neutral ke angry.
+
+**Threshold (margin fer):**
+
+| threshold | lolos | benar di antara yang lolos |
+|---|---|---|
+| 0.5 | 0.85 | 0.78 |
+| 0.6 | 0.69 | 0.82 |
+| 0.7 | 0.51 | 0.84 |
+
+Di 0.7 cuma separuh frame yang didengerin. Sad hampir gak pernah lolos: di gambar emas keyakinannya 0.46–0.61.
+
+**Keputusan:** margin `fer` dipakai di webcam, rekaman fine-tune, dan app. Fine-tune tetap jalan — sad kelas terlemah (0.55) dan baru 2 orang yang dites.
+
+**Batasan:** ronde `none` dan `fer` jalan berurutan, jadi cahaya atau cara pose bisa beda antar ronde. Dibanding tes #1 ada tiga hal yang berubah bareng (model +Sad, orangnya, posisi kamera), jadi dua tes itu gak bisa dibandingin langsung.
+
 ## Hasil akhir (test set — isi Hari 8)
 
 | Metrik | Nilai |

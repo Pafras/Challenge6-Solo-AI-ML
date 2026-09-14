@@ -69,7 +69,13 @@ brief's star rating):
   and a fixed box drifts from that as soon as the user leans or sits further
   back. The same crop is what the app displays, so the screen shows only the
   face. A fixed box with an on-screen guide is the fallback if Day 9 runs out
-  of time.
+  of time. **Margin decided 14 Sep: "fer".** Vision's box is tighter than a
+  FER2013 crop and cuts off the brows, so it is widened by 11% of its height
+  upwards and 5.5% of its width on each side, bottom unchanged
+  (`MARGINS["fer"]` in `scripts/webcam_test.py`). On the webcam it lifted
+  angry 0.31 → 0.80 and surprise 0.53 → 0.88; neutral and happy dropped
+  to 0.86. Swift must apply the same margin, or the model sees a crop it was
+  never measured on.
 - **Two models, on the mentor's advice (10 Sep).** First: a
   facial-expression classifier, image to emotion, which ships in the app.
   Second: a beatbox audio classifier, sound to kick/hihats/snare/clap,

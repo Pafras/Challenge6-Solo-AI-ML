@@ -156,6 +156,19 @@ Catatan jujur: tiga nilai LR tidak semuanya diuji di model yang sama (1e-2 di Ti
 
 Masalah teknis yang ditemukan dan diperbaiki saat uji: OpenCV 5 tidak lagi punya detektor Haar (diganti Vision); *Continuity Camera* membuat macOS memakai kamera iPhone sebagai kamera 0; kamera terlalu rendah (wajah dari bawah).
 
+**Uji ulang 14 Sep (model +Sad, kamera setinggi mata, sebagian besar wajah teman yang belum pernah dilihat model)** — membandingkan crop tanpa margin dengan margin `fer` (kotak diperlebar ke atas agar dahi dan alis ikut):
+
+| | tanpa margin | margin `fer` |
+|---|---|---|
+| angry | 0.31 | **0.80** |
+| surprise | 0.53 | **0.88** |
+| happy | 0.98 | 0.86 |
+| neutral | 1.00 | 0.86 |
+| sad | 0.59 | 0.55 |
+| rata-rata per pose | 0.683 | **0.787** |
+
+Margin menaikkan persis kelas yang bergantung pada alis, sesuai hipotesis dari pengukuran kotak Vision. Margin `fer` dipakai untuk webcam, rekaman fine-tune, dan app. Sad tetap kelas terlemah dan keyakinannya jarang di atas 0.6 — alasan fine-tune tetap dijalankan.
+
 ### 4.7 Fine-tune dengan wajah sendiri ⏳
 
 **Desain** (`record_faces.py` → `make_own_split.py` → `fine_tune.py`):
