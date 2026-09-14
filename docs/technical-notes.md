@@ -2,7 +2,7 @@
 
 Dokumen ini menjelaskan **apa yang dilatih, bagaimana, dan kenapa**: metode, setiap eksperimen beserta hasilnya, dan fungsi tiap file di `scripts/`. Angka mentah per run ada di [`experiments.md`](experiments.md); dokumen ini merangkum dan menjelaskannya.
 
-> Status per 14 Sep: model wajah final dipilih dan diuji di webcam; fine-tune dengan wajah sendiri sedang berjalan. Test set belum dibuka (dijadwalkan sekali, Hari 8). Bagian yang masih menunggu hasil ditandai **⏳**.
+> Status per 14 Sep: model wajah 5 kelas di-fine-tune dengan wajah yang direkam (Fine-tune bersih jadi kandidat final) dan diuji di webcam. Test set belum dibuka (dijadwalkan sekali, Hari 8). Bagian yang masih menunggu hasil ditandai **⏳**.
 
 ---
 
@@ -178,7 +178,18 @@ Margin menaikkan persis kelas yang bergantung pada alis, sesuai hipotesis dari p
 - Data latih = FER2013 **+** rekaman (diulang 10×). FER tetap dicampur supaya model tidak melupakan wajah lain (*catastrophic forgetting*).
 - Diukur tiap epoch di dua tempat: orang yang tidak dilatih, dan FER valid. Epoch 0 = model sebelum fine-tune pada frame yang sama → perbandingan sebelum/sesudah yang jujur.
 
-**Hasil**: ⏳ diisi setelah run.
+**Hasil** — direkam 7 orang (dengan izin); setelah dicek per frame, 2 orang dikeluarkan karena labelnya meragukan (tertawa saat diminta *sad*/*neutral*, *angry* yang nyaris datar). Latih: 4 orang, 1.200 crop. Validasi: 1 orang (erin).
+
+| Run | Data rekaman | erin (terbaik) | erin sad | erin neutral | FER valid |
+|---|---|---|---|---|---|
+| sebelum (+Sad) | — | 0.660 | 0.35 | 0.80 | 0.770 |
+| **Fine-tune bersih** | 4 orang, label bersih | **0.767** | **0.60** | 0.72 | 0.762 |
+| Fine-tune semua | + 2 orang berlabel meragukan (+50% data) | 0.733 | 0.57 | **0.58** | 0.756 |
+
+- Fine-tune menaikkan wajah yang tidak pernah dilatih **+10.7 poin**, terutama sad dan surprise, **tanpa melupakan FER** (0.770 → 0.762).
+- **Label bersih mengalahkan jumlah data**: menambah dua orang berlabel meragukan (+50% data) justru menurunkan hasil, dan penurunannya jatuh tepat di *neutral* — kelas yang direkam sambil tertawa.
+- **Uji live di wajah Pafras** (tidak pernah dilatih, dua model): seri secara total (0.71 vs 0.69). Tapi variasi cara berpose antar sesi lebih besar dari selisih antar model (sad di model yang sama: 0.98 di satu sesi, 0.29 di sesi lain), jadi uji live satu orang tidak cukup untuk membandingkan model. **Sad tetap kelas terlemah** di wajah baru.
+- Threshold keyakinan 0.6 terlihat pas di webcam (±67% frame lolos, ±87% benar).
 
 ---
 

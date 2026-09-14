@@ -170,6 +170,27 @@ Di 0.7 cuma separuh frame yang didengerin. Sad hampir gak pernah lolos: di gamba
 
 **Batasan:** ronde `none` dan `fer` jalan berurutan, jadi cahaya atau cara pose bisa beda antar ronde. Dibanding tes #1 ada tiga hal yang berubah bareng (model +Sad, orangnya, posisi kamera), jadi dua tes itu gak bisa dibandingin langsung.
 
+## Tes webcam #3 — 14 Sep, Pafras, +Sad vs Fine-tune bersih
+
+Pafras gak pernah direkam buat data latih, jadi wajahnya baru buat dua model. Log `log-20260914-130911-mobilenet-ls-sad-pafras` (169 dtk, ronde margin none lalu fer; awalnya salah dinamai "kahfi", diganti karena itu muka Pafras) dan `log-20260914-131319-mobilenet-finetune-bersih-pafras` (52 dtk, cuma fer). Gak ada gambar emas.
+
+| pose (margin fer) | +Sad | Fine-tune bersih |
+|---|---|---|
+| angry | 0.64 | 0.56 |
+| happy | 0.69 | **0.86** |
+| neutral | 1.00 | 1.00 |
+| surprise | 0.93 | 0.98 |
+| sad | 0.29 | **0.07** |
+| rata-rata per pose | 0.71 | 0.69 |
+
+**Seri secara total.** Happy dan surprise naik, angry dan sad turun. Sad paling sering ditebak neutral di dua model.
+
+**Tes live satu orang terlalu berisik buat bandingin model.** Di model yang *sama* (+Sad), sad Pafras 0.98 di ronde none tapi 0.29 di ronde fer — beda cara pose antar ronde lebih besar dari beda antar model. Angka yang terkontrol tetap yang di erin (frame yang sama persis, 300 frame): 0.660 → 0.767.
+
+Threshold 0.6 kelihatan pas: Fine-tune bersih meloloskan 67% frame dengan 87% benar.
+
+**Batasan:** urutannya model lama dulu, fine-tune kedua. Run fine-tune pendek (~10 dtk per pose).
+
 ## Hasil akhir (test set — isi Hari 8)
 
 | Metrik | Nilai |
