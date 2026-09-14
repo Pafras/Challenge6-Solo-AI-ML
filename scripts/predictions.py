@@ -49,7 +49,11 @@ def main():
     device = "mps" if torch.backends.mps.is_available() else "cpu"
     model.to(device).eval()
 
-    ds = FER2013(args.split, transform=build_transform(ckpt["image_size"], ckpt["channels"]))
+    # The checkpoint's class list picks the split, as in evaluate.py: a
+    # 5-class model on the 4-class CSV would never be shown a sad face.
+    csv_path = f"data/splits/fer2013_{len(classes)}class.csv"
+    ds = FER2013(args.split, transform=build_transform(ckpt["image_size"], ckpt["channels"]),
+                 csv_path=csv_path)
     loader = DataLoader(ds, batch_size=64, shuffle=False)
 
     probs, labels = [], []
