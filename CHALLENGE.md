@@ -82,7 +82,7 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 `PyTorch` · wajah
 
 - [ ] Eksperimen learning rate: 3 nilai, lihat kurva loss-nya
-- [ ] Eksperimen optimizer: SGD+momentum vs Adam vs AdamW
+- [x] Eksperimen optimizer: SGD+momentum vs Adam vs AdamW
 - [ ] Eksperimen augmentation: tanpa vs flip vs flip+rotate+brightness
 - [x] Eksperimen class weight buat imbalance 2.28x
 - [x] Pilih config final model wajah, catat di tabel

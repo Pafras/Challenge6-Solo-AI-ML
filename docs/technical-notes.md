@@ -96,6 +96,8 @@ Semua run: seed 42, split sama. Detail per epoch di `experiments.md`.
 | Weight decay | wd 0.01 → **0.05** | 0.837 | +1 poin, konsisten di 3 epoch terakhir |
 | Class weight | + bobot kelas seimbang | 0.840 | kelas terlemah naik (angry 0.748 → 0.770); selisih terbaik–terburuk 16 → 11 poin |
 | Dropout | dropout kepala 0.2 → **0.5** | 0.836 | tidak berpengaruh |
+| SGD *(dari Weight decay)* | AdamW → **SGD + momentum 0.9**, lr 1e-2, wd 5e-4 | 0.827 | −1 poin, tapi hafalan jauh lebih sedikit (train 0.902 vs 0.954) dan loss valid tidak naik lagi |
+| SGD lr kecil | lr 1e-2 → **1e-3** | 0.772 | underfitting (train ≈ valid): lr yang pas untuk Adam terlalu kecil untuk SGD |
 
 **Bab 3 — Keyakinan**
 
@@ -115,8 +117,14 @@ Semua run: seed 42, split sama. Detail per epoch di `experiments.md`.
 |---|---|---|
 | **Adam** | semua run awal | baseline |
 | **AdamW** (weight decay terpisah dari gradien) | wd 0.01 dan 0.05 | seri dengan Adam di wd 0.01; wd 0.05 +1 poin |
-| **SGD + momentum** | ❌ belum | tidak sempat — satu-satunya optimizer umum yang belum dicoba |
-| **LR** | 1e-2 · 1e-3 · 1e-4 | 1e-2 terlalu besar (macet), 1e-4 terlalu lambat, 1e-3 paling baik |
+| **SGD + momentum 0.9** | lr 1e-2 dan 1e-3, wd 5e-4 | lr 1e-2: **0.827** vs AdamW 0.837 — akurasi hampir sama, tapi train hanya 0.902 (AdamW 0.954) dan loss valid turun terus sampai epoch 10 (AdamW naik lagi sejak epoch 4). lr 1e-3: 0.772, underfitting |
+| **LR (Adam)** | 1e-2 · 1e-3 · 1e-4 | 1e-2 terlalu besar (macet), 1e-4 terlalu lambat, 1e-3 paling baik |
+
+**Kenapa SGD tidak diberi lr dan weight decay yang sama dengan AdamW:** Adam menyesuaikan ukuran langkah untuk tiap bobot, SGD tidak — SGD butuh lr sekitar 10× lebih besar. Di AdamW weight decay dipisah dari gradien; di SGD ia menyatu dengan gradien, jadi 0.05 akan terlalu kuat (angka standarnya 5e-4). Maka SGD dijalankan dengan resep standarnya sendiri, ditambah satu run dengan lr ala Adam untuk menunjukkan kenapa itu tidak adil.
+
+**Yang terbaca:** optimizer adaptif (AdamW) mencapai akurasi sedikit lebih tinggi dan lebih cepat, tapi lebih cepat pula menghafal. SGD + momentum lebih lambat tapi generalisasinya lebih "tenang" — pola yang umum dilaporkan di literatur. Selisih 1 poin masih dalam goyangan satu seed, jadi AdamW tetap dipakai untuk model final.
+
+![Weight decay (AdamW) vs SGD vs SGD lr kecil](curves/compare-optimizer.png)
 | **Scheduler** | konstan vs cosine | cosine menghilangkan goyangan validasi (+1 poin) |
 
 Catatan jujur: tiga nilai LR tidak semuanya diuji di model yang sama (1e-2 di TinyCNN, 1e-4 di MobileNet).
@@ -266,7 +274,7 @@ Karena 0.997 diukur di rekaman dari sumber yang sama. Di 14 orang lain dengan mi
 Pergeseran domain: FER2013 adalah foto dari internet dengan sudut dan pencahayaan tertentu; webcam memberi sudut kamera, pencahayaan, dan wajah yang berbeda. Pipeline sudah dibuktikan benar, jadi solusinya ada di data (fine-tune), bukan di kode.
 
 **Apa yang akan dilakukan kalau ada waktu lebih?**
-SGD + momentum; DeepCNN di 224 (memisahkan efek ukuran input dari bobot pretrained); melatih model audio dengan sebagian orang AVP; menjalankan setiap konfigurasi dengan beberapa seed dan melaporkan rata-rata ± simpangan.
+DeepCNN di 224 (memisahkan efek ukuran input dari bobot pretrained); melatih model audio dengan sebagian orang AVP; menjalankan setiap konfigurasi dengan beberapa seed dan melaporkan rata-rata ± simpangan.
 
 ---
 
@@ -275,6 +283,6 @@ SGD + momentum; DeepCNN di 224 (memisahkan efek ukuran input dari bobot pretrain
 - **Satu seed per run.** Selisih 1–2 poin antar run bisa jadi hanya kebetulan.
 - **Epoch terbaik dipilih di set yang sama dengan yang dilaporkan**, jadi angka valid sedikit optimis. Angka jujur datang dari test set.
 - **Test set belum dibuka.** ⏳
-- **Belum dicoba**: SGD + momentum, augmentasi flip saja, DeepCNN di 224, melatih audio dengan data AVP.
+- **Belum dicoba**: augmentasi flip saja, DeepCNN di 224, melatih audio dengan data AVP.
 - **Uji webcam dari satu wajah dan satu ruangan.** Fine-tune dan validasi dengan orang lain adalah langkah untuk mengatasinya. ⏳
 - **Crop Python (Vision) vs Swift** belum dicek sama persis — "gambar emas" disimpan untuk dicek di Hari 9.

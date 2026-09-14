@@ -28,6 +28,8 @@ Metodenya **one-factor-at-a-time (OFAT)**: tiap run cuma ngubah satu variabel da
 | 10 | Weight decay | wd 0.05 | 0.837 |
 | 11 | Class weight | kelas kecil dibobotin | kelas terlemah (angry) naik |
 | 12 | Dropout | 0.2 → 0.5 | gak ngefek |
+| 15 | SGD | AdamW → SGD + momentum, lr 1e-2 | 0.827, hafalan jauh lebih sedikit |
+| 16 | SGD lr kecil | SGD, lr 1e-3 | 0.772, kekecilan → underfit |
 | **Bab 3: Keyakinan** | | | |
 | 13 | **Label smoothing ⭐ (final)** | target 0.925, bukan 1 | salah-tapi-yakin 181 → 56 |
 | **Bab 4: Kelas** | | | |
@@ -61,6 +63,10 @@ Metodenya **one-factor-at-a-time (OFAT)**: tiap run cuma ngubah satu variabel da
 | 12 | 10 Sep | MobileNetV3-S pretrained | 224 | 1e-3 | AdamW wd 0.05 | cosine | 64 | flip+rot+jitter · **dropout 0.5** | tanpa | 10 | 0.836 | beda dari #10 cuma dropout kepala 0.2 → 0.5. **praktis gak ngefek:** per kelas nyaris identik (angry 0.741, happy 0.906, neutral 0.803, surprise 0.849), total sama. train epoch 10 0.945 vs 0.954 — rem hafalan ada tapi tipis. checkpoint `models/mobilenet-drop05.pt`. |
 | 13 | 10 Sep | MobileNetV3-S pretrained | 224 | 1e-3 | AdamW wd 0.05 | cosine | 64 | flip+rot+jitter · **label smoothing 0.1** | balanced | 10 | 0.839 | beda dari #11 cuma label smoothing. akurasi & per kelas seri (angry 0.766, happy 0.884, neutral 0.813, surprise 0.868). **pertama kali loss valid gak naik lagi:** turun terus sampai epoch 10 (0.490), lebih rendah dari titik terendah run mana pun. **salah tapi >90% yakin: 181 → 56 foto.** yakin rata-rata waktu salah 78,7% → 68,7%, waktu benar 94,2% → 85,0%. hafalan (train 0.950) tetap — yang berubah cara salahnya, bukan jumlahnya. threshold keyakinan di app harus lebih rendah (~0,6–0,7). checkpoint `models/mobilenet-ls.pt`. |
 | 14 | 12 Sep | MobileNetV3-S pretrained | 224 | 1e-3 | AdamW wd 0.05 | cosine | 64 | flip+rot+jitter · label smoothing 0.1 · **5 kelas (+sad)** | balanced | 10 | 0.770 | beda dari #13 cuma nambah sad. split 4 kelas identik (24.142 baris sama persis), sad di urutan terakhir. per kelas: angry 0.676 (#13: 0.766) · happy 0.877 · neutral **0.679** (#13: 0.813) · surprise 0.874 · sad 0.713. **gagal kriteria yang dipasang sebelum run:** sad ≥ 0,70 lolos tipis, neutral ≥ 0,78 gagal (turun 13 poin). sad nyedot dari dua kelas: neutral→sad 0.176, angry→sad 0.177, dan sad→neutral 0.149. 0.770 gak bisa dibandingin langsung sama 0.839 (5 kelas, tebak acak 0.20 vs 0.25). loss valid masih turun di epoch 10 (0.690), gak overfit. checkpoint `models/mobilenet-ls-sad.pt`. |
+| 15 | 14 Sep | MobileNetV3-S pretrained | 224 | **1e-2** | **SGD momentum 0.9, wd 5e-4** | cosine | 64 | flip+rot+jitter | tanpa | 10 | 0.827 | pembanding: #10 Weight decay (AdamW wd 0.05, 0.837), beda optimizer. lr dan wd ikut resep standar SGD karena angka AdamW gak berlaku: SGD gak nyesuaiin langkah per bobot jadi butuh lr ~10x, dan wd di SGD nyatu ke gradien (0.05 bakal terlalu kuat). naik terus tiap epoch 0.754 → 0.827, terbaik di epoch terakhir. **hafalan jauh lebih sedikit:** train epoch 10 0.902 vs AdamW 0.954, dan **loss valid gak naik lagi** (terendah 0.492 di epoch 10; AdamW terendah 0.506 di epoch 4 lalu naik ke 0.601). akurasi −1 poin, masih dalam goyangan satu seed. checkpoint `models/mobilenet-sgd.pt`. |
+| 16 | 14 Sep | MobileNetV3-S pretrained | 224 | **1e-3** | SGD momentum 0.9, wd 5e-4 | cosine | 64 | flip+rot+jitter | tanpa | 10 | 0.772 | beda dari #15 cuma lr. **underfitting:** train 0.760 ≈ valid 0.771, epoch 1 cuma 0.540 (lr 1e-2: 0.754), masih naik pelan di akhir. lr yang pas buat Adam kekecilan buat SGD. checkpoint `models/mobilenet-sgd-lr1e-3.pt`. |
+
+![Weight decay (AdamW) vs SGD vs SGD lr kecil](curves/compare-optimizer.png)
 
 ## Temuan Hari 5 — arsitektur
 
