@@ -28,6 +28,9 @@ CKPT_5 = "models/mobilenet-ls-sad.pt"
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--valid", nargs="+", required=True, help="people held out for validation")
+    # Leave people out without moving their files, e.g. recordings with
+    # doubtful labels, so a fine-tune can be run with and without them.
+    p.add_argument("--exclude", nargs="*", default=[], help="people left out entirely")
     p.add_argument("--margin", default="none", choices=list(MARGINS))
     p.add_argument("--root", default="data/own_faces")
     p.add_argument("--out-dir", default="data/own_faces_48")
@@ -36,7 +39,8 @@ def main():
 
     classes = torch.load(CKPT_5, map_location="cpu")["classes"]
     root, out_dir = Path(args.root), Path(args.out_dir) / args.margin
-    people = sorted(d.name for d in root.iterdir() if (d / "boxes.csv").exists())
+    people = sorted(d.name for d in root.iterdir()
+                    if (d / "boxes.csv").exists() and d.name not in args.exclude)
     missing = set(args.valid) - set(people)
     assert not missing, f"no recordings for {missing}; recorded: {people}"
     assert set(people) - set(args.valid), "every person is in valid; nobody left to train on"
@@ -63,7 +67,7 @@ def main():
         w.writerows(rows)
 
     per = Counter((person, classes[label]) for _, label, _, person in rows)
-    print(f"margin {args.margin} · valid = {args.valid}")
+    print(f"margin {args.margin} · valid = {args.valid} · dikecualikan = {args.exclude or '-'}")
     print(f"{'':10}" + "".join(f"{c[:8]:>9}" for c in classes) + "    split")
     for person in people:
         split = "valid" if person in args.valid else "train"
