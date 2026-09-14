@@ -2,7 +2,7 @@
 
 Dokumen ini menjelaskan **apa yang dilatih, bagaimana, dan kenapa**: metode, setiap eksperimen beserta hasilnya, dan fungsi tiap file di `scripts/`. Angka mentah per run ada di [`experiments.md`](experiments.md); dokumen ini merangkum dan menjelaskannya.
 
-> Status per 14 Sep: model wajah 5 kelas di-fine-tune dengan wajah yang direkam (**Fine-tune bersih jadi model final**) dan diuji di webcam. Test set belum dibuka (dijadwalkan sekali, Hari 8). Bagian yang masih menunggu hasil ditandai **⏳**.
+> Status per 14 Sep: model wajah 5 kelas di-fine-tune dengan wajah yang direkam (**Fine-tune bersih jadi model final**) dan diuji di webcam. **Test set sudah dibuka sekali (14 Sep)** — hasilnya di bagian 1 dan di `experiments.md`.
 
 ---
 
@@ -14,6 +14,7 @@ Dokumen ini menjelaskan **apa yang dilatih, bagaimana, dan kenapa**: metode, set
 | Data | FER2013 | Pafras/beatbox-bucket + AVP (uji lintas dataset) |
 | Arsitektur final | MobileNetV3-Small pretrained (fine-tune) | AudioCNN (3 conv + BatchNorm), dari nol |
 | Angka validasi | 0.839 (4 kelas) · 0.770 (5 kelas, +Sad) | 0.99 di bucket · ~0.57 di AVP (orang lain) |
+| **Angka test (dibuka sekali)** | **0.752** · macro F1 0.745 (Fine-tune bersih, 5 kelas) | **0.517 ± 0.038** di AVP (3 seed) · 0.906 ± 0.111 di bucket |
 | Dipakai di app? | **ya** — lewat Core ML | **tidak** — latihan kedua, hasilnya model card |
 
 **Pelajaran utama:**
@@ -171,7 +172,7 @@ Masalah teknis yang ditemukan dan diperbaiki saat uji: OpenCV 5 tidak lagi punya
 
 Margin menaikkan persis kelas yang bergantung pada alis, sesuai hipotesis dari pengukuran kotak Vision. Margin `fer` dipakai untuk webcam, rekaman fine-tune, dan app. Sad tetap kelas terlemah dan keyakinannya jarang di atas 0.6 — alasan fine-tune tetap dijalankan.
 
-### 4.7 Fine-tune dengan wajah sendiri ⏳
+### 4.7 Fine-tune dengan wajah sendiri
 
 **Desain** (`record_faces.py` → `make_own_split.py` → `fine_tune.py`):
 - Rekam beberapa orang (dengan izin), 5 ekspresi × 60 frame, maksimal 5 frame/detik supaya frame tidak kembar.
@@ -287,7 +288,7 @@ Create ML terlalu dekat dengan drag-and-drop: tidak ada desain arsitektur, train
 Ya, dan keduanya dibandingkan: TinyCNN dan DeepCNN dilatih dari nol, MobileNet dan ResNet18 dari bobot ImageNet. Hasil perbandingannya adalah salah satu temuan utama. Model audio dilatih sepenuhnya dari nol.
 
 **Kenapa 0.84 sudah bagus?**
-Manusia sekitar 0.65 di FER2013 7 kelas, dan tebakan acak 4 kelas 0.25. Tapi 0.84 tetap angka *valid* — test set belum dibuka, dan uji webcam menunjukkan angka valid tidak menjamin model jalan di wajah sungguhan.
+Manusia sekitar 0.65 di FER2013 7 kelas, dan tebakan acak 4 kelas 0.25. Di test set, model final (5 kelas) mendapat 0.752 — hanya 1 poin di bawah angka validnya. Tapi uji webcam menunjukkan angka valid tidak menjamin model jalan di wajah sungguhan.
 
 **Kenapa MobileNet, bukan ResNet18?**
 Lebih akurat (0.813 vs 0.797), 7× lebih kecil, 2.5× lebih cepat dilatih — dan harus berjalan real-time di app.
@@ -310,7 +311,7 @@ DeepCNN di 224 (memisahkan efek ukuran input dari bobot pretrained); melatih mod
 
 - **Satu seed per run.** Selisih 1–2 poin antar run bisa jadi hanya kebetulan.
 - **Epoch terbaik dipilih di set yang sama dengan yang dilaporkan**, jadi angka valid sedikit optimis. Angka jujur datang dari test set.
-- **Test set belum dibuka.** ⏳
+- **Test set dibuka sekali** (14 Sep). Wajah: 0.752, hanya 1 poin di bawah valid — angka valid ternyata jujur. Audio di AVP: 0.517 ± 0.038, cuma 4 poin di atas selalu menebak "hihats" (0.473). Audio di bucket: 0.906 ± 0.111 — kick jatuh ke 0.34 di satu seed karena satu rekaman kick yang tidak biasa panjang; dengan hanya 6 rekaman kick, test bucket terlalu kecil untuk stabil.
 - **Belum dicoba**: augmentasi flip saja, DeepCNN di 224, melatih audio dengan data AVP.
-- **Uji webcam dari satu wajah dan satu ruangan.** Fine-tune dan validasi dengan orang lain adalah langkah untuk mengatasinya. ⏳
+- **Uji webcam dari sedikit wajah dan satu ruangan.** Fine-tune memakai 4 orang dan divalidasi pada 1 orang lain; uji live pada wajah Pafras menunjukkan variasi cara berpose antar sesi lebih besar dari selisih antar model. Angka live di wajah baru tetap belum pasti, terutama untuk sad.
 - **Crop Python (Vision) vs Swift** belum dicek sama persis — "gambar emas" disimpan untuk dicek di Hari 9.

@@ -191,15 +191,51 @@ Threshold 0.6 kelihatan pas: Fine-tune bersih meloloskan 67% frame dengan 87% be
 
 **Batasan:** urutannya model lama dulu, fine-tune kedua. Run fine-tune pendek (~10 dtk per pose).
 
-## Hasil akhir (test set — isi Hari 8)
+## Hasil akhir — test set, dibuka sekali (14 Sep)
+
+### Model wajah — Fine-tune bersih (5 kelas), test FER2013, 6.043 foto
 
 | Metrik | Nilai |
 |--------|-------|
-| Accuracy | |
-| Macro F1 | |
-| Latency / frame | |
+| Accuracy | **0.752** (valid 0.762 → cuma 1 poin optimis) |
+| Macro F1 | **0.745** |
+| Latency / frame | ~22 ms deteksi Vision + model, Python di MPS (webcam test). Core ML diukur Hari 9. |
 
-Kelas yang dibuang dari mapping + alasannya:
+| kelas | precision | recall | F1 | jumlah |
+|---|---|---|---|---|
+| angry | 0.701 | 0.648 | 0.674 | 958 |
+| happy | 0.901 | 0.864 | **0.882** | 1774 |
+| neutral | 0.685 | 0.659 | 0.672 | 1233 |
+| surprise | 0.831 | **0.897** | 0.863 | 831 |
+| sad | **0.607** | 0.670 | **0.637** | 1247 |
+
+**Kesalahan terbesar:** neutral → sad (259 foto, 21% neutral), sad → neutral (199), angry → sad (185). Di FER model **kebanyakan** nebak sad (precision sad paling rendah, 0.607); di webcam kebalikannya — sad **jarang** ditebak dan lari ke neutral. Bentuk wajah di foto FER dan di webcam memang beda.
+
+Kelas yang dibuang dari mapping: **gak ada**, lima-limanya dipakai. Sad kelas terlemah; dengan threshold 0.6 di app, sad jarang ganti pola — tapi juga jarang ganti pola dengan salah.
+
+File: `docs/test-results/face-test.txt`, `docs/confusion-test.png`, `docs/predictions-test.png`.
+
+### Model audio — Padding noise (dibenerin), 3 seed, rata-rata ± sd
+
+**avp-test** (14 orang yang gak pernah dipakai, 4.748 clip) — angka jujurnya:
+
+| | seed 42 | seed 1 | seed 2 | **rata-rata ± sd** |
+|---|---|---|---|---|
+| akurasi | 0.500 | 0.561 | 0.492 | **0.517 ± 0.038** |
+
+Recall: kick (`kd`) 0.733 ± 0.063 · hihat tertutup (`hhc`) 0.443 ± 0.075 · hihat terbuka (`hho`) 0.437 ± 0.074 · snare (`sd`) 0.427 ± 0.063.
+
+- **Cuma +4 poin di atas tebakan paling gampang**: 47% clip avp-test itu hihat, jadi tebak "hihats" terus = 0.473.
+- **"Rata-rata 5 epoch terakhir" terbukti angka yang jujur:** di avp-valid 0.506 ± 0.014, di test 0.517. "Epoch terbaik" (0.576 di avp-valid) optimis 6 poin karena epoch-nya dipilih di set yang sama.
+- Hihat dan snare saling ketuker: hhc → kick 0.30, hho → snare 0.29, snare → hihats 0.30.
+
+**Test bucket** (18 rekaman, 575 clip): **0.906 ± 0.111** (0.937 / 0.783 / 0.998). Clap, hihats, snare 1.00 di semua seed; **kick 0.81 / 0.34 / 0.99**, salahnya ke snare.
+
+- **Bukan bug:** seed 1 di valid bucket 0.966 (tercatat waktu training 0.964), kick 1.00.
+- **Per rekaman:** kick-049 (median 0.57 dtk, kick terpanjang, di atas 90% kick data latih) gagal di seed 42 (7/31) dan seed 1 (1/31). Seed 1 gagal di hampir semua rekaman kick; seed 2 hampir sempurna. Batas kick–snare gak stabil antar seed, dan valid (10 rekaman kick) gak nangkep ini.
+- **Dugaan awal "test bucket pasti ~1.0" salah.** Rekaman test itu rekaman yang beda, dan 6 rekaman kick terlalu sedikit — satu rekaman yang aneh aja udah ngubah angka banyak.
+
+File: `docs/test-results/audio-avp-test.txt`, `docs/test-results/audio-bucket-test.txt`.
 
 ---
 

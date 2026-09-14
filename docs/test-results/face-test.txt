@@ -1,0 +1,17 @@
+contoh foto #2  (data/fer2013/test/angry/PrivateTest_1054527.jpg)
+  expected : [1, 0, 0, 0, 0]   = angry
+  result   : [0.02, 0.02, 0.05, 0.04, 0.87]   = tebakan sad
+  loss     : -ln(0.02) = 3.84   (peluang yang dikasih ke jawaban benar)
+
+confusion matrix (test) — baris = expected, kolom = result
+               angry     happy   neutral  surprise       sad     benar
+   angry         621        39        81        32       185     0.648
+   happy          39      1533        77        56        69     0.864
+ neutral          68        65       812        29       259     0.659
+surprise          20        23        16       745        27     0.897
+     sad         138        41       199        34       835     0.670
+
+total benar 4546 / 6043 = 0.752
+paling sering ketuker: neutral ditebak sad (259 foto)
+
+wrote docs/predictions-test.png, docs/confusion-test.png

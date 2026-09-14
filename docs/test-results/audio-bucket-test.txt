@@ -1,0 +1,17 @@
+split test · 3 checkpoint
+  audio-a2b              acc 0.937  | clap 1.00  hihats 1.00  kick 0.81  snare 1.00
+  audio-a2b-s1           acc 0.783  | clap 1.00  hihats 1.00  kick 0.34  snare 1.00
+  audio-a2b-s2           acc 0.998  | clap 1.00  hihats 1.00  kick 0.99  snare 1.00
+
+=> acc 0.906 ± 0.111
+   clap     recall 1.000 ± 0.000
+   hihats   recall 1.000 ± 0.000
+   kick     recall 0.713 ± 0.340
+   snare    recall 1.000 ± 0.000
+
+confusion, dijumlah dari semua checkpoint (baris = asli, kolom = tebakan, bagian dari baris):
+              clap   hihats     kick    snare
+clap         1.000    0.000    0.000    0.000
+hihats       0.000    1.000    0.000    0.000
+kick         0.000    0.000    0.713    0.287
+snare        0.000    0.000    0.000    1.000

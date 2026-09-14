@@ -104,8 +104,8 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 ### Hari 8 — Senin, 14 Sep
 `PyTorch` · dua-duanya
 
-- [ ] Buka test set model audio sekali — **`avp-test` itu angka jujurnya** (14 orang yang gak pernah dipakai). Test bucket dilaporin juga, tapi dengan catatan: pasti ~1,0 (varian nyaris kembar) dan clap cuma 2 rekaman. Confusion matrix + recall per label AVP (`hhc`/`hho` terpisah)
-- [ ] Buka test set model wajah — sekali ini aja, SETELAH fine-tune (kalau ada). Accuracy, precision, recall, F1
+- [x] Buka test set model audio sekali — **`avp-test` itu angka jujurnya** (14 orang yang gak pernah dipakai). Test bucket dilaporin juga, tapi dengan catatan: pasti ~1,0 (varian nyaris kembar) dan clap cuma 2 rekaman. Confusion matrix + recall per label AVP (`hhc`/`hho` terpisah)
+- [x] Buka test set model wajah — sekali ini aja, SETELAH fine-tune (kalau ada). Accuracy, precision, recall, F1
 - [ ] Draft dua model card selagi angkanya masih anget
 
 ## Act — Minggu 2
