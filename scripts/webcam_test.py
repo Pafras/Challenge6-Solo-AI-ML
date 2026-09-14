@@ -108,6 +108,10 @@ def main():
     p.add_argument("--window", type=int, default=10)
     p.add_argument("--camera", type=int, default=0)
     p.add_argument("--ckpt", default=CKPT)
+    # Who is in front of the camera. It goes into the log's filename with
+    # the model's name, so one log is one person on one model and two
+    # sessions never have to be told apart afterwards.
+    p.add_argument("--person", default="anon")
     args = p.parse_args()
 
     device = "mps" if torch.backends.mps.is_available() else "cpu"
@@ -183,7 +187,7 @@ def main():
     cap.release()
     cv2.destroyAllWindows()
     if log:
-        path = OUT / f"log-{stamp}.csv"
+        path = OUT / f"log-{stamp}-{Path(args.ckpt).stem}-{args.person}.csv"
         with path.open("w", newline="") as fh:
             w = csv.DictWriter(fh, fieldnames=list(log[0]))
             w.writeheader()
