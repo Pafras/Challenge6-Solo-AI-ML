@@ -35,7 +35,8 @@ Metodenya **one-factor-at-a-time (OFAT)**: tiap run cuma ngubah satu variabel da
 | **Bab 4: Kelas** | | | |
 | 14 | +Sad | 5 kelas | sad nyedot neutral, gagal kriteria |
 | **Bab 5: Fine-tune** | | | |
-| 17 | Fine-tune bersih | +Sad + rekaman 4 orang, lr 1e-4 | orang baru (erin) 0.660 → 0.767, sad 0.35 → 0.60, FER tetap |
+| 17 | **Fine-tune bersih ⭐ (kandidat final)** | +Sad + rekaman 4 orang, lr 1e-4 | orang baru (erin) 0.660 → 0.767, sad 0.35 → 0.60, FER tetap |
+| 18 | Fine-tune semua | + alief & imel (label diragukan) | erin 0.733, neutral 0.58 → label kotor ngerusak, walau data +50% |
 
 **Model audio**
 
@@ -68,6 +69,9 @@ Metodenya **one-factor-at-a-time (OFAT)**: tiap run cuma ngubah satu variabel da
 | 15 | 14 Sep | MobileNetV3-S pretrained | 224 | **1e-2** | **SGD momentum 0.9, wd 5e-4** | cosine | 64 | flip+rot+jitter | tanpa | 10 | 0.827 | pembanding: #10 Weight decay (AdamW wd 0.05, 0.837), beda optimizer. lr dan wd ikut resep standar SGD karena angka AdamW gak berlaku: SGD gak nyesuaiin langkah per bobot jadi butuh lr ~10x, dan wd di SGD nyatu ke gradien (0.05 bakal terlalu kuat). naik terus tiap epoch 0.754 → 0.827, terbaik di epoch terakhir. **hafalan jauh lebih sedikit:** train epoch 10 0.902 vs AdamW 0.954, dan **loss valid gak naik lagi** (terendah 0.492 di epoch 10; AdamW terendah 0.506 di epoch 4 lalu naik ke 0.601). akurasi −1 poin, masih dalam goyangan satu seed. checkpoint `models/mobilenet-sgd.pt`. |
 | 16 | 14 Sep | MobileNetV3-S pretrained | 224 | **1e-3** | SGD momentum 0.9, wd 5e-4 | cosine | 64 | flip+rot+jitter | tanpa | 10 | 0.772 | beda dari #15 cuma lr. **underfitting:** train 0.760 ≈ valid 0.771, epoch 1 cuma 0.540 (lr 1e-2: 0.754), masih naik pelan di akhir. lr yang pas buat Adam kekecilan buat SGD. checkpoint `models/mobilenet-sgd-lr1e-3.pt`. |
 | 17 | 14 Sep | MobileNetV3-S, **fine-tune dari +Sad** | 224 | 1e-4 | AdamW wd 0.05 | cosine | 64 | flip+rot+jitter · label smoothing 0.1 · **FER + rekaman 4 orang ×10** | balanced | 5 | **0.767** (erin) / 0.762 (FER) | **Fine-tune bersih.** latih: FER 20.550 + rekaman bintang, firda, cile, ana (1.200 crop, diulang 10×), margin fer. alief & imel dikecualikan (label diragukan). validasi: **erin**, gak pernah dilatih. **erin 0.660 → 0.767 (+10,7)**: sad 0.35 → 0.60, surprise 0.65 → 0.90, angry 0.60 → 0.75, happy 0.90 → 0.87, **neutral 0.80 → 0.72** (ongkosnya). **FER valid 0.770 → 0.762: gak lupa wajah lain.** naik semua di epoch 1, lalu datar 0.74–0.77 — epoch tambahan gak nambah. epoch dipilih pakai erin (1 orang, 300 frame), jadi sedikit optimis. checkpoint `models/mobilenet-finetune-bersih.pt`. |
+| 18 | 14 Sep | MobileNetV3-S, fine-tune dari +Sad | 224 | 1e-4 | AdamW wd 0.05 | cosine | 64 | flip+rot+jitter · label smoothing 0.1 · FER + rekaman **6 orang** ×10 | balanced | 5 | 0.733 (erin) / 0.756 (FER) | **Fine-tune semua.** beda dari Fine-tune bersih cuma nambah alief & imel (1.800 crop vs 1.200). epoch 0 identik (0.660 / 0.770). **lebih jelek walau datanya 50% lebih banyak:** erin terbaik 0.733 vs 0.767, rata-rata epoch 1–5 0.711 vs 0.756 — konsisten di tiap epoch, bukan satu epoch sial. **neutral 0.72 → 0.58**, persis kelas yang alief ketawain waktu direkam: model belajar "senyum = neutral", jadi neutral erin yang datar ditebak lain. sad 0.60 → 0.57, happy 0.87 → 0.83, angry 0.75 → 0.80. FER 0.756 vs 0.762. loss erin lebih tinggi (0.81 vs 0.67–0.72). **→ label bersih > jumlah data.** alief & imel dibuang. checkpoint `models/mobilenet-finetune-semua.pt`. |
+
+![Fine-tune bersih vs Fine-tune semua](curves/compare-finetune.png)
 
 ![Weight decay (AdamW) vs SGD vs SGD lr kecil](curves/compare-optimizer.png)
 

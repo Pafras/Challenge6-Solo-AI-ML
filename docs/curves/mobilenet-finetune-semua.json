@@ -1,0 +1,82 @@
+{
+  "name": "mobilenet-finetune-semua",
+  "config": {
+    "init": "models/mobilenet-ls-sad.pt",
+    "own_csv": "data/splits/own_faces_semua.csv",
+    "repeat": 10,
+    "lr": 0.0001,
+    "epochs": 5,
+    "batch_size": 64,
+    "weight_decay": 0.05,
+    "label_smoothing": 0.1,
+    "seed": 42,
+    "save": "models/mobilenet-finetune-semua.pt"
+  },
+  "summary": "fine-tune dari mobilenet-ls-sad \u00b7 lr 0.0001 \u00b7 repeat 10 \u00b7 5 epoch \u00b7 valid = orang yang gak ikut dilatih, terbaik 0.733 (FER valid 0.756)",
+  "own_recall_before": {
+    "angry": 0.6,
+    "happy": 0.9,
+    "neutral": 0.8,
+    "surprise": 0.65,
+    "sad": 0.35
+  },
+  "own_recall_after": {
+    "angry": 0.8,
+    "happy": 0.8333333333333334,
+    "neutral": 0.5833333333333334,
+    "surprise": 0.8833333333333333,
+    "sad": 0.5666666666666667
+  },
+  "epochs": [
+    {
+      "epoch": 1,
+      "lr": 0.0001,
+      "train_loss": 0.6524668079746063,
+      "train_acc": 0.8829831387808041,
+      "valid_loss": 0.8901809215545654,
+      "valid_acc": 0.66,
+      "fer_loss": 0.7129233586347635,
+      "fer_acc": 0.7672366243794815
+    },
+    {
+      "epoch": 2,
+      "lr": 9.045084971874738e-05,
+      "train_loss": 0.552548267182673,
+      "train_acc": 0.9310246433203632,
+      "valid_loss": 0.7694032708803813,
+      "valid_acc": 0.72,
+      "fer_loss": 0.7256986756253755,
+      "fer_acc": 0.7578599007170436
+    },
+    {
+      "epoch": 3,
+      "lr": 6.545084971874737e-05,
+      "train_loss": 0.5271880675970194,
+      "train_acc": 0.945473411154345,
+      "valid_loss": 0.8100004029273987,
+      "valid_acc": 0.7333333333333333,
+      "fer_loss": 0.7436104893224119,
+      "fer_acc": 0.7562051847766134
+    },
+    {
+      "epoch": 4,
+      "lr": 3.454915028125263e-05,
+      "train_loss": 0.5123025476391369,
+      "train_acc": 0.9517250324254215,
+      "valid_loss": 0.809356939792633,
+      "valid_acc": 0.72,
+      "fer_loss": 0.7287884501548216,
+      "fer_acc": 0.759238830667402
+    },
+    {
+      "epoch": 5,
+      "lr": 9.549150281252631e-06,
+      "train_loss": 0.5029856601144862,
+      "train_acc": 0.9585732814526589,
+      "valid_loss": 0.814751144250234,
+      "valid_acc": 0.72,
+      "fer_loss": 0.7285866325097523,
+      "fer_acc": 0.7617209045780474
+    }
+  ]
+}
