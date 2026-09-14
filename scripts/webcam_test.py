@@ -52,10 +52,10 @@ def crop_box(box, margin, frame_shape):
 
 
 class Model:
-    def __init__(self, device):
-        ck = torch.load(CKPT, map_location="cpu")
+    def __init__(self, device, ckpt=CKPT):
+        ck = torch.load(ckpt, map_location="cpu")
         self.classes = ck["classes"]
-        self.net = build_model(ck["arch"])
+        self.net = build_model(ck["arch"], n_classes=len(self.classes))
         self.net.load_state_dict(ck["state_dict"])
         self.net.eval().to(device)
         self.tf = build_transform(ck["image_size"], ck["channels"])
@@ -107,10 +107,12 @@ def main():
     p.add_argument("--threshold", type=float, default=0.7)
     p.add_argument("--window", type=int, default=10)
     p.add_argument("--camera", type=int, default=0)
+    p.add_argument("--ckpt", default=CKPT)
     args = p.parse_args()
 
     device = "mps" if torch.backends.mps.is_available() else "cpu"
-    model = Model(device)
+    model = Model(device, args.ckpt)
+    print("model:", args.ckpt, "·", model.classes)
     classes = model.classes
     cap = cv2.VideoCapture(args.camera)
     ok, frame = cap.read()
