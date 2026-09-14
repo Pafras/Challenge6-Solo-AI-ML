@@ -97,7 +97,7 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 
 - [ ] Sisa fine-tune muka sendiri kalau Sabtu molor
 - [ ] **Model audio** — assert normalisasi (fitur train harus mean ≈0 / std ≈1) + flag `--seeds`
-- [ ] **Model audio** — ulang A2b vs A3 pakai 3 seed, laporin rata-rata ± simpangan. Selisih mereka 2–3 poin, masih dalam goyangan → pilih model final dari sini
+- [x] **Model audio** — ulang A2b vs A3 pakai 3 seed, laporin rata-rata ± simpangan. Selisih mereka 2–3 poin, masih dalam goyangan → pilih model final dari sini
 - [ ] **Model audio** *(kalau sempat)* — latih pakai sebagian orang AVP: 7 dari 14 orang `avp-valid` jadi `avp-train`, 7 sisanya tetap valid, `avp-test` gak disentuh. Hitung ulang run lama di valid 7 orang pakai checkpoint yang ada
 - [ ] *(opsional)* DeepCNN di 224 — misahin efek ukuran gambar vs bobot ImageNet
 

@@ -111,7 +111,7 @@ footer{margin-top:40px;font-size:12px;color:var(--dim)}
 </header><ul>
 <li><input type="checkbox" id="t31"><label for="t31">Sisa fine-tune muka sendiri kalau Sabtu molor</label></li>
 <li><input type="checkbox" id="t32"><label for="t32"><strong>Model audio</strong> — assert normalisasi (fitur train harus mean ≈0 / std ≈1) + flag <code>--seeds</code></label></li>
-<li><input type="checkbox" id="t33"><label for="t33"><strong>Model audio</strong> — ulang A2b vs A3 pakai 3 seed, laporin rata-rata ± simpangan. Selisih mereka 2–3 poin, masih dalam goyangan → pilih model final dari sini</label></li>
+<li><input type="checkbox" id="t33" checked><label for="t33"><strong>Model audio</strong> — ulang A2b vs A3 pakai 3 seed, laporin rata-rata ± simpangan. Selisih mereka 2–3 poin, masih dalam goyangan → pilih model final dari sini</label></li>
 <li><input type="checkbox" id="t34"><label for="t34"><strong>Model audio</strong> <em>(kalau sempat)</em> — latih pakai sebagian orang AVP: 7 dari 14 orang <code>avp-valid</code> jadi <code>avp-train</code>, 7 sisanya tetap valid, <code>avp-test</code> gak disentuh. Hitung ulang run lama di valid 7 orang pakai checkpoint yang ada</label></li>
 <li><input type="checkbox" id="t35"><label for="t35"><em>(opsional)</em> DeepCNN di 224 — misahin efek ukuran gambar vs bobot ImageNet</label></li>
 </ul>

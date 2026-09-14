@@ -46,8 +46,8 @@ Metodenya **one-factor-at-a-time (OFAT)**: tiap run cuma ngubah satu variabel da
 | A1 | Baseline audio | 0.997 di bucket, 0.497 di AVP |
 | A1b | Baseline, diukur jujur | epoch terbaik dipilih pakai AVP |
 | A2 | Padding noise | padding nol bikin model curang di hihat |
-| A2b | Padding noise (dibenerin) | statistik normalisasi dibetulin |
-| A3 | **Normalisasi volume ⭐** | paling seimbang antar kelas |
+| A2b | **Padding noise (dibenerin) ⭐ (final)** | statistik dibetulin; di 3 seed paling stabil (0.506 ± 0.014) |
+| A3 | Normalisasi volume | seed 42 kelihatan paling seimbang, tapi gak keulang di 3 seed |
 
 | # | Tanggal | Arsitektur | Image size | LR | Optimizer | Scheduler | Batch | Augmentation | Class weight | Epoch | Val acc | Catatan |
 |---|---------|-----------|-----------|-----|-----------|-----------|-------|--------------|--------------|-------|---------|---------|
@@ -242,6 +242,23 @@ Mulai A2, **val acc = avp-valid / bucket valid**, dan epoch terbaik dipilih dari
 ![A1b vs A2b vs A3](curves/compare-audio-norm.png)
 
 **Setelan udah mentok di ~0,55.** Padding (A2), statistik (A2b), dan volume (A3) masing-masing cuma geser beberapa poin atau mindahin kesalahan dari satu kelas ke kelas lain. Gak ada yang nembus 0,6. Sisanya penyebab 2: gaya suara orang awam gak ada di data latih. Langkah berikutnya soal **data**, bukan setelan.
+
+### 3 seed — 14 Sep: Padding noise vs Normalisasi volume
+
+Selisih dua pipeline cuma 2–3 poin di satu seed, masih dalam goyangan. Sebelum `avp-test` dibuka, dua-duanya dijalanin ulang dengan seed 1 dan 2 (seed 42 dari run sebelumnya). **Kriteria dipasang sebelum lihat hasil:** bandingin rata-rata 5 epoch terakhir di avp-valid; kalau selisihnya di bawah simpangan, pilih yang kelas terlemahnya lebih tinggi.
+
+| | seed 42 | seed 1 | seed 2 | **rata-rata ± sd** | rata-rata per kelas | kelas terlemah (rata-rata) | bucket valid |
+|---|---|---|---|---|---|---|---|
+| Padding noise (dibenerin) | 0.519 | 0.508 | 0.492 | **0.506 ± 0.014** | 0.580 ± 0.045 | **0.39** | 0.96–0.99 |
+| Normalisasi volume | 0.551 | 0.530 | 0.442 | **0.508 ± 0.058** | 0.568 ± 0.044 | 0.36 | 0.84–0.98 |
+
+(angka = rata-rata 5 epoch terakhir di avp-valid)
+
+- **Seri:** selisih +0.001, jauh di bawah simpangan (0.058).
+- **"Normalisasi volume paling seimbang" itu kebetulan seed 42.** Rata-rata per kelas 0.613 di seed 42 gak keulang (0.567, 0.525). Kesimpulan satu seed kemarin kebalik begitu diulang.
+- **Normalisasi volume gak stabil:** simpangan 4x lebih besar, dan skor bucket-nya anjlok ke 0.84–0.89 di dua seed baru.
+- **Pilihan (sesuai kriteria): Padding noise (dibenerin)** — kelas terlemah sedikit lebih tinggi (0.39 vs 0.36) dan jauh lebih stabil antar seed.
+- `avp-test` dinilai pakai **ketiga seed** dan dilaporin rata-rata ± sd (`scripts/evaluate_audio.py`), bukan seed terbaik.
 
 ### Temuan AVP — 0.997 itu ngukur bucket, bukan beatbox
 

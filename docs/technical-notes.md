@@ -217,8 +217,10 @@ Mono 22.050 Hz → potong/pad ke 0.5 detik → **log-mel spectrogram 64 × 44** 
 | Baseline audio | AudioCNN, Adam 1e-3, 15 epoch | 0.497 | **0.997** | hanya 3 dari 1.044 clip salah di bucket |
 | Baseline, diukur jujur | epoch terbaik dipilih dari AVP | 0.504 | 0.987 | angka per label sangat berisik antar epoch |
 | Padding noise | padding nol → noise | 0.577 | 0.990 | +7 poin di AVP |
-| Padding noise (dibenerin) | statistik normalisasi diperbaiki | 0.556 | 0.991 | seri → BatchNorm menyerap kesalahan tadi |
-| **Normalisasi volume ⭐** | + normalisasi puncak | 0.576 | 0.976 | paling seimbang antar kelas (0.613 vs 0.562) |
+| **Padding noise (dibenerin) ⭐** | statistik normalisasi diperbaiki | 0.556 | 0.991 | seri → BatchNorm menyerap kesalahan tadi; **final** setelah uji 3 seed |
+| Normalisasi volume | + normalisasi puncak | 0.576 | 0.976 | di seed 42 terlihat paling seimbang, tapi tidak terulang di 3 seed |
+
+**Uji 3 seed** (sebelum test dibuka; rata-rata 5 epoch terakhir di avp-valid): Padding noise **0.506 ± 0.014**, Normalisasi volume **0.508 ± 0.058** — seri. Keunggulan "paling seimbang" Normalisasi volume ternyata kebetulan satu seed. Sesuai kriteria yang ditetapkan sebelum melihat hasil, dipilih yang kelas terlemahnya lebih tinggi dan lebih stabil: **Padding noise**. Test dinilai dengan ketiga seed (rata-rata ± simpangan), bukan seed terbaik.
 
 **Temuan penting:**
 - **0.997 hanya mengukur bucket.** Di AVP (orang lain, mic MacBook) angkanya 0.497, sedikit di atas menebak "hihats" terus (0.450).
