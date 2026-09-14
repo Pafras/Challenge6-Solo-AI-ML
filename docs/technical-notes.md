@@ -2,7 +2,7 @@
 
 Dokumen ini menjelaskan **apa yang dilatih, bagaimana, dan kenapa**: metode, setiap eksperimen beserta hasilnya, dan fungsi tiap file di `scripts/`. Angka mentah per run ada di [`experiments.md`](experiments.md); dokumen ini merangkum dan menjelaskannya.
 
-> Status per 14 Sep: model wajah 5 kelas di-fine-tune dengan wajah yang direkam (Fine-tune bersih jadi kandidat final) dan diuji di webcam. Test set belum dibuka (dijadwalkan sekali, Hari 8). Bagian yang masih menunggu hasil ditandai **⏳**.
+> Status per 14 Sep: model wajah 5 kelas di-fine-tune dengan wajah yang direkam (**Fine-tune bersih jadi model final**) dan diuji di webcam. Test set belum dibuka (dijadwalkan sekali, Hari 8). Bagian yang masih menunggu hasil ditandai **⏳**.
 
 ---
 
@@ -129,7 +129,9 @@ Semua run: seed 42, split sama. Detail per epoch di `experiments.md`.
 
 Catatan jujur: tiga nilai LR tidak semuanya diuji di model yang sama (1e-2 di TinyCNN, 1e-4 di MobileNet).
 
-### 4.5 Model final: Label smoothing
+### 4.5 Model dasar: Label smoothing
+
+> Ini model terbaik 4 kelas dan titik awal untuk +Sad. **Model final yang dipakai app adalah Fine-tune bersih** (bagian 4.7): +Sad yang di-fine-tune dengan wajah rekaman.
 
 `MobileNetV3-Small pretrained · 224 · AdamW lr 1e-3 wd 0.05 · cosine · augmentasi · class weight · label smoothing 0.1 · 10 epoch · val 0.839`
 

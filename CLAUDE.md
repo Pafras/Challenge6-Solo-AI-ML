@@ -152,10 +152,11 @@ accounts, a database, a progression system, 3D graphics.
 - **Prediction jitter.** Real-time predictions flicker between frames even
   when the user holds still. Temporal smoothing (majority vote over a short
   window + confidence threshold) is mandatory. Number-one cause of the demo
-  feeling broken. The final model (run 13) is trained with label smoothing,
-  so its confidence is honest but rarely above ~92%: start the threshold at
-  0.7, not 0.9 (at 0.9 it would accept only a third of frames), and tune it
-  in the Day 8 webcam test. Measured thresholds are in `docs/experiments.md`.
+  feeling broken. The final model (Fine-tune bersih) is trained with label
+  smoothing, so its confidence is honest but rarely very high. The webcam
+  tests settled the threshold at **0.6**: about two thirds of frames pass,
+  ~87% of those correct; 0.7 lets only half through. Measured thresholds
+  are in `docs/experiments.md`.
 - **Preprocessing parity.** Face crop, resize and normalisation in Swift
   must match training in PyTorch exactly. A mismatch drops accuracy
   silently, with no error. Note that Core ML ML Program runs float16 by
@@ -193,12 +194,15 @@ accounts, a database, a progression system, 3D graphics.
 - Settled on 14 Sep: FER2013 with **five classes** (angry / happy / neutral /
   surprise / sad), chosen for variety in the app even though the +Sad run
   failed its pre-set criterion (neutral 0.813 → 0.679 on validation).
-  Fine-tuning on recorded people is meant to close that gap. Base model
-  `models/mobilenet-ls-sad.pt` (0.770, five classes); the four-class Label
-  smoothing model `models/mobilenet-ls.pt` (0.839) stays as the fallback.
-  Refer to runs by name, not number (see the run map in
-  `docs/experiments.md`). Still unproven: the fine-tune and the test set
-  (Day 8, once).
+  **Final face model, decided 14 Sep: Fine-tune bersih,
+  `models/mobilenet-finetune-bersih.pt`** — the five-class model fine-tuned
+  on four recorded people with clean labels. On the held-out person it rose
+  from 0.660 to 0.767 on identical frames, FER validation held (0.770 →
+  0.762), and on Pafras's own face live it tied the base model. Sad stays
+  the weakest class on new faces. The four-class Label smoothing model
+  `models/mobilenet-ls.pt` (0.839) stays as the fallback. Refer to runs by
+  name, not number (see the run map in `docs/experiments.md`). Still
+  unproven: the test set (Day 8, once).
 - Whether the mentor counts transfer learning as "training a model" — worth
   asking, but the plan compares scratch and pretrained either way, so the
   answer changes framing rather than work.

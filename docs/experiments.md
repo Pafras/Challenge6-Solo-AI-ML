@@ -31,11 +31,11 @@ Metodenya **one-factor-at-a-time (OFAT)**: tiap run cuma ngubah satu variabel da
 | 15 | SGD | AdamW → SGD + momentum, lr 1e-2 | 0.827, hafalan jauh lebih sedikit |
 | 16 | SGD lr kecil | SGD, lr 1e-3 | 0.772, kekecilan → underfit |
 | **Bab 3: Keyakinan** | | | |
-| 13 | **Label smoothing ⭐ (final)** | target 0.925, bukan 1 | salah-tapi-yakin 181 → 56 |
+| 13 | **Label smoothing** (final 4 kelas, cadangan) | target 0.925, bukan 1 | salah-tapi-yakin 181 → 56 |
 | **Bab 4: Kelas** | | | |
 | 14 | +Sad | 5 kelas | sad nyedot neutral, gagal kriteria |
 | **Bab 5: Fine-tune** | | | |
-| 17 | **Fine-tune bersih ⭐ (kandidat final)** | +Sad + rekaman 4 orang, lr 1e-4 | orang baru (erin) 0.660 → 0.767, sad 0.35 → 0.60, FER tetap |
+| 17 | **Fine-tune bersih ⭐ (final)** | +Sad + rekaman 4 orang, lr 1e-4 | orang baru (erin) 0.660 → 0.767, sad 0.35 → 0.60, FER tetap |
 | 18 | Fine-tune semua | + alief & imel (label diragukan) | erin 0.733, neutral 0.58 → label kotor ngerusak, walau data +50% |
 
 **Model audio**
