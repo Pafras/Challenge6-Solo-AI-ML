@@ -97,7 +97,8 @@ brief's star rating):
   numerically against PyTorch on the same input.
 - **macOS app:** SwiftUI + Vision (face detection) + Core ML (inference) +
   AVFoundation (audio). Kept small.
-- **Beat:** symbolic tokens (`K` kick, `H` hi-hat, `S` snare). Rule-based
+- **Beat:** symbolic tokens (`K` kick, `H` hi-hat, `S` snare, `C` clap —
+  clap added 14 Sep for variety across five patterns). Rule-based
   emotion → beat mapping, a plain lookup table. No ML beat generator — it
   would add nothing to the learning goal.
 - **One expression = one looping pattern, not one sound (decided 11 Sep).**
@@ -189,11 +190,15 @@ accounts, a database, a progression system, 3D graphics.
 
 ## What's still open
 
-- Settled on 10 Sep: FER2013, four classes (angry / happy / neutral /
-  surprise), and run 13 as the final face model — `models/mobilenet-ls.pt`,
-  0.839 on validation. The reasoning and the full run log are in
-  `docs/experiments.md`. Still unproven: the test set (Day 8, once) and real
-  faces through the MacBook webcam.
+- Settled on 14 Sep: FER2013 with **five classes** (angry / happy / neutral /
+  surprise / sad), chosen for variety in the app even though the +Sad run
+  failed its pre-set criterion (neutral 0.813 → 0.679 on validation).
+  Fine-tuning on recorded people is meant to close that gap. Base model
+  `models/mobilenet-ls-sad.pt` (0.770, five classes); the four-class Label
+  smoothing model `models/mobilenet-ls.pt` (0.839) stays as the fallback.
+  Refer to runs by name, not number (see the run map in
+  `docs/experiments.md`). Still unproven: the fine-tune and the test set
+  (Day 8, once).
 - Whether the mentor counts transfer learning as "training a model" — worth
   asking, but the plan compares scratch and pretrained either way, so the
   answer changes framing rather than work.

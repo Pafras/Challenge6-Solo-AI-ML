@@ -51,13 +51,14 @@ Instead of physically beatboxing with their mouth, the user uses their facial ex
 **One expression selects one looping pattern, not one sound** (decided 11 Sep). Each emotion maps to a whole pattern that loops on the BPM clock:
 
 ```text
-😐 Neutral  → K - H - K - H -    (calm)
-😄 Happy    → K H H S K H H S    (groove)
-😠 Angry    → K K S - K K S S    (heavy)
-😮 Surprise → K H S H K S H S    (variation)
+😐 Neutral  → K - H - K - H -    (calm,      90 BPM)
+😄 Happy    → K H H S K H H S    (groove,   110 BPM)
+😠 Angry    → K K S - K K S S    (heavy,    130 BPM)
+😮 Surprise → K H S C K S H C    (variation, 120 BPM)
+😢 Sad      → K - - - S - - -    (sparse,    70 BPM)
 ```
 
-The exact patterns and tempos are placeholders, settled on Day 10. Sad is not in the model: the face classifier has four classes (angry / happy / neutral / surprise).
+Sounds: `K` kick, `H` hi-hat, `S` snare, `C` clap, `-` silence. The exact patterns and tempos are placeholders, settled on Day 10. The face model has five classes (angry / happy / neutral / surprise / sad), decided 14 Sep. Five expressions do not need five sounds: patterns differ by order, density, rests and tempo.
 
 A new expression swaps the pattern at the start of the next bar, and only once the prediction is stable and confident. Below the confidence threshold the current pattern keeps playing, so the music never stops or stutters.
 
@@ -402,6 +403,7 @@ Initial vocabulary:
 K = Kick
 H = Hi-hat
 S = Snare
+C = Clap
 - = Silence
 ```
 
@@ -498,6 +500,7 @@ Example:
 K → kick.wav
 H → hihat.wav
 S → snare.wav
+C → clap.wav
 ```
 
 Input:
@@ -941,7 +944,8 @@ emotion-beatbox/
 │   ├── samples/
 │   │   ├── kick.wav
 │   │   ├── snare.wav
-│   │   └── hihat.wav
+│   │   ├── hihat.wav
+│   │   └── clap.wav
 │   └── audio_engine.py
 │
 ├── realtime/
