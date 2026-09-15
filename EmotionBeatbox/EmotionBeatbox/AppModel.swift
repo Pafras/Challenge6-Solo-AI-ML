@@ -16,6 +16,12 @@ final class AppModel {
 
     let camera = CameraManager()
     private var smoother = Smoother()
+    /// A new stable expression must hold this long before it reaches the
+    /// beat: the smoother alone reacts in ~0.33 s, quick enough that pulling
+    /// faces for fun kept switching the pattern.
+    private let holdSeconds = 0.8
+    private var candidate: Expression?
+    private var candidateSince = Date()
     private var beat: BeatEngine?
     private var refresh: Timer?
 
@@ -63,6 +69,11 @@ final class AppModel {
         stable = smoother.add(result.expression, confidence: result.confidence)
         // Below the threshold the smoother returns nil: keep the current
         // pattern playing rather than stopping or switching.
-        if let stable { beat?.target = stable }
+        guard let stable else { return }
+        if stable != candidate {
+            candidate = stable
+            candidateSince = .now
+        }
+        if Date.now.timeIntervalSince(candidateSince) >= holdSeconds { beat?.target = stable }
     }
 }

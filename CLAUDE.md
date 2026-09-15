@@ -120,6 +120,11 @@ brief's star rating):
   the expression is, and it flickers frame to frame. The table lives in
   `audio/patterns.json`, shared by the preview script and the app. Each
   sound has three takes from the bucket, played in turn.
+  **Switch brakes, 15 Sep:** a new expression must stay stable for 0.8 s
+  before it reaches the beat, and a pattern plays at least 2 bars before
+  another may take over. Found in the first live run, where pulling faces
+  flipped the beat every bar; the cost is ~1–2 s of response to a
+  deliberate change.
 - **Audio engine:** sample playback on a BPM clock. Not AI, doesn't need
   to be.
 - **Quest:** 2–3 hardcoded target sequences of expressions, each held for a

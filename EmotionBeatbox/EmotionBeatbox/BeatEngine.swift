@@ -81,7 +81,7 @@ final class BeatEngine {
             }
         }
     }
-
+    
     private static func load(_ name: String) throws -> AVAudioPCMBuffer {
         guard let url = bundleURL(name, "wav") else {
             throw CocoaError(.fileNoSuchFile, userInfo: [NSLocalizedDescriptionKey: "\(name).wav not in the app bundle"])
@@ -91,7 +91,7 @@ final class BeatEngine {
         try file.read(into: buffer)
         return buffer
     }
-
+    
     func start() throws {
         try engine.start()
         // Every player starts at the same instant, so sample 0 means the
@@ -102,7 +102,7 @@ final class BeatEngine {
             MainActor.assumeIsolated { self?.scheduleAhead() }
         }
     }
-
+    
     func stop() {
         timer?.invalidate()
         engine.stop()
@@ -120,12 +120,22 @@ final class BeatEngine {
         let horizon = now + AVAudioFramePosition(0.15 * sampleRate)
         if nextBar < now { nextBar = now }   // silent, or late: start from here
         while nextBar < horizon {
-            guard let expression = target ?? playing else {
+            guard let expression = nextExpression() else {
                 nextBar = horizon            // nothing to play yet
                 return
             }
             scheduleBar(expression)
         }
+    }
+
+    /// A pattern plays at least this many bars before another may take over,
+    /// so a face flicking between expressions cannot flip the beat every bar.
+    private let minBars = 2
+
+    private func nextExpression() -> Expression? {
+        guard let playing else { return target }
+        guard let target, target != playing, barsHeld >= minBars else { return playing }
+        return target
     }
 
     private func scheduleBar(_ expression: Expression) {
