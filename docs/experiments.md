@@ -80,6 +80,17 @@ Metodenya **one-factor-at-a-time (OFAT)**: tiap run cuma ngubah satu variabel da
 
 ![Weight decay (AdamW) vs SGD vs SGD lr kecil](curves/compare-optimizer.png)
 
+## Temuan landmark — 15 Sep: kenapa sad paling susah
+
+`scripts/plot_landmarks.py` → `docs/landmark-boxplot.png`, "landmark box plot" dari paper Juárez-Jiménez dkk. (2025) versi 5 kelas kita. Per emosi: median 76 titik (garis biru), median neutral (abu-abu), dan kotak persentil 25–75 per titik. FER2013 train, cuma wajah yang ketemu titiknya.
+
+![Landmark box plot](landmark-boxplot.png)
+
+- **Surprise paling beda dari neutral:** alis naik, mulut kebuka tinggi, dagu turun. Cocok sama recall landmark surprise di FER valid, 0.80, yang tertinggi kedua.
+- **Angry = alis turun**, mulut juga sedikit kebuka dan dagu turun. Mulut terbuka juga ada di surprise; yang bedain angry dari surprise itu alisnya (turun vs naik).
+- **Happy = mulut melebar**, sudut bibir naik. Sisanya nempel ke neutral.
+- **Sad nyaris nempel di neutral di semua titik**, dan kotaknya paling besar. Median wajah sad ≈ median wajah neutral, jadi dari bentuk doang dua kelas ini hampir gak bisa dibedain. Ini ngejelasin kenapa sad (0.58) dan neutral (0.57) paling rendah di Landmark MLP, dan kenapa sad nyedot neutral di #14 +Sad. Beda sad kemungkinan ada di hal kecil yang titik gak nangkep (sudut bibir turun tipis, kelopak mata), jadi di sad CNN yang lihat piksel lebih unggul.
+
 ## Temuan Hari 5 — arsitektur
 
 Semua run: lr 1e-3, Adam, batch 64, 5 epoch, seed 42. Cuma arsitektur (dan ukuran input buat yang pretrained) yang beda.
