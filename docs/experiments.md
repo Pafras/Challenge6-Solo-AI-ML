@@ -237,6 +237,24 @@ Recall: kick (`kd`) 0.733 ± 0.063 · hihat tertutup (`hhc`) 0.443 ± 0.075 · h
 
 File: `docs/test-results/audio-avp-test.txt`, `docs/test-results/audio-bucket-test.txt`.
 
+## Konversi Core ML — 15 Sep
+
+`scripts/convert_coreml.py` → `models/EmotionClassifier.mlpackage` (Fine-tune bersih, **float16**). Input: gambar grayscale 48×48 (`face48`). Resize ke 224, ulang 3 channel, normalisasi ImageNet, dan softmax ada **di dalam model**, jadi Swift cukup ngasih crop 48×48. Output: `probs`, 5 angka, urutan angry / happy / neutral / surprise / sad.
+
+Dicek tiga lapis di seluruh FER valid (3.626 foto):
+
+| | akurasi | tebakan sama dengan A | selisih prob (rata-rata / maks) |
+|---|---|---|---|
+| A — pipeline training (resize PIL) | 0.7620 | — | — |
+| B — pembungkus di PyTorch (resize `interpolate`) | 0.7606 | 0.989 | 0.004 / 0.119 |
+| **C — Core ML float16** | **0.7601** | **0.987** | 0.005 / 0.141 |
+
+B vs C (efek konversi + float16 aja): tebakan sama 0.992, selisih rata-rata 0.004. **Total turun 0.19 poin.**
+
+Selisih terbesar datang dari **cara resize**, bukan dari Core ML: PIL membulatkan hasil resize ke nilai piksel bulat, `interpolate` gak. Akurasinya sama, jadi yang pindah cuma tebakan yang dari awal nyaris seri — smoothing di app nyerap itu. Float32 gak perlu.
+
+Gambar emas webcam (43 frame, jalur live: crop → grey → 48): tebakan sama 42/43, selisih prob maks 0.047. Referensi buat Swift: `data/webcam/golden-48/` (crop 48×48 + `expected.json` berisi probabilitas Core ML per frame) — Swift harus nyamain crop-nya dan dapet probabilitas yang sama (±0.02).
+
 ---
 
 # Model audio — beatbox (clap / hihats / kick / snare)

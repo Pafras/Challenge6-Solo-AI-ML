@@ -255,6 +255,7 @@ Mono 22.050 Hz → potong/pad ke 0.5 detik → **log-mel spectrogram 64 × 44** 
 |---|---|---|
 | `test_conversion.py` | membuktikan jalur PyTorch → Core ML pada CNN mainan sebelum ada model | beda ~1e-4 (float16), output diberi nama `logits` supaya Swift bisa memanggilnya |
 | `check_coreml.py` | cek bahwa arsitektur sungguhan (MobileNetV3: hardswish, squeeze-excitation) terkonversi | float32 cocok ~1e-7, float16 ~1e-2 di logits (wajar untuk jaringan dalam) |
+| `convert_coreml.py` | konversi model final ke `EmotionClassifier.mlpackage` (float16) | resize 48→224, 3 channel, normalisasi, dan softmax dimasukkan ke dalam model, jadi Swift hanya memberi crop 48×48 · akurasi FER valid 0.7620 → 0.7601 setelah konversi, tebakan sama 98.7% · menulis referensi "gambar emas" untuk cek Swift |
 
 ### Webcam dan fine-tune
 | File | Fungsi | Hal penting |
