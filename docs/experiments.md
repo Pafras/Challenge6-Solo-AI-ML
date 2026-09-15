@@ -207,6 +207,29 @@ Threshold 0.6 kelihatan pas: Fine-tune bersih meloloskan 67% frame dengan 87% be
 
 **Batasan:** urutannya model lama dulu, fine-tune kedua. Run fine-tune pendek (~10 dtk per pose).
 
+## Tes webcam #4 — 15 Sep, Pafras, Fine-tune bersih vs Gabungan (frame yang sama)
+
+`webcam_test.py --fuse --threshold 0.6 --camera 1` (kamera MacBook; 0 diambil iPhone lewat Continuity Camera). Tiap frame dinilai CNN saja **dan** gabungan (α 0.55, run 20), jadi beda cara pose gak ikut masuk ke perbandingan. Ini yang kurang di tes #3. Log `log-20260915-183558-mobilenet-finetune-bersih-fuse-pafras` (906 frame, 69 dtk, margin fer).
+
+| pose | frame | benar CNN → gabungan | lolos CNN → gabungan | benar\|lolos CNN → gabungan |
+|---|---|---|---|---|
+| angry | 162 | 0.83 → 0.83 | 0.88 → 0.75 | 0.92 → 0.96 |
+| happy | 135 | 0.92 → 0.90 | 0.98 → 0.91 | 0.92 → 0.97 |
+| neutral | 132 | 1.00 → 1.00 | 0.99 → 0.98 | 1.00 → 1.00 |
+| sad | 297 | 0.63 → 0.68 | 0.22 → 0.22 | 0.33 → 0.47 |
+| surprise | 180 | 0.94 → 0.98 | 0.96 → 0.94 | 0.97 → 0.99 |
+| **semua frame** | 906 | **0.825 → 0.848** | 0.711 → 0.673 | |
+
+**Kriteria (dipasang sebelum sesi) lolos semua:** benar total +2,3 poin; gak ada pose turun > 10 poin (happy −2 paling jauh); lolos 0.673, di atas separuh frame.
+
+**Untung utamanya: gabungan lebih jarang yakin tapi salah.** Frame yang lolos threshold *dan* salah: **7,7% → 5,0%** (−35%), sementara lolos-dan-benar hampir sama (63,4% → 62,4%). Frame yakin-tapi-salah itu yang bikin beat ganti ke pattern yang salah, jadi ini langsung ngurangin risiko jitter, risiko nomor satu demo. Angry yang lolos tapi ketebak neutral 11 → 5 frame.
+
+**Sad tetap lemah di dua-duanya.** Cuma 22% frame sad yang lolos threshold, dan yang lolos kebanyakan salah: ketebak happy (27 → 26 frame) dan neutral (17 → 9). Cuma ~7–10% frame sad yang bener-bener nyetir beat. Di demo live, sad jangan diandalin.
+
+**Ongkosnya:** keyakinan gabungan lebih rendah, jadi lolos turun 71% → 67%, paling kerasa di angry (0.88 → 0.75). Beat bakal sedikit lebih lambat nanggepin angry.
+
+**Batasan:** satu orang, satu sesi, 69 detik. Tapi dua model dinilai di frame yang sama persis, jadi arahnya bisa dipercaya, dan arahnya sama dengan FER valid dan erin (run 20). **→ gabungan masuk app.**
+
 ## Hasil akhir — test set, dibuka sekali (14 Sep)
 
 ### Model wajah — Fine-tune bersih (5 kelas), test FER2013, 6.043 foto
