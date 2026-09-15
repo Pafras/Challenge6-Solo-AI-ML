@@ -51,14 +51,20 @@ Instead of physically beatboxing with their mouth, the user uses their facial ex
 **One expression selects one looping pattern, not one sound** (decided 11 Sep). Each emotion maps to a whole pattern that loops on the BPM clock:
 
 ```text
-😐 Neutral  → K - H - K - H -    (calm,      90 BPM)
-😄 Happy    → K H H S K H H S    (groove,   110 BPM)
-😠 Angry    → K K S - K K S S    (heavy,    130 BPM)
-😮 Surprise → K H S C K S H C    (variation, 120 BPM)
-😢 Sad      → K - - - S - - -    (sparse,    70 BPM)
+😐 Neutral  → K  H  -  H  K  H  S  H     (calm,      90 BPM)
+😄 Happy    → KH H  SH H  KH KH SH H     (groove,   110 BPM)
+😠 Angry    → K  K  S  H  K  K  S  SH    (heavy,    130 BPM)
+😮 Surprise → KH C  SH C  KH S  H  C     (variation, 120 BPM)
+😢 Sad      → K  -  H  -  S  -  H  -     (sparse,    70 BPM)
 ```
 
-Sounds: `K` kick, `H` hi-hat, `S` snare, `C` clap, `-` silence. The exact patterns and tempos are placeholders, settled on Day 10. The face model has five classes (angry / happy / neutral / surprise / sad), decided 14 Sep. Five expressions do not need five sounds: patterns differ by order, density, rests and tempo.
+(variation A shown)
+
+Sounds: `K` kick, `H` hi-hat, `S` snare, `C` clap, `-` silence. **A step can stack sounds**: `KH` is kick and hi-hat together, the way a hi-hat keeps time behind the kick and snare. All four sounds appear in every expression. The face model has five classes (angry / happy / neutral / surprise / sad), decided 14 Sep. Five expressions do not need five sounds: patterns differ by order, density, rests and tempo.
+
+**Variations (decided 15 Sep).** Each expression has three variations, A, B and C (a fill). While the same expression is held, they rotate on the clock every two bars: A → B → A → C, then again. The model only picks the expression; which variation plays is the clock's job, so the rotation adds no jitter. A new expression always starts at A, at the next bar. Each sound has three recorded takes, played in turn, so neighbouring hits are never the exact same file.
+
+The full table lives in **`audio/patterns.json`**, read by both `scripts/make_samples.py` (previews) and the app, so the two cannot drift apart. Patterns and tempos are still tuned on Day 10.
 
 A new expression swaps the pattern at the start of the next bar, and only once the prediction is stable and confident. Below the confidence threshold the current pattern keeps playing, so the music never stops or stutters.
 
@@ -406,6 +412,8 @@ S = Snare
 C = Clap
 - = Silence
 ```
+
+A step may stack tokens: `KH` = kick and hi-hat at the same time.
 
 Example:
 

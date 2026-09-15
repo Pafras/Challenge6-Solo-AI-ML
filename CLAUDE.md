@@ -111,6 +111,15 @@ brief's star rating):
   and every jitter would sound as a wrong hit. Prediction jitter is the
   number-one risk (see Known risks); patterns filter it, single hits
   amplify it. The spec follows this throughout (sections 1, 14–17, 34).
+  **Variations, decided 15 Sep:** each expression has three variations
+  (A, B, C = fill) that rotate on the clock every two bars, A → B → A → C,
+  while the expression is held; the model picks only the expression, never
+  the variation, so rotation adds no jitter. Steps can stack sounds (`KH`),
+  and all four sounds appear in every expression. Rejected: choosing the
+  variation from model confidence — confidence is certainty, not how strong
+  the expression is, and it flickers frame to frame. The table lives in
+  `audio/patterns.json`, shared by the preview script and the app. Each
+  sound has three takes from the bucket, played in turn.
 - **Audio engine:** sample playback on a BPM clock. Not AI, doesn't need
   to be.
 - **Quest:** 2–3 hardcoded target sequences of expressions, each held for a

@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
-"""Cut the four beat samples from the bucket, and render the patterns.
+"""Cut the beat samples from the bucket, and render the patterns.
 
     python scripts/make_samples.py
 
-Writes audio/samples/{kick,hihat,snare,clap}.wav (committed; the app
-bundles them) and audio/preview/<pattern>.wav, two bars of each
-expression's pattern, to listen to before any Swift exists.
+Writes audio/samples/<sound>_<n>.wav, three takes per sound (committed;
+the app bundles them), and audio/preview/<expression>.wav: eight bars of
+each expression with its variations rotating as the app will play them,
+to listen to before any Swift exists.
 
-Each sample is one of the bucket's original recordings (44.1 kHz, not an
-augmented variant) from the train split: the one the audio model is most
-sure belongs to its class. That is the audio model's one job in the app.
+The patterns come from audio/patterns.json, the same file the app reads,
+so the preview and the app cannot disagree.
+
+Each take is one of the bucket's original recordings (44.1 kHz, not an
+augmented variant) from the train split, among those the audio model is
+most sure belong to their class: the audio model's one job in the app.
+Three takes per sound are played in turn, so no two neighbouring kicks
+are the exact same file, as with a real beatboxer.
 """
 import csv
+import json
 from pathlib import Path
 
 import numpy as np
@@ -23,29 +30,19 @@ from audio_labels import CLASSES, parse_name
 from train_audio import AudioCNN
 
 AUDIO_CKPT = "models/audio-a2b.pt"
+PATTERNS = Path("audio/patterns.json")
 SAMPLES = Path("audio/samples")
 PREVIEW = Path("audio/preview")
 SR = 44100
-TOKEN = {"K": "kick", "H": "hihat", "S": "snare", "C": "clap"}
-FILE = {"kick": "kick", "hihats": "hihat", "snare": "snare", "clap": "clap"}
-# Longest a hit may ring; the tail beyond is faded out. Short enough that a
-# hit never smears into the next step at 130 BPM (0.23 s per step) except
-# kick and clap, which are meant to overlap a little.
-MAX_LEN = {"kick": 0.35, "hihat": 0.15, "snare": 0.30, "clap": 0.35}
-PEAK = 0.89   # -1 dBFS, headroom when two hits land together
-
-# The spec's placeholders (docs/spec-emotion-beatbox.md, section 1).
-PATTERNS = {
-    "neutral":  ("K - H - K - H -", 90),
-    "happy":    ("K H H S K H H S", 110),
-    "angry":    ("K K S - K K S S", 130),
-    "surprise": ("K H S C K S H C", 120),
-    "sad":      ("K - - - S - - -", 70),
-}
+SOUND = {"kick": "K", "hihats": "H", "snare": "S", "clap": "C"}   # class -> token
+NAME = {"K": "kick", "H": "hihat", "S": "snare", "C": "clap"}      # token -> file stem
+# Longest a take may ring before its tail is faded out.
+MAX_LEN = {"K": 0.35, "H": 0.15, "S": 0.30, "C": 0.35}
+PEAK = 0.89   # -1 dBFS
 
 
-def pick_sources():
-    """Per class, the original train recording the audio model rates highest."""
+def pick_sources(n):
+    """Per class, the n original train recordings the audio model rates highest."""
     ck = torch.load(AUDIO_CKPT, map_location="cpu")
     model = AudioCNN()
     model.load_state_dict(ck["state_dict"])
@@ -53,60 +50,69 @@ def pick_sources():
     with open(CSV) as fh:
         originals = [r for r in csv.DictReader(fh)
                      if r["split"] == "train" and Path(r["path"]).stem.count("-") == 1]
-    best = {}
+    scored = {c: [] for c in CLASSES}
     torch.manual_seed(0)
     with torch.no_grad():
         for r in originals:
             label = int(r["label"])
-            conf = torch.softmax(model(features(r["path"], ck["pad"], ck["norm"]).unsqueeze(0)), 1)[0, label]
-            if label not in best or conf > best[label][0]:
-                best[label] = (conf.item(), r["path"])
-    return {CLASSES[l]: v for l, v in best.items()}
+            probs = torch.softmax(model(features(r["path"], ck["pad"], ck["norm"]).unsqueeze(0)), 1)[0]
+            scored[CLASSES[label]].append((probs[label].item(), r["path"]))
+    # Ties at full confidence are common; sorting on the path as well keeps
+    # the pick the same on every run.
+    return {c: sorted(v, key=lambda t: (-t[0], t[1]))[:n] for c, v in scored.items()}
 
 
-def clean(path, name):
-    """Mono, onset at the start, tail capped and faded, peak-normalised."""
+def clean(path, token):
+    """Mono, hit at the start, tail capped and faded, peak-normalised."""
     x, sr = sf.read(path, dtype="float32", always_2d=True)
     x = x.mean(axis=1)
     assert sr == SR, f"{path}: {sr} Hz, expected an original at {SR}"
     a = np.abs(x)
     start = max(0, int(np.argmax(a > 0.1 * a.max())) - int(0.005 * sr))   # 5 ms before the hit
-    x = x[start:start + int(MAX_LEN[name] * sr)]
+    x = x[start:start + int(MAX_LEN[token] * sr)]
     fade = min(len(x), int(0.010 * sr))
-    x[-fade:] *= np.linspace(1, 0, fade)          # no click when the sound is cut
+    x[-fade:] *= np.linspace(1, 0, fade)          # no click where the sound is cut
     return x / np.abs(x).max() * PEAK
 
 
-def render(pattern, bpm, samples, bars=2):
-    """Steps are eighth notes: 60 / bpm / 2 seconds apart."""
-    steps = pattern.split()
-    step = 60 / bpm / 2
-    out = np.zeros(int(bars * len(steps) * step * SR) + SR)
-    for i in range(bars * len(steps)):
-        token = steps[i % len(steps)]
-        if token == "-":
-            continue
-        s = samples[TOKEN[token]]
-        at = int(i * step * SR)
-        out[at:at + len(s)] += s
-    out = out[:int(bars * len(steps) * step * SR)]
+def render(expr, cfg, takes, bars=8):
+    """Eight bars of one expression, variations rotating as in the app."""
+    spec = cfg["expressions"][expr]
+    step = 60 / spec["bpm"] / 2
+    n_steps = len(spec["A"])
+    out = np.zeros(int(bars * n_steps * step * SR) + SR)
+    turn = {t: 0 for t in NAME}   # round-robin over the takes of each sound
+    for bar in range(bars):
+        variation = cfg["order"][(bar // cfg["bars_per_variation"]) % len(cfg["order"])]
+        for i, hit in enumerate(spec[variation]):
+            at = int((bar * n_steps + i) * step * SR)
+            for token in hit.replace("-", ""):
+                s = takes[token][turn[token] % len(takes[token])] * cfg["gain"][token]
+                turn[token] += 1
+                out[at:at + len(s)] += s
+    out = out[:int(bars * n_steps * step * SR)]
     return out / max(1.0, np.abs(out).max() / PEAK)
 
 
 def main():
+    cfg = json.loads(PATTERNS.read_text())
     SAMPLES.mkdir(parents=True, exist_ok=True)
     PREVIEW.mkdir(parents=True, exist_ok=True)
-    samples = {}
-    for cls, (conf, path) in sorted(pick_sources().items()):
-        name = FILE[cls]
-        samples[name] = clean(path, name)
-        sf.write(SAMPLES / f"{name}.wav", samples[name], SR, subtype="PCM_16")
-        print(f"{name:6} <- {parse_name(path)[1]:12} (model yakin {conf:.3f})  "
-              f"{len(samples[name]) / SR:.2f} s  -> {SAMPLES / name}.wav")
-    for expr, (pattern, bpm) in PATTERNS.items():
-        out = render(pattern, bpm, samples)
+    takes = {}
+    for cls, picks in sorted(pick_sources(cfg["samples_per_sound"]).items()):
+        token = SOUND[cls]
+        takes[token] = []
+        for k, (conf, path) in enumerate(picks, 1):
+            x = clean(path, token)
+            takes[token].append(x)
+            out = SAMPLES / f"{NAME[token]}_{k}.wav"
+            sf.write(out, x, SR, subtype="PCM_16")
+            print(f"{out.name:12} <- {parse_name(path)[1]:12} (model yakin {conf:.3f})  {len(x) / SR:.2f} s")
+    for expr, spec in cfg["expressions"].items():
+        out = render(expr, cfg, takes)
         sf.write(PREVIEW / f"{expr}.wav", out, SR, subtype="PCM_16")
-        print(f"preview {expr:8} {pattern}  {bpm} BPM  {len(out) / SR:.1f} s -> {PREVIEW / expr}.wav")
+        used = sorted({t for v in "ABC" for hit in spec[v] for t in hit.replace("-", "")})
+        print(f"preview {expr:8} {spec['bpm']:3} BPM  bunyi {''.join(used):4}  {len(out) / SR:.1f} s")
 
 
 if __name__ == "__main__":
