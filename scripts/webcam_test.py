@@ -27,12 +27,16 @@ import cv2
 import torch
 from PIL import Image
 
+from extract_landmarks import landmarks
 from face_detect import detect_face
 from show_batch import build_transform
 from train import build_model
+from train_landmarks import LandmarkMLP
 
 CKPT = "models/mobilenet-ls.pt"
 OUT = Path("data/webcam")
+MLP = "models/landmark-mlp.pt"
+ALPHA = 0.55   # CNN's share in the mix, chosen on FER valid in run 20 (fuse_landmarks.py)
 
 # Measured on FER2013 faces (face_detect.py): Vision's box is 90% of a FER
 # crop and starts 10% lower, cutting off the forehead. "fer" widens it back.
@@ -63,12 +67,40 @@ class Model:
 
     @torch.no_grad()
     def __call__(self, face_bgr):
-        gray = cv2.cvtColor(face_bgr, cv2.COLOR_BGR2GRAY)
-        # Down to 48 first, like every FER2013 image the model learned from.
-        # A sharp webcam crop sent straight to 224 is a picture it never saw.
-        small = cv2.resize(gray, (48, 48), interpolation=cv2.INTER_AREA)
-        x = self.tf(Image.fromarray(small)).unsqueeze(0).to(self.device)
+        x = self.tf(Image.fromarray(to48(face_bgr))).unsqueeze(0).to(self.device)
         return torch.softmax(self.net(x), 1)[0].cpu()
+
+
+def to48(face_bgr):
+    # Down to 48 first, like every FER2013 image the model learned from.
+    # A sharp webcam crop sent straight to 224 is a picture it never saw.
+    gray = cv2.cvtColor(face_bgr, cv2.COLOR_BGR2GRAY)
+    return cv2.resize(gray, (48, 48), interpolation=cv2.INTER_AREA)
+
+
+class Fused:
+    """CNN and Landmark MLP on the same 48x48 crop, mixed as in run 20.
+
+    Returns (CNN alone, mix), so one session compares both on identical
+    frames. No landmarks found: the mix is the CNN, as in fuse_landmarks.py.
+    """
+    def __init__(self, cnn, ckpt=MLP):
+        ck = torch.load(ckpt, map_location="cpu")
+        assert ck["classes"] == cnn.classes, "--fuse needs the 5-class CNN (--ckpt ...finetune-bersih.pt)"
+        self.mlp = LandmarkMLP(dropout=ck["dropout"])
+        self.mlp.load_state_dict(ck["state_dict"])
+        self.mlp.eval()
+        self.mean, self.std, self.cnn, self.classes = ck["mean"], ck["std"], cnn, cnn.classes
+
+    @torch.no_grad()
+    def __call__(self, face_bgr):
+        p_cnn = self.cnn(face_bgr)
+        feat = landmarks(to48(face_bgr))
+        if feat is None:
+            return p_cnn, p_cnn
+        x = (torch.from_numpy(feat) - self.mean) / self.std
+        p_lm = torch.softmax(self.mlp(x.unsqueeze(0)), 1)[0]
+        return p_cnn, ALPHA * p_cnn + (1 - ALPHA) * p_lm
 
 
 def classify(frame, model, margin):
@@ -88,14 +120,14 @@ def smoothed(window, threshold):
     return votes.most_common(1)[0][0] if votes else None
 
 
-def summary(log, classes, threshold):
+def summary(log, classes, threshold, pred="pred", conf="conf"):
     print(f"\n{'pose':9}{'margin':7}{'frame':>6}{'benar':>7}{'lolos':>7}{'benar|lolos':>12}")
     groups = sorted({(r["pose"], r["margin"]) for r in log})
     for pose, margin in groups:
         rows = [r for r in log if r["pose"] == pose and r["margin"] == margin]
-        right = [r["pred"] == pose for r in rows]
-        passed = [r for r in rows if r["conf"] >= threshold]
-        acc_passed = sum(r["pred"] == pose for r in passed) / len(passed) if passed else float("nan")
+        right = [r[pred] == pose for r in rows]
+        passed = [r for r in rows if r[conf] >= threshold]
+        acc_passed = sum(r[pred] == pose for r in passed) / len(passed) if passed else float("nan")
         print(f"{pose:9}{margin:7}{len(rows):6}{sum(right) / len(rows):7.2f}"
               f"{len(passed) / len(rows):7.2f}{acc_passed:12.2f}")
     print(f"\nbenar = tebakan mentah benar · lolos = keyakinan >= {threshold} · "
@@ -112,11 +144,16 @@ def main():
     # the model's name, so one log is one person on one model and two
     # sessions never have to be told apart afterwards.
     p.add_argument("--person", default="anon")
+    # Screen and "stabil" follow the mix; the CNN's own answer on the same
+    # frame is logged next to it, and the summary prints both.
+    p.add_argument("--fuse", action="store_true", help=f"also run the Landmark MLP, mix at α {ALPHA}")
     args = p.parse_args()
 
     device = "mps" if torch.backends.mps.is_available() else "cpu"
     model = Model(device, args.ckpt)
-    print("model:", args.ckpt, "·", model.classes)
+    if args.fuse:
+        model = Fused(model)
+    print("model:", args.ckpt, "·", model.classes, "· gabungan" if args.fuse else "")
     classes = model.classes
     cap = cv2.VideoCapture(args.camera)
     ok, frame = cap.read()
@@ -137,6 +174,9 @@ def main():
             break
         t1 = time.perf_counter()
         box, probs = classify(frame, model, margin)
+        p_cnn = probs
+        if args.fuse and box is not None:
+            p_cnn, probs = probs
         t2 = time.perf_counter()
         # Where a slow frame rate comes from: the camera (dim rooms make the
         # MacBook camera expose longer and deliver fewer frames) or our code.
@@ -147,8 +187,10 @@ def main():
             label, conf = classes[idx], conf.item()
             window.append((label, conf))
             if pose:
+                c_conf, c_idx = p_cnn.max(0)
                 log.append({"t": time.time(), "pose": pose, "margin": margin, "pred": label,
-                            "conf": conf, **{c: probs[i].item() for i, c in enumerate(classes)}})
+                            "conf": conf, "pred_cnn": classes[c_idx], "conf_cnn": c_conf.item(),
+                            **{c: probs[i].item() for i, c in enumerate(classes)}})
             x0, y0, x1, y1 = box
             cv2.rectangle(view, (x0, y0), (x1, y1), (0, 255, 0), 2)
             for i, c in enumerate(classes):
@@ -187,11 +229,15 @@ def main():
     cap.release()
     cv2.destroyAllWindows()
     if log:
-        path = OUT / f"log-{stamp}-{Path(args.ckpt).stem}-{args.person}.csv"
+        path = OUT / f"log-{stamp}-{Path(args.ckpt).stem}{'-fuse' if args.fuse else ''}-{args.person}.csv"
         with path.open("w", newline="") as fh:
             w = csv.DictWriter(fh, fieldnames=list(log[0]))
             w.writeheader()
             w.writerows(log)
+        if args.fuse:
+            print("\n== CNN saja (frame yang sama) ==")
+            summary(log, classes, args.threshold, "pred_cnn", "conf_cnn")
+            print("\n== gabungan ==")
         summary(log, classes, args.threshold)
         print(f"log: {path}")
 

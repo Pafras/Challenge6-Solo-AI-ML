@@ -49,7 +49,7 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [x] Setup env: venv, PyTorch, torchvision, opencv, requirements.txt
 - [x] Pilih & download dataset ekspresi (FER2013 / RAF-DB) — cek lisensi + jumlah sample per kelas
 - [x] Bikin Dataset + DataLoader, render 1 batch buat verifikasi label bener
-- [ ] Kunci 4 kelas emosi (tes di depan kamera dulu, mana yang bisa dipasang on-demand) + mapping ke K/H/S
+- [x] Kunci 4 kelas emosi (tes di depan kamera dulu, mana yang bisa dipasang on-demand) + mapping ke K/H/S — *jadinya 5 kelas (+sad), 14 Sep*
 - [x] Kunci seed + split train/val/test, simpan split-nya ke file biar konsisten antar run
 
 ## Act — Minggu 1
@@ -86,11 +86,11 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [ ] Eksperimen augmentation: tanpa vs flip vs flip+rotate+brightness
 - [x] Eksperimen class weight buat imbalance 2.28x
 - [x] Pilih config final model wajah, catat di tabel
-- [ ] Tes webcam realtime (Python): webcam → crop wajah → 48 → 224 → model #13 → emosi + smoothing *(dimajuin dari Hari 8)*
-- [ ] Ukur di muka beneran: tiap ekspresi kebaca? threshold 0,7 kerasa pas?
-- [ ] Putuskan: perlu fine-tune pakai muka sendiri atau enggak
-- [ ] *(kalau perlu)* Rekam muka sendiri + 2–3 teman (izin dulu), 4 ekspresi × ~60 frame
-- [ ] *(kalau perlu)* Fine-tune model #13, uji pakai orang yang GAK ikut dilatih
+- [x] Tes webcam realtime (Python): webcam → crop wajah → 48 → 224 → model #13 → emosi + smoothing *(dimajuin dari Hari 8)*
+- [x] Ukur di muka beneran: tiap ekspresi kebaca? threshold 0,7 kerasa pas? — *jadinya 0,6*
+- [x] Putuskan: perlu fine-tune pakai muka sendiri atau enggak
+- [x] *(kalau perlu)* Rekam muka sendiri + 2–3 teman (izin dulu), 4 ekspresi × ~60 frame
+- [x] *(kalau perlu)* Fine-tune model #13, uji pakai orang yang GAK ikut dilatih — *Fine-tune bersih, erin 0,660 → 0,767*
 
 ### Hari 7 — Minggu, 13 Sep
 `cadangan`
@@ -117,14 +117,17 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [x] Verifikasi output Core ML sama dengan PyTorch di input yang sama (bandingin numerik)
 - [x] Setup project SwiftUI macOS + camera permission
 - [x] Vision face detection + Core ML prediksi, emosi live ke layar
+- [x] Landmark: ekstrak 76 titik Vision, Landmark MLP (run 19), gabungan CNN + landmark (run 20, lolos tipis), landmark box plot
+- [ ] Uji gabungan di wajah live (`webcam_test.py --fuse`) → putuskan masuk app atau cuma jadi temuan
+- [ ] *(kalau live-nya lebih bagus)* Pasang gabungan ke app: landmark Vision + MLP Core ML + overlay titik, cek pakai golden frame
 
 ### Hari 10 — Rabu, 16 Sep
 `Core ML`
 
 - [x] Siapin sample audio: kick.wav, snare.wav, hihat.wav, clap.wav — ambil dari clip bucket biar kedengeran kayak beatbox beneran
-- [ ] Audio engine: BPM clock + sequencer token → suara, loop mulus
+- [x] Audio engine: BPM clock + sequencer token → suara, loop mulus
 - [x] Mapping emosi → beat pattern (rule-based, tabel biasa)
-- [ ] Ekspresi ganti → pattern ganti di step berikutnya, bukan restart loop
+- [x] Ekspresi ganti → pattern ganti di step berikutnya, bukan restart loop — *di bar berikutnya, tahan 0,8 dtk, minimal 2 bar per pattern*
 - [ ] **Rekam demo video cadangan sore ini** — free mode aja udah cukup
 - [ ] *(stretch)* Quest: 1–2 target sequence hardcoded + score sequence match
 - [ ] *(kalau sempat)* Fill dari keyakinan: rata-rata keyakinan satu bar ≥ ~0,8 → bar berikutnya main variasi C sekali, lalu balik ke giliran A→B→A→C. Diputusin per bar, bukan per frame, jadi gak nambah jitter. Catat di `CLAUDE.md` sebagai pengecualian kecil dari "variasi gak dipilih dari keyakinan"; jelasin sebagai kejelasan ekspresi, bukan kekuatan emosi
