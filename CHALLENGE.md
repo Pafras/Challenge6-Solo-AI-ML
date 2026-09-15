@@ -113,15 +113,15 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 ### Hari 9 — Selasa, 15 Sep
 `Core ML`
 
-- [ ] Convert PyTorch → Core ML pakai coremltools
-- [ ] Verifikasi output Core ML sama dengan PyTorch di input yang sama (bandingin numerik)
+- [x] Convert PyTorch → Core ML pakai coremltools
+- [x] Verifikasi output Core ML sama dengan PyTorch di input yang sama (bandingin numerik)
 - [ ] Setup project SwiftUI macOS + camera permission
 - [ ] Vision face detection + Core ML prediksi, emosi live ke layar
 
 ### Hari 10 — Rabu, 16 Sep
 `Core ML`
 
-- [ ] Siapin sample audio: kick.wav, snare.wav, hihat.wav, clap.wav — ambil dari clip bucket biar kedengeran kayak beatbox beneran
+- [x] Siapin sample audio: kick.wav, snare.wav, hihat.wav, clap.wav — ambil dari clip bucket biar kedengeran kayak beatbox beneran
 - [ ] Audio engine: BPM clock + sequencer token → suara, loop mulus
 - [ ] Mapping emosi → beat pattern (rule-based, tabel biasa)
 - [ ] Ekspresi ganti → pattern ganti di step berikutnya, bukan restart loop
