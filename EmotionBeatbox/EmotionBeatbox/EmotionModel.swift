@@ -23,9 +23,9 @@ nonisolated final class EmotionModel: @unchecked Sendable {
     }
 
     /// One-channel 8-bit buffer: Core ML scales 0-255 to 0-1 itself, as
-    /// ToTensor did in training.
-    private static func pixelBuffer(_ pixels: [UInt8]) throws -> CVPixelBuffer {
-        let n = FaceCropper.size
+    /// ToTensor did in training. FaceLandmarks hands Vision its 192 image
+    /// the same way.
+    static func pixelBuffer(_ pixels: [UInt8], size n: Int = FaceCropper.size) throws -> CVPixelBuffer {
         var buffer: CVPixelBuffer?
         CVPixelBufferCreate(nil, n, n, kCVPixelFormatType_OneComponent8, nil, &buffer)
         guard let buffer else { throw CocoaError(.coderInvalidValue) }
@@ -42,24 +42,40 @@ nonisolated final class EmotionModel: @unchecked Sendable {
     }
 }
 
-/// Camera frame -> crop -> model, run on the camera's queue so the main
-/// thread only ever sees the result.
+/// Camera frame -> crop -> CNN + Landmark MLP, mixed, run on the camera's
+/// queue so the main thread only ever sees the result.
 nonisolated final class FrameProcessor: @unchecked Sendable {
     struct Result: Sendable {
         let expression: Expression
         let confidence: Float
         let probs: [Float]
+        let landmarks: FaceLandmarks.Points?   // nil: no points, probs are the CNN's alone
     }
 
-    private let cropper = FaceCropper()
-    private let model: EmotionModel
+    /// The CNN's share of the mix, chosen on FER valid in run 20
+    /// (scripts/fuse_landmarks.py) and confirmed live in webcam test #4.
+    static let alpha: Float = 0.55
 
-    init() throws { model = try EmotionModel() }
+    private let cropper = FaceCropper()
+    private let finder = FaceLandmarks()
+    private let model: EmotionModel
+    private let landmarkModel: LandmarkModel
+
+    init() throws {
+        model = try EmotionModel()
+        landmarkModel = try LandmarkModel()
+    }
 
     /// nil when no face is found.
     func process(_ frame: CVPixelBuffer) -> Result? {
-        guard let crop = cropper.crop(frame), let probs = try? model.predict(crop.face48),
-              let best = probs.indices.max(by: { probs[$0] < probs[$1] }) else { return nil }
-        return Result(expression: Expression.modelOrder[best], confidence: probs[best], probs: probs)
+        guard let crop = cropper.crop(frame), let cnn = try? model.predict(crop.face48) else { return nil }
+        let points = finder.find(crop.face48)
+        var probs = cnn
+        if let points, let lm = try? landmarkModel.predict(points.features) {
+            probs = zip(cnn, lm).map { Self.alpha * $0 + (1 - Self.alpha) * $1 }
+        }
+        guard let best = probs.indices.max(by: { probs[$0] < probs[$1] }) else { return nil }
+        return Result(expression: Expression.modelOrder[best], confidence: probs[best], probs: probs,
+                      landmarks: points)
     }
 }

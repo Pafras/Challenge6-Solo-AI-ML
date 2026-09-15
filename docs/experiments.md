@@ -311,6 +311,22 @@ Dua akibatnya:
 - Kotak di gambar emas tanggal 14 udah basi buat dibandingin langsung; cek kotak cuma sah di OS yang sama.
 - Pergeseran crop ~2% udah bisa ngubah tebakan di beberapa frame yang nyaris seri (3–6 dari 43). Smoothing di app nyerap ini, tapi angka webcam tanggal 12–14 diukur pakai Vision versi lama — tes live di app perlu diulang di macOS 27.
 
+### Landmark di Swift vs Python — 15 Sep
+
+`scripts/convert_landmarks.py` → `models/LandmarkClassifier.mlpackage` (float32; standarisasi mean/std + softmax di dalam model). Core ML vs PyTorch di FER valid: selisih prob maks **5e-7**, kelas sama 100%. Program cek kecil (di luar repo) ngejalanin `Landmarks.swift` app di 43 crop emas 48×48 (`data/webcam/golden-48/`, referensi Python di `landmarks.json`):
+
+| jalur ke Vision | titik ketemu | \|Δtitik\| median / maks (jarak pupil) | landmark: kelas sama | **gabungan: kelas sama** (Δprob maks) |
+|---|---|---|---|---|
+| **app**: bicubic Swift → pixel buffer abu-abu | 43/43 | 0.019 / 0.077 | 41/43 | **43/43** (0.051) |
+| byte 192 Python → pixel buffer yang sama | 43/43 | 0.019 / 0.077 | 41/43 | 43/43 (0.051) |
+| file PNG 192 Python | 43/43 | 0.011 / 0.088 | 43/43 | 43/43 (0.030) |
+| bicubic Swift → PNG di memori (cara Python) | 43/43 | 0.011 / 0.088 | 43/43 | 43/43 (0.030) |
+
+- **Bicubic Swift = `cv2.INTER_CUBIC`:** beda maks 1 tingkat abu-abu, rata-rata 0,0000. Baris 1 dan 2 identik, jadi resize bukan sumber selisih.
+- **Vision Swift ≠ Vision Python, bahkan di file yang sama persis.** Revisi request sama (3) di dua sisi, dan Python sendiri deterministik (gambar sama dua kali → selisih 0,0). Sisa selisihnya ada di Vision per proses, gak bisa disamain dari kode kita.
+- Lewat PNG selisihnya kira-kira setengah, tapi **gak ngubah satu pun tebakan gabungan**. App tetap pakai pixel buffer; encode PNG per frame gak ada gunanya.
+- Median 0,019 jarak pupil ≈ 0,3 px di crop 48. Dengan bobot landmark 0,45, efeknya ke prob gabungan maks 0,05, masih jauh di bawah beda di frame nyaris seri yang udah diserap smoothing.
+
 ---
 
 # Model audio — beatbox (clap / hihats / kick / snare)

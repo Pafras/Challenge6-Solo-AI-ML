@@ -33,6 +33,11 @@ struct ContentView: View {
             Divider()
             Text(model.faceFound ? "Wajah terdeteksi" : "Wajah belum terdeteksi")
                 .font(.caption).foregroundStyle(model.faceFound ? .green : .orange)
+            if let points = model.landmarks {
+                LandmarkThumb(points: points)
+            } else if model.faceFound {
+                Text("Titik wajah gak ketemu: CNN saja").font(.caption).foregroundStyle(.secondary)
+            }
             ForEach(Array(Expression.modelOrder.enumerated()), id: \.offset) { i, expression in
                 let p = i < model.probs.count ? Double(model.probs[i]) : 0
                 HStack {
@@ -45,6 +50,40 @@ struct ContentView: View {
             Text("Stabil: \(model.stable?.rawValue ?? "—")  (threshold 0,6)")
                 .font(.caption).foregroundStyle(.secondary)
         }
+    }
+}
+
+/// What the models see: the 48 px crop enlarged to 192, with Vision's 76
+/// points on top. The CNN reads the pixels, the Landmark MLP the points.
+struct LandmarkThumb: View {
+    let points: FaceLandmarks.Points
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 10) {
+            ZStack {
+                if let image = Self.cgImage(points.image) {
+                    Image(decorative: image, scale: 1).resizable()
+                }
+                Canvas { context, size in
+                    for p in points.display {
+                        let dot = CGRect(x: p.x * size.width - 1.5, y: p.y * size.height - 1.5, width: 3, height: 3)
+                        context.fill(Path(ellipseIn: dot), with: .color(.green))
+                    }
+                }
+            }
+            .frame(width: 120, height: 120)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            Text("Yang dilihat model: crop 48 px diperbesar + 76 titik wajah. Gabungan: 55% piksel, 45% titik.")
+                .font(.caption).foregroundStyle(.secondary)
+        }
+    }
+
+    private static func cgImage(_ grey: [UInt8]) -> CGImage? {
+        let n = FaceLandmarks.size
+        guard let provider = CGDataProvider(data: Data(grey) as CFData) else { return nil }
+        return CGImage(width: n, height: n, bitsPerComponent: 8, bitsPerPixel: 8, bytesPerRow: n,
+                       space: CGColorSpaceCreateDeviceGray(), bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue),
+                       provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
     }
 }
 

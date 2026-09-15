@@ -205,8 +205,10 @@ accounts, a database, a progression system, 3D graphics.
   previous direction, and submission moved up to the 17th. The spec's 12 days
   are compressed into 9 (Days 3–11). The app absorbed the cut, not training.
 - **No buffer on the last day.** Day 11 is submission. The model card is
-  drafted on Day 8 while the numbers are fresh, and a backup demo is recorded
-  on Day 10, so a slip on Wednesday doesn't mean submitting nothing.
+  drafted on Day 8 while the numbers are fresh. The submission is a sharing
+  session with a live demo, not a video (mentor, 15 Sep); a short backup
+  video recorded on Day 10 is the fallback if the live demo fails in the
+  room (lighting, sound, nerves).
 
 ## What's still open
 
@@ -222,6 +224,21 @@ accounts, a database, a progression system, 3D graphics.
   `models/mobilenet-ls.pt` (0.839) stays as the fallback. Refer to runs by
   name, not number (see the run map in `docs/experiments.md`). Still
   unproven: the test set (Day 8, once).
+- **What the app ships since 15 Sep: Gabungan (late fusion)** — Fine-tune
+  bersih mixed with the Landmark MLP (`models/landmark-mlp.pt`, 76 Vision
+  face points, no pixels), `p = 0.55·CNN + 0.45·landmark` (runs 19–20).
+  Passed its pre-set criteria thinly offline (FER valid 0.762 → 0.774, erin
+  0.767 → 0.780) and live on Pafras with both models scoring the same frames
+  (webcam test #4): correct 0.825 → 0.848, and frames that pass the 0.6
+  threshold while wrong 7.7% → 5.0%, which is the jitter that matters. Faces
+  Vision finds no points on fall back to the CNN. No test-set number: the
+  test set was opened once, for the CNN, on Day 8. The landmark path in
+  Swift copies `scripts/extract_landmarks.py`: the 48 crop enlarged to 192
+  with OpenCV's bicubic, `VNDetectFaceLandmarksRequest`, points centred on
+  the pupils and divided by the pupil distance; the standardisation lives
+  inside `LandmarkClassifier.mlpackage`. Swift's Vision gives slightly
+  different points from Python's on the identical image (same revision, ~0.3
+  px at 48), yet the fused answer matches on 43/43 golden crops.
 - Whether the mentor counts transfer learning as "training a model" — worth
   asking, but the plan compares scratch and pretrained either way, so the
   answer changes framing rather than work.

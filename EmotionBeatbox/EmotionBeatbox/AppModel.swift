@@ -9,6 +9,7 @@ final class AppModel {
     var raw: Expression?
     var confidence: Float = 0
     var probs: [Float] = []
+    var landmarks: FaceLandmarks.Points?
     var stable: Expression?
     var playing: Expression?
     var variation = "A"
@@ -62,6 +63,7 @@ final class AppModel {
 
     private func handle(_ result: FrameProcessor.Result?) {
         faceFound = result != nil
+        landmarks = result?.landmarks
         guard let result else { return }
         raw = result.expression
         confidence = result.confidence

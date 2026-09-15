@@ -22,6 +22,8 @@ AVP_Dataset-2/
 # Its weights sit in Data/, which the data/ rule above also matches on a
 # case-insensitive Mac; without this line the app would ship without them.
 !EmotionBeatbox/EmotionBeatbox/Resources/EmotionClassifier.mlpackage/**
+!EmotionBeatbox/EmotionBeatbox/Resources/LandmarkClassifier.mlpackage/
+!EmotionBeatbox/EmotionBeatbox/Resources/LandmarkClassifier.mlpackage/**
 
 # Xcode
 xcuserdata/

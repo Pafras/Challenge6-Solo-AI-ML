@@ -17,17 +17,18 @@ DEST = Path("EmotionBeatbox/EmotionBeatbox/Resources")
 
 def main():
     DEST.mkdir(parents=True, exist_ok=True)
-    model = DEST / "EmotionClassifier.mlpackage"
-    if model.exists():
-        shutil.rmtree(model)
-    shutil.copytree("models/EmotionClassifier.mlpackage", model)
+    for name in ("EmotionClassifier.mlpackage", "LandmarkClassifier.mlpackage"):
+        model = DEST / name
+        if model.exists():
+            shutil.rmtree(model)
+        shutil.copytree(f"models/{name}", model)
     shutil.copy2("audio/patterns.json", DEST / "patterns.json")
     for old in DEST.glob("*.wav"):        # a take that no longer exists must not linger
         old.unlink()
     wavs = sorted(Path("audio/samples").glob("*.wav"))
     for wav in wavs:
         shutil.copy2(wav, DEST / wav.name)
-    print(f"{DEST}: EmotionClassifier.mlpackage, patterns.json, {len(wavs)} samples")
+    print(f"{DEST}: EmotionClassifier + LandmarkClassifier .mlpackage, patterns.json, {len(wavs)} samples")
 
 
 if __name__ == "__main__":

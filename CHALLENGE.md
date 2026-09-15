@@ -119,7 +119,7 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [x] Vision face detection + Core ML prediksi, emosi live ke layar
 - [x] Landmark: ekstrak 76 titik Vision, Landmark MLP (run 19), gabungan CNN + landmark (run 20, lolos tipis), landmark box plot
 - [x] Uji gabungan di wajah live (`webcam_test.py --fuse`) → putuskan masuk app atau cuma jadi temuan — *lolos: yakin-tapi-salah 7,7% → 5,0%, masuk app*
-- [ ] *(kalau live-nya lebih bagus)* Pasang gabungan ke app: landmark Vision + MLP Core ML + overlay titik, cek pakai golden frame
+- [x] *(kalau live-nya lebih bagus)* Pasang gabungan ke app: landmark Vision + MLP Core ML + overlay titik, cek pakai golden frame — *gabungan Swift = Python di 43/43 crop emas*
 
 ### Hari 10 — Rabu, 16 Sep
 `Core ML`

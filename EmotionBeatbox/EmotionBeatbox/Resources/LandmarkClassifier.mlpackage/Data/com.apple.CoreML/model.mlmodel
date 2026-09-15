@@ -1,0 +1,1035 @@
+ï
+…
+pointsnx0, y0, ... x75, y75 of VNFaceLandmarks2D.allPoints, minus the pupils' midpoint, divided by the pupil distance*	
+˜ €RF
+probs1softmax over angry, happy, neutral, surprise, sad
+*
+ €¢›
+DFacial expression from 76 Vision face points (Landmark MLP, run 19).¢
+fusion_alpha_cnn0.55¢+
+classes angry,happy,neutral,surprise,sad¢+
+$com.github.apple.coremltools.version9.0¢+
+source_checkpointmodels/landmark-mlp.pt¢:
+,com.github.apple.coremltools.conversion_date
+2026-09-15¢3
+#com.github.apple.coremltools.sourcetorch==2.7.0¢:
++com.github.apple.coremltools.source_dialectTorchScript²ÚNíL
+mainäL
+
+points
+
+
+˜CoreML6¹L
+CoreML6­Lprobs‚
+const
+mean
+
+
+˜*
+name
+
+
+"
+mean*@
+val9
+
+
+˜*"
+@model_path/weights/weight.bin@“
+const#
+mlp_net_0_f_0_bias
+
+€*(
+name 
+
+"
+mlp_net_0_f_0_bias*;
+val4
+
+€*#
+@model_path/weights/weight.bin€¥
+const,
+mlp_net_0_f_0_weight
+
+€
+˜**
+name"
+
+"
+mlp_net_0_f_0_weight*B
+val;
+
+€
+˜*#
+@model_path/weights/weight.binÀ¢
+const*
+mlp_net_0_f_1_running_var
+
+€*/
+name'
+
+"
+mlp_net_0_f_1_running_var*<
+val5
+
+€*$
+@model_path/weights/weight.bin€—¤
+const+
+mlp_net_0_f_1_running_mean
+
+€*0
+name(
+ 
+"
+mlp_net_0_f_1_running_mean*<
+val5
+
+€*$
+@model_path/weights/weight.binÀ§”
+const#
+mlp_net_0_f_1_bias
+
+€*(
+name 
+
+"
+mlp_net_0_f_1_bias*<
+val5
+
+€*$
+@model_path/weights/weight.bin€¸˜
+const%
+mlp_net_0_f_1_weight
+
+€**
+name"
+
+"
+mlp_net_0_f_1_weight*<
+val5
+
+€*$
+@model_path/weights/weight.binÀÈ¨
+const-
+mlp_net_0_skip_weight
+
+€
+˜*+
+name#
+
+"
+mlp_net_0_skip_weight*C
+val<
+
+€
+˜*$
+@model_path/weights/weight.bin€Ù”
+const#
+mlp_net_1_f_0_bias
+
+€*(
+name 
+
+"
+mlp_net_1_f_0_bias*<
+val5
+
+€*$
+@model_path/weights/weight.binÀÙ&¦
+const,
+mlp_net_1_f_0_weight
+
+€
+€**
+name"
+
+"
+mlp_net_1_f_0_weight*C
+val<
+
+€
+€*$
+@model_path/weights/weight.bin€â&¢
+const*
+mlp_net_1_f_1_running_var
+
+€*/
+name'
+
+"
+mlp_net_1_f_1_running_var*<
+val5
+
+€*$
+@model_path/weights/weight.binÀâF¤
+const+
+mlp_net_1_f_1_running_mean
+
+€*0
+name(
+ 
+"
+mlp_net_1_f_1_running_mean*<
+val5
+
+€*$
+@model_path/weights/weight.bin€ëF”
+const#
+mlp_net_1_f_1_bias
+
+€*(
+name 
+
+"
+mlp_net_1_f_1_bias*<
+val5
+
+€*$
+@model_path/weights/weight.binÀóF˜
+const%
+mlp_net_1_f_1_weight
+
+€**
+name"
+
+"
+mlp_net_1_f_1_weight*<
+val5
+
+€*$
+@model_path/weights/weight.bin€üF¨
+const-
+mlp_net_1_skip_weight
+
+€
+€*+
+name#
+
+"
+mlp_net_1_skip_weight*C
+val<
+
+€
+€*$
+@model_path/weights/weight.binÀ„G”
+const#
+mlp_net_2_f_0_bias
+
+€*(
+name 
+
+"
+mlp_net_2_f_0_bias*<
+val5
+
+€*$
+@model_path/weights/weight.bin€…g¦
+const,
+mlp_net_2_f_0_weight
+
+€
+€**
+name"
+
+"
+mlp_net_2_f_0_weight*C
+val<
+
+€
+€*$
+@model_path/weights/weight.binÀ‰g¢
+const*
+mlp_net_2_f_1_running_var
+
+€*/
+name'
+
+"
+mlp_net_2_f_1_running_var*<
+val5
+
+€*$
+@model_path/weights/weight.bin€Šo¤
+const+
+mlp_net_2_f_1_running_mean
+
+€*0
+name(
+ 
+"
+mlp_net_2_f_1_running_mean*<
+val5
+
+€*$
+@model_path/weights/weight.binÀŽo”
+const#
+mlp_net_2_f_1_bias
+
+€*(
+name 
+
+"
+mlp_net_2_f_1_bias*<
+val5
+
+€*$
+@model_path/weights/weight.bin€“o˜
+const%
+mlp_net_2_f_1_weight
+
+€**
+name"
+
+"
+mlp_net_2_f_1_weight*<
+val5
+
+€*$
+@model_path/weights/weight.binÀ—o¨
+const-
+mlp_net_2_skip_weight
+
+€
+€*+
+name#
+
+"
+mlp_net_2_skip_weight*C
+val<
+
+€
+€*$
+@model_path/weights/weight.bin€œo€
+const
+mlp_net_3_bias
+
+
+*$
+name
+
+"
+mlp_net_3_bias*1
+val*
+
+
+
+
+
+¾
+½’êœ½?R•»Ýá<Œ=œ
+const'
+mlp_net_3_weight
+
+
+€*&
+name
+
+"
+mlp_net_3_weight*B
+val;
+
+
+€*$
+@model_path/weights/weight.binÀœw_
+sub
+y
+
+mean
+x
+
+
+points
+var_6
+
+
+˜*
+name
+
+
+"
+op_6¦
+const,
+_inversed_input_1_y_0
+
+
+˜*+
+name#
+
+"
+_inversed_input_1_y_0*B
+val;
+
+
+˜*$
+@model_path/weights/weight.bin€±wˆ
+mul
+y
+
+_inversed_input_1_y_0
+x	
+
+var_6(
+_inversed_input_1
+
+
+˜*'
+name
+
+"
+_inversed_input_1O
+const
+var_11
+*
+name
+
+	"
+op_11*
+val
+
+
+
+
+¬Å'7¨
+linear
+bias
+
+mlp_net_0_f_0_bias"
+weight
+
+mlp_net_0_f_0_weight
+x
+
+_inversed_input_1
+input_3
+
+
+€*
+name
+
+"
+
+linear_0–
+const.
+input_5_rank2_expansion_axes_0
+
+
+*4
+name,
+$
+"" 
+input_5_rank2_expansion_axes_0*'
+val 
+
+
+
+
+
+ÿÿÿÿÿÿÿÿÿ°
+expand_dims*
+axes"
+ 
+input_5_rank2_expansion_axes_0
+x
+	
+input_34
+input_5_rank2_expansion
+
+
+€
+*-
+name%
+
+"
+input_5_rank2_expansion¼
+
+batch_norm
+epsilon
+
+
+var_11&
+mean
+
+mlp_net_0_f_1_running_mean 
+x
+
+input_5_rank2_expansion)
+variance
+
+mlp_net_0_f_1_running_var!
+gamma
+
+mlp_net_0_f_1_weight
+beta
+
+mlp_net_0_f_1_bias2
+input_5_batch_norm_1d
+
+
+€
+*+
+name#
+
+"
+input_5_batch_norm_1dv
+const
+input_5_axes_0
+
+
+*$
+name
+
+"
+input_5_axes_0*'
+val 
+
+
+
+
+
+ÿÿÿÿÿÿÿÿÿ„
+squeeze
+axes
+
+input_5_axes_0
+x
+
+input_5_batch_norm_1d
+input_5
+
+
+€*
+name
+
+"	
+input_5a
+const
+input_7_mode_0
+*$
+name
+
+"
+input_7_mode_0*
+val
+
+	"
+EXACTs
+gelu
+x
+	
+input_5
+mode
+
+input_7_mode_0
+input_7
+
+
+€*
+name
+
+"	
+input_7Ž
+const 
+linear_1_bias_0
+
+€*%
+name
+
+"
+linear_1_bias_0*<
+val5
+
+€*$
+@model_path/weights/weight.binÀ¶w¥
+linear
+bias
+
+linear_1_bias_0#
+weight
+
+mlp_net_0_skip_weight
+x
+
+_inversed_input_1
+var_36
+
+
+€*
+name
+
+"
+
+linear_1g
+add
+y
+
+
+var_36
+x
+	
+input_7
+input_9
+
+
+€*
+name
+
+"	
+input_9Ÿ
+linear
+bias
+
+mlp_net_1_f_0_bias"
+weight
+
+mlp_net_1_f_0_weight
+x
+	
+input_9
+input_11
+
+
+€*
+name
+
+"
+
+linear_2˜
+const/
+input_13_rank2_expansion_axes_0
+
+
+*5
+name-
+%
+#"!
+input_13_rank2_expansion_axes_0*'
+val 
+
+
+
+
+
+ÿÿÿÿÿÿÿÿÿ´
+expand_dims+
+axes#
+!
+input_13_rank2_expansion_axes_0
+x
+
+
+input_115
+input_13_rank2_expansion
+
+
+€
+*.
+name&
+
+"
+input_13_rank2_expansion¿
+
+batch_norm
+epsilon
+
+
+var_11&
+mean
+
+mlp_net_1_f_1_running_mean!
+x
+
+input_13_rank2_expansion)
+variance
+
+mlp_net_1_f_1_running_var!
+gamma
+
+mlp_net_1_f_1_weight
+beta
+
+mlp_net_1_f_1_bias3
+input_13_batch_norm_1d
+
+
+€
+*,
+name$
+
+"
+input_13_batch_norm_1dx
+const
+input_13_axes_0
+
+
+*%
+name
+
+"
+input_13_axes_0*'
+val 
+
+
+
+
+
+ÿÿÿÿÿÿÿÿÿˆ
+squeeze
+axes
+
+input_13_axes_0
+x
+
+input_13_batch_norm_1d
+input_13
+
+
+€*
+name
+
+"
+
+input_13c
+const
+input_15_mode_0
+*%
+name
+
+"
+input_15_mode_0*
+val
+
+	"
+EXACTw
+gelu
+x
+
+
+input_13
+mode
+
+input_15_mode_0
+input_15
+
+
+€*
+name
+
+"
+
+input_15Ž
+const 
+linear_3_bias_0
+
+€*%
+name
+
+"
+linear_3_bias_0*<
+val5
+
+€*$
+@model_path/weights/weight.bin€Çw›
+linear
+bias
+
+linear_3_bias_0#
+weight
+
+mlp_net_1_skip_weight
+x
+	
+input_9
+var_53
+
+
+€*
+name
+
+"
+
+linear_3j
+add
+y
+
+
+var_53
+x
+
+
+input_15
+input_17
+
+
+€*
+name
+
+"
+
+input_17 
+linear
+bias
+
+mlp_net_2_f_0_bias"
+weight
+
+mlp_net_2_f_0_weight
+x
+
+
+input_17
+input_19
+
+
+€*
+name
+
+"
+
+linear_4˜
+const/
+input_21_rank2_expansion_axes_0
+
+
+*5
+name-
+%
+#"!
+input_21_rank2_expansion_axes_0*'
+val 
+
+
+
+
+
+ÿÿÿÿÿÿÿÿÿ´
+expand_dims+
+axes#
+!
+input_21_rank2_expansion_axes_0
+x
+
+
+input_195
+input_21_rank2_expansion
+
+
+€
+*.
+name&
+
+"
+input_21_rank2_expansion¿
+
+batch_norm
+epsilon
+
+
+var_11&
+mean
+
+mlp_net_2_f_1_running_mean!
+x
+
+input_21_rank2_expansion)
+variance
+
+mlp_net_2_f_1_running_var!
+gamma
+
+mlp_net_2_f_1_weight
+beta
+
+mlp_net_2_f_1_bias3
+input_21_batch_norm_1d
+
+
+€
+*,
+name$
+
+"
+input_21_batch_norm_1dx
+const
+input_21_axes_0
+
+
+*%
+name
+
+"
+input_21_axes_0*'
+val 
+
+
+
+
+
+ÿÿÿÿÿÿÿÿÿˆ
+squeeze
+axes
+
+input_21_axes_0
+x
+
+input_21_batch_norm_1d
+input_21
+
+
+€*
+name
+
+"
+
+input_21c
+const
+input_23_mode_0
+*%
+name
+
+"
+input_23_mode_0*
+val
+
+	"
+EXACTw
+gelu
+x
+
+
+input_21
+mode
+
+input_23_mode_0
+input_23
+
+
+€*
+name
+
+"
+
+input_23Ž
+const 
+linear_5_bias_0
+
+€*%
+name
+
+"
+linear_5_bias_0*<
+val5
+
+€*$
+@model_path/weights/weight.binÀÏwœ
+linear
+bias
+
+linear_5_bias_0#
+weight
+
+mlp_net_2_skip_weight
+x
+
+
+input_17
+var_70
+
+
+€*
+name
+
+"
+
+linear_5d
+add
+y
+
+
+var_70
+x
+
+
+input_23
+input
+
+
+€*
+name
+
+	"
+input’
+linear
+bias
+
+mlp_net_3_bias
+weight
+
+mlp_net_3_weight
+x	
+
+input
+var_74
+
+
+*
+name
+
+"
+
+linear_6L
+const
+var_75
+*
+name
+
+	"
+op_75*
+val
+
+
+h
+softmax
+x
+
+
+var_74
+axis
+
+
+var_75
+probs
+
+
+*
+name
+
+	"
+op_77"å
+	buildInfo×"
+
+
+Ä"Á
+6
+!
+
+"
+coremltools-version
+	
+"
+9.0
+@
+)
+!
+"
+coremltools-component-torch
+
+	"
+2.7.0
+E
+(
+ 
+"
+coremltools-source-dialect
+
+"
+TorchScript
