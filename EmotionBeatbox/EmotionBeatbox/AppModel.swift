@@ -14,6 +14,8 @@ final class AppModel {
     var playing: Expression?
     var variation = "A"
     var bpm: Double = 0
+    var step: Int?
+    var stepsInBar = 8
 
     let camera = CameraManager()
     private var smoother = Smoother()
@@ -50,13 +52,16 @@ final class AppModel {
             return
         }
         status = ""
-        // The engine's own state, for the screen, a few times a second.
-        refresh = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+        // The engine's own state, for the screen. 20 times a second: a step
+        // lasts 0.23 s at 130 BPM, and the dot must not skip one.
+        refresh = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated {
                 guard let self, let beat = self.beat else { return }
                 self.playing = beat.playing
                 self.variation = beat.variation
                 self.bpm = beat.bpm
+                self.step = beat.step
+                self.stepsInBar = beat.stepsInBar
             }
         }
     }

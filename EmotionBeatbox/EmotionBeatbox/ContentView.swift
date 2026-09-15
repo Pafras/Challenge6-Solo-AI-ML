@@ -18,6 +18,19 @@ struct ContentView: View {
         .task { await model.start() }
     }
 
+    /// One dot per eighth note; the lit one is sounding now. Dots on the
+    /// beat are larger, so the bar reads as four counts.
+    private var barDots: some View {
+        HStack(spacing: 6) {
+            ForEach(0..<model.stepsInBar, id: \.self) { i in
+                Circle()
+                    .fill(i == model.step ? Color.accentColor : Color.secondary.opacity(0.35))
+                    .frame(width: i % 2 == 0 ? 12 : 8, height: i % 2 == 0 ? 12 : 8)
+            }
+        }
+        .frame(height: 14)
+    }
+
     private var panel: some View {
         VStack(alignment: .leading, spacing: 10) {
             if !model.status.isEmpty {
@@ -29,6 +42,13 @@ struct ContentView: View {
             if model.playing != nil {
                 Text("variasi \(model.variation) · \(Int(model.bpm)) BPM")
                     .font(.callout).foregroundStyle(.secondary)
+                barDots
+                // The face has settled on another expression: say when it takes over,
+                // so nobody has to count bars by ear.
+                if let next = model.stable, next != model.playing {
+                    Text("Berikutnya: \(next.emoji) \(next.rawValue) · di awal bar")
+                        .font(.callout.bold())
+                }
             }
             Divider()
             Text(model.faceFound ? "Wajah terdeteksi" : "Wajah belum terdeteksi")

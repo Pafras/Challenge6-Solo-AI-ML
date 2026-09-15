@@ -35,6 +35,9 @@ final class BeatEngine {
     private(set) var playing: Expression?
     private(set) var variation = "A"
     private(set) var bpm: Double = 0
+    /// The eighth note of the bar sounding now, for the dots on screen; nil when silent.
+    private(set) var step: Int?
+    private(set) var stepsInBar = 8
     /// Set from the smoother; applied at the next bar.
     var target: Expression?
 
@@ -50,6 +53,8 @@ final class BeatEngine {
     private var nextPlayer: [String: Int] = [:]
     private var nextBar: AVAudioFramePosition = 0
     private var barsHeld = 0
+    /// Recently scheduled bars, so the clock can tell which step is sounding.
+    private var bars: [(start: AVAudioFramePosition, stepFrames: Double, steps: Int)] = []
     private var timer: Timer?
 
     init() throws {
@@ -117,6 +122,7 @@ final class BeatEngine {
 
     /// Keep about 0.15 s of beat scheduled ahead of the clock.
     private func scheduleAhead() {
+        updateStep()
         let horizon = now + AVAudioFramePosition(0.15 * sampleRate)
         if nextBar < now { nextBar = now }   // silent, or late: start from here
         while nextBar < horizon {
@@ -155,8 +161,19 @@ final class BeatEngine {
             let at = nextBar + AVAudioFramePosition(Double(i) * stepFrames)
             for sound in step where sound != "-" { hit(String(sound), at: at) }
         }
+        bars = Array((bars + [(nextBar, stepFrames, steps.count)]).suffix(4))
         nextBar += AVAudioFramePosition(Double(steps.count) * stepFrames)
         barsHeld += 1
+    }
+
+    /// Bars are scheduled 0.15 s ahead, so the one sounding is the latest
+    /// that has already started on the audio clock.
+    private func updateStep() {
+        let t = now
+        guard let bar = bars.last(where: { $0.start <= t }) else { step = nil; return }
+        let s = Int(Double(t - bar.start) / bar.stepFrames)
+        step = s < bar.steps ? s : nil
+        stepsInBar = bar.steps
     }
 
     /// Takes and players both go round-robin: neighbouring hits of one sound
