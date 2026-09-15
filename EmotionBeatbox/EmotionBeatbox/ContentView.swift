@@ -21,14 +21,18 @@ struct ContentView: View {
     /// One dot per eighth note; the lit one is sounding now. Dots on the
     /// beat are larger, so the bar reads as four counts.
     private var barDots: some View {
-        HStack(spacing: 6) {
-            ForEach(0..<model.stepsInBar, id: \.self) { i in
-                Circle()
-                    .fill(i == model.step ? Color.accentColor : Color.secondary.opacity(0.35))
-                    .frame(width: i % 2 == 0 ? 12 : 8, height: i % 2 == 0 ? 12 : 8)
+        // Redrawn on every display frame, reading the audio clock itself.
+        TimelineView(.animation) { _ in
+            let now = model.currentStep()
+            HStack(spacing: 6) {
+                ForEach(0..<(now?.of ?? 8), id: \.self) { i in
+                    Circle()
+                        .fill(i == now?.step ? Color.accentColor : Color.secondary.opacity(0.35))
+                        .frame(width: i % 2 == 0 ? 12 : 8, height: i % 2 == 0 ? 12 : 8)
+                }
             }
+            .frame(height: 14)
         }
-        .frame(height: 14)
     }
 
     private var panel: some View {

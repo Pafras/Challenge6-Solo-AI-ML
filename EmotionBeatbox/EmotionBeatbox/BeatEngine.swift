@@ -36,9 +36,6 @@ final class BeatEngine {
     private(set) var playing: Expression?
     private(set) var variation = "A"
     private(set) var bpm: Double = 0
-    /// The eighth note of the bar sounding now, for the dots on screen; nil when silent.
-    private(set) var step: Int?
-    private(set) var stepsInBar = 8
     /// How clearly the face showed the playing expression in this bar so far:
     /// the mean of its probability over the bar's frames. Clarity, not
     /// strength: the model's certainty, which is why each expression has its
@@ -133,7 +130,6 @@ final class BeatEngine {
 
     /// Keep about 0.15 s of beat scheduled ahead of the clock.
     private func scheduleAhead() {
-        updateStep()
         let horizon = now + AVAudioFramePosition(0.15 * sampleRate)
         if nextBar < now { nextBar = now }   // silent, or late: start from here
         while nextBar < horizon {
@@ -197,14 +193,17 @@ final class BeatEngine {
         barsHeld += 1
     }
 
+    /// The eighth note sounding now and the bar's length, for the dots on
+    /// screen; nil when silent. Read straight off the audio clock on every
+    /// display frame: polled through timers, the dot landed on the timers'
+    /// grid instead of the beat's, 0-80 ms late, and stepped unevenly.
     /// Bars are scheduled 0.15 s ahead, so the one sounding is the latest
-    /// that has already started on the audio clock.
-    private func updateStep() {
+    /// that has already started.
+    func currentStep() -> (step: Int, of: Int)? {
         let t = now
-        guard let bar = bars.last(where: { $0.start <= t }) else { step = nil; return }
+        guard let bar = bars.last(where: { $0.start <= t }) else { return nil }
         let s = Int(Double(t - bar.start) / bar.stepFrames)
-        step = s < bar.steps ? s : nil
-        stepsInBar = bar.steps
+        return s < bar.steps ? (s, bar.steps) : nil
     }
 
     /// Takes and players both go round-robin: neighbouring hits of one sound
