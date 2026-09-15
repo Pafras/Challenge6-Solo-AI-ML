@@ -124,7 +124,11 @@ brief's star rating):
   before it reaches the beat, and a pattern plays at least 2 bars before
   another may take over. Found in the first live run, where pulling faces
   flipped the beat every bar; the cost is ~1–2 s of response to a
-  deliberate change.
+  deliberate change. **Eased the same evening to at least 1 bar:** with
+  the fused model live, changes felt slow. Measured, not guessed: the
+  models take 13 ms a frame (CNN alone 9 ms), well inside 30 fps, so the
+  delay was the bar clock. A bar lasts 1.85 s (angry, 130 BPM) to 3.43 s
+  (sad, 70 BPM), so 2 bars held sad for ~7 s. The 0.8 s hold stays.
 - **Audio engine:** sample playback on a BPM clock. Not AI, doesn't need
   to be.
 - **Quest:** 2–3 hardcoded target sequences of expressions, each held for a

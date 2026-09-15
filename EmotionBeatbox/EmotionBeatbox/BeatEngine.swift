@@ -129,8 +129,11 @@ final class BeatEngine {
     }
 
     /// A pattern plays at least this many bars before another may take over,
-    /// so a face flicking between expressions cannot flip the beat every bar.
-    private let minBars = 2
+    /// so a face flicking between expressions cannot flip the beat mid-bar.
+    /// Was 2: at 70-90 BPM that held a pattern 5-7 s, and a demo that changes
+    /// face every few seconds felt slow. The 0.8 s hold in AppModel still
+    /// filters flicker.
+    private let minBars = 1
 
     private func nextExpression() -> Expression? {
         guard let playing else { return target }
