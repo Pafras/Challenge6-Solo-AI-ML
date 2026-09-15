@@ -127,6 +127,7 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [ ] Ekspresi ganti → pattern ganti di step berikutnya, bukan restart loop
 - [ ] **Rekam demo video cadangan sore ini** — free mode aja udah cukup
 - [ ] *(stretch)* Quest: 1–2 target sequence hardcoded + score sequence match
+- [ ] *(kalau sempat)* Fill dari keyakinan: rata-rata keyakinan satu bar ≥ ~0,8 → bar berikutnya main variasi C sekali, lalu balik ke giliran A→B→A→C. Diputusin per bar, bukan per frame, jadi gak nambah jitter. Catat di `CLAUDE.md` sebagai pengecualian kecil dari "variasi gak dipilih dari keyakinan"; jelasin sebagai kejelasan ekspresi, bukan kekuatan emosi
 
 ## Cooldown
 
