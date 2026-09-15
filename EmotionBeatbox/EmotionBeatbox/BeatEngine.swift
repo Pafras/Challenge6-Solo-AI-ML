@@ -6,6 +6,7 @@ struct PatternTable: Decodable {
     struct Entry: Decodable {
         let mood: String
         let bpm: Double
+        let fillAt: Float
         let A: [String]
         let B: [String]
         let C: [String]
@@ -38,6 +39,16 @@ final class BeatEngine {
     /// The eighth note of the bar sounding now, for the dots on screen; nil when silent.
     private(set) var step: Int?
     private(set) var stepsInBar = 8
+    /// How clearly the face showed the playing expression in this bar so far:
+    /// the mean of its probability over the bar's frames. Clarity, not
+    /// strength: the model's certainty, which is why each expression has its
+    /// own fill_at in patterns.json (sad rarely tops 0.55, surprise 0.85).
+    private(set) var clarity: Float?
+    private(set) var fillAt: Float = 1
+    /// This bar is a fill: C once, because the bar before it was clear.
+    private(set) var filled = false
+    private var claritySum: Float = 0
+    private var clarityCount = 0
     /// Set from the smoother; applied at the next bar.
     var target: Expression?
 
@@ -147,13 +158,33 @@ final class BeatEngine {
         return target
     }
 
+    /// Every frame's probabilities, in Expression.modelOrder. Only the playing
+    /// expression's share counts.
+    func observe(_ probs: [Float]) {
+        guard let playing, let i = Expression.modelOrder.firstIndex(of: playing), i < probs.count else { return }
+        claritySum += probs[i]
+        clarityCount += 1
+        clarity = claritySum / Float(clarityCount)
+    }
+
     private func scheduleBar(_ expression: Expression) {
+        // Fill: the bar ending now showed the expression clearly, so this bar
+        // plays C once, then the rotation carries on. Decided once per bar,
+        // never per frame, so it adds no jitter; never two bars running, or
+        // C would stop sounding special.
+        let fill = expression == playing && !filled
+            && (clarity ?? 0) >= (table.expressions[expression.rawValue]?.fillAt ?? 1)
         if expression != playing {           // a new expression starts at A
             playing = expression
             barsHeld = 0
         }
         guard let entry = table.expressions[expression.rawValue] else { return }
-        variation = table.order[(barsHeld / table.barsPerVariation) % table.order.count]
+        variation = fill ? "C" : table.order[(barsHeld / table.barsPerVariation) % table.order.count]
+        filled = fill
+        fillAt = entry.fillAt
+        claritySum = 0
+        clarityCount = 0
+        clarity = nil
         bpm = entry.bpm
         let steps = entry.steps(variation)
         let stepFrames = sampleRate * 60 / entry.bpm / 2

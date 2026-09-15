@@ -144,26 +144,27 @@ footer{margin-top:40px;font-size:12px;color:var(--dim)}
 <li><input type="checkbox" id="t48" checked><label for="t48">Mapping emosi → beat pattern (rule-based, tabel biasa)</label></li>
 <li><input type="checkbox" id="t49" checked><label for="t49">Ekspresi ganti → pattern ganti di step berikutnya, bukan restart loop — <em>di bar berikutnya, tahan 0,8 dtk, minimal 2 bar per pattern</em></label></li>
 <li><input type="checkbox" id="t50"><label for="t50"><strong>Rekam demo video cadangan sore ini</strong> — free mode aja udah cukup</label></li>
-<li><input type="checkbox" id="t51"><label for="t51"><em>(stretch)</em> Quest: 1–2 target sequence hardcoded + score sequence match</label></li>
-<li><input type="checkbox" id="t52"><label for="t52"><em>(kalau sempat)</em> Fill dari keyakinan: rata-rata keyakinan satu bar ≥ ~0,8 → bar berikutnya main variasi C sekali, lalu balik ke giliran A→B→A→C. Diputusin per bar, bukan per frame, jadi gak nambah jitter. Catat di <code>CLAUDE.md</code> sebagai pengecualian kecil dari &quot;variasi gak dipilih dari keyakinan&quot;; jelasin sebagai kejelasan ekspresi, bukan kekuatan emosi</label></li>
+<li><input type="checkbox" id="t51" checked><label for="t51">Bar dots: 8 titik per bar + label &quot;Berikutnya: … di awal bar&quot;, biar gak perlu ngitung bar pakai kuping</label></li>
+<li><input type="checkbox" id="t52"><label for="t52"><em>(stretch)</em> Quest: 1–2 target sequence hardcoded + score sequence match</label></li>
+<li><input type="checkbox" id="t53" checked><label for="t53"><em>(kalau sempat)</em> Fill dari keyakinan: rata-rata keyakinan satu bar ≥ ~0,8 → bar berikutnya main variasi C sekali, lalu balik ke giliran A→B→A→C. Diputusin per bar, bukan per frame, jadi gak nambah jitter. Catat di <code>CLAUDE.md</code> sebagai pengecualian kecil dari &quot;variasi gak dipilih dari keyakinan&quot;; jelasin sebagai kejelasan ekspresi, bukan kekuatan emosi</label></li>
 </ul>
 </section>
 <h2>Cooldown</h2>
 <section class="day" data-date="2026-09-17"><header><h3>Hari 11 — Kamis, 17 Sep <em>(submit)</em></h3>
 </header><ul>
-<li><input type="checkbox" id="t53"><label for="t53">Polish seadanya: benerin yang paling kerasa ganggu, jangan nambah fitur</label></li>
-<li><input type="checkbox" id="t54"><label for="t54">Finalisasi model card + rapikan <code>docs/experiments.md</code> jadi cerita</label></li>
-<li><input type="checkbox" id="t55"><label for="t55">Rekam demo final (kalau yang Rabu udah cukup, pakai itu)</label></li>
-<li><input type="checkbox" id="t56"><label for="t56">Submit ke Academy + refleksi</label></li>
+<li><input type="checkbox" id="t54"><label for="t54">Polish seadanya: benerin yang paling kerasa ganggu, jangan nambah fitur</label></li>
+<li><input type="checkbox" id="t55"><label for="t55">Finalisasi model card + rapikan <code>docs/experiments.md</code> jadi cerita</label></li>
+<li><input type="checkbox" id="t56"><label for="t56">Rekam demo final (kalau yang Rabu udah cukup, pakai itu)</label></li>
+<li><input type="checkbox" id="t57"><label for="t57">Submit ke Academy + refleksi</label></li>
 </ul>
 </section>
 <h2>Opsional (cuma kalau semua di atas kelar)</h2>
 <ul>
-<li><input type="checkbox" id="t57"><label for="t57"><strong>Input gambar</strong> — pilih foto dari galeri, lewat pipeline yang sama (~30 menit)</label></li>
-<li><input type="checkbox" id="t58"><label for="t58"><strong>Input teks + Foundation Models</strong> — kalimat → emosi → beat (~2–3 jam). Ini yang ngasih ingredient 3★ pekerjaan beneran, bukan tempelan komentar.</label></li>
-<li><input type="checkbox" id="t59"><label for="t59">Quest + scoring lengkap (timing accuracy, 3 level kesulitan)</label></li>
-<li><input type="checkbox" id="t60"><label for="t60">Foundation Models: sequence + score → komentar natural</label></li>
-<li><input type="checkbox" id="t61"><label for="t61">Emotion intensity buat ngendaliin BPM / density</label></li>
+<li><input type="checkbox" id="t58"><label for="t58"><strong>Input gambar</strong> — pilih foto dari galeri, lewat pipeline yang sama (~30 menit)</label></li>
+<li><input type="checkbox" id="t59"><label for="t59"><strong>Input teks + Foundation Models</strong> — kalimat → emosi → beat (~2–3 jam). Ini yang ngasih ingredient 3★ pekerjaan beneran, bukan tempelan komentar.</label></li>
+<li><input type="checkbox" id="t60"><label for="t60">Quest + scoring lengkap (timing accuracy, 3 level kesulitan)</label></li>
+<li><input type="checkbox" id="t61"><label for="t61">Foundation Models: sequence + score → komentar natural</label></li>
+<li><input type="checkbox" id="t62"><label for="t62">Emotion intensity buat ngendaliin BPM / density</label></li>
 </ul>
 <footer>Generated from <code>CHALLENGE.md</code> by <code>build_tracker.py</code>.
 Centang di browser tidak tersimpan — minta Claude Code edit markdown-nya, lalu regenerate.</footer>

@@ -117,7 +117,14 @@ brief's star rating):
   the variation, so rotation adds no jitter. Steps can stack sounds (`KH`),
   and all four sounds appear in every expression. Rejected: choosing the
   variation from model confidence — confidence is certainty, not how strong
-  the expression is, and it flickers frame to frame. The table lives in
+  the expression is, and it flickers frame to frame. **Exception, 15 Sep evening: a fill from
+  clarity.** When the playing expression's mean probability over a bar
+  reaches that expression's `fill_at`, the next bar plays C once, never two
+  bars running. Decided per bar, so it adds no jitter, and framed as how
+  clearly the face shows the expression, not how strong the emotion is. One
+  threshold per expression, because the fused model's certainty differs by
+  class (webcam log #4 bars: surprise 0.85–0.93, angry 0.68–0.71, sad
+  ≤ 0.55); a single 0.8 would fill surprise every bar and angry never. The table lives in
   `audio/patterns.json`, shared by the preview script and the app. Each
   sound has three takes from the bucket, played in turn.
   **Switch brakes, 15 Sep:** a new expression must stay stable for 0.8 s

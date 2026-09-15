@@ -16,6 +16,9 @@ final class AppModel {
     var bpm: Double = 0
     var step: Int?
     var stepsInBar = 8
+    var clarity: Float?
+    var fillAt: Float = 1
+    var filled = false
 
     let camera = CameraManager()
     private var smoother = Smoother()
@@ -62,6 +65,9 @@ final class AppModel {
                 self.bpm = beat.bpm
                 self.step = beat.step
                 self.stepsInBar = beat.stepsInBar
+                self.clarity = beat.clarity
+                self.fillAt = beat.fillAt
+                self.filled = beat.filled
             }
         }
     }
@@ -73,6 +79,7 @@ final class AppModel {
         raw = result.expression
         confidence = result.confidence
         probs = result.probs
+        beat?.observe(result.probs)
         stable = smoother.add(result.expression, confidence: result.confidence)
         // Below the threshold the smoother returns nil: keep the current
         // pattern playing rather than stopping or switching.

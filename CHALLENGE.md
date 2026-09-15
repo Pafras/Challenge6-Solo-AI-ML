@@ -129,8 +129,9 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [x] Mapping emosi → beat pattern (rule-based, tabel biasa)
 - [x] Ekspresi ganti → pattern ganti di step berikutnya, bukan restart loop — *di bar berikutnya, tahan 0,8 dtk, minimal 2 bar per pattern*
 - [ ] **Rekam demo video cadangan sore ini** — free mode aja udah cukup
+- [x] Bar dots: 8 titik per bar + label "Berikutnya: … di awal bar", biar gak perlu ngitung bar pakai kuping
 - [ ] *(stretch)* Quest: 1–2 target sequence hardcoded + score sequence match
-- [ ] *(kalau sempat)* Fill dari keyakinan: rata-rata keyakinan satu bar ≥ ~0,8 → bar berikutnya main variasi C sekali, lalu balik ke giliran A→B→A→C. Diputusin per bar, bukan per frame, jadi gak nambah jitter. Catat di `CLAUDE.md` sebagai pengecualian kecil dari "variasi gak dipilih dari keyakinan"; jelasin sebagai kejelasan ekspresi, bukan kekuatan emosi
+- [x] *(kalau sempat)* Fill dari keyakinan: rata-rata keyakinan satu bar ≥ ~0,8 → bar berikutnya main variasi C sekali, lalu balik ke giliran A→B→A→C. Diputusin per bar, bukan per frame, jadi gak nambah jitter. Catat di `CLAUDE.md` sebagai pengecualian kecil dari "variasi gak dipilih dari keyakinan"; jelasin sebagai kejelasan ekspresi, bukan kekuatan emosi
 
 ## Cooldown
 

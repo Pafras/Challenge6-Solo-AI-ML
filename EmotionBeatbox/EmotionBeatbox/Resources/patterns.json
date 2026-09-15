@@ -1,5 +1,5 @@
 {
-  "_comment": "Single source of truth for the beat. Read by scripts/make_samples.py (previews) and bundled into the macOS app. One step = one eighth note (60 / bpm / 2 s). A step lists the sounds that hit together: K kick, H hi-hat, S snare, C clap, '-' rest. While an expression is held, the variations rotate in 'order', each lasting 'bars_per_variation' bars; a new expression always starts at A, at the next bar.",
+  "_comment": "Single source of truth for the beat. Read by scripts/make_samples.py (previews) and bundled into the macOS app. One step = one eighth note (60 / bpm / 2 s). A step lists the sounds that hit together: K kick, H hi-hat, S snare, C clap, '-' rest. While an expression is held, the variations rotate in 'order', each lasting 'bars_per_variation' bars; a new expression always starts at A, at the next bar. Fill: when the playing expression's mean probability over a bar reaches its 'fill_at', the next bar plays C once (never two bars running). fill_at is per expression because the model's certainty differs by class; set near the median clear bar in webcam log #4 (one person), so a tuning knob, not a law.",
   "bars_per_variation": 2,
   "order": ["A", "B", "A", "C"],
   "samples_per_sound": 3,
@@ -8,6 +8,7 @@
     "neutral": {
       "mood": "calm",
       "bpm": 90,
+      "fill_at": 0.80,
       "A": ["K", "H", "-", "H", "K", "H", "S", "H"],
       "B": ["K", "H", "-", "H", "K", "C", "S", "H"],
       "C": ["K", "H", "S", "H", "K", "H", "SC", "-"]
@@ -15,6 +16,7 @@
     "happy": {
       "mood": "groove",
       "bpm": 110,
+      "fill_at": 0.84,
       "A": ["KH", "H", "SH", "H", "KH", "KH", "SH", "H"],
       "B": ["KH", "H", "SH", "C", "KH", "H", "SH", "CH"],
       "C": ["KH", "H", "SH", "H", "KH", "S", "SC", "SC"]
@@ -22,6 +24,7 @@
     "angry": {
       "mood": "heavy",
       "bpm": 130,
+      "fill_at": 0.70,
       "A": ["K", "K", "S", "H", "K", "K", "S", "SH"],
       "B": ["K", "H", "S", "K", "K", "K", "SC", "H"],
       "C": ["K", "K", "S", "S", "K", "SC", "S", "SC"]
@@ -29,6 +32,7 @@
     "surprise": {
       "mood": "variation",
       "bpm": 120,
+      "fill_at": 0.90,
       "A": ["KH", "C", "SH", "C", "KH", "S", "H", "C"],
       "B": ["C", "KH", "S", "H", "KC", "H", "S", "C"],
       "C": ["KH", "SC", "KH", "SC", "K", "S", "C", "C"]
@@ -36,6 +40,7 @@
     "sad": {
       "mood": "sparse",
       "bpm": 70,
+      "fill_at": 0.55,
       "A": ["K", "-", "H", "-", "S", "-", "H", "-"],
       "B": ["K", "-", "H", "K", "S", "-", "H", "-"],
       "C": ["K", "-", "H", "-", "S", "-", "C", "H"]

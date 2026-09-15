@@ -40,9 +40,13 @@ struct ContentView: View {
             Text(model.playing.map { "Beat: \($0.rawValue)" } ?? "Tunjukkan ekspresimu")
                 .font(.title2.bold())
             if model.playing != nil {
-                Text("variasi \(model.variation) · \(Int(model.bpm)) BPM")
+                Text("variasi \(model.variation)\(model.filled ? " · fill 🔥" : "") · \(Int(model.bpm)) BPM")
                     .font(.callout).foregroundStyle(.secondary)
                 barDots
+                // Clear enough through the bar, and the next bar is a fill.
+                Text(String(format: "kejelasan bar ini %.2f · fill kalau ≥ %.2f", model.clarity ?? 0, model.fillAt))
+                    .font(.caption).monospacedDigit()
+                    .foregroundStyle((model.clarity ?? 0) >= model.fillAt ? Color.orange : Color.secondary)
                 // The face has settled on another expression: say when it takes over,
                 // so nobody has to count bars by ear.
                 if let next = model.stable, next != model.playing {
