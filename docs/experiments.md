@@ -255,6 +255,23 @@ Selisih terbesar datang dari **cara resize**, bukan dari Core ML: PIL membulatka
 
 Gambar emas webcam (43 frame, jalur live: crop → grey → 48): tebakan sama 42/43, selisih prob maks 0.047. Referensi buat Swift: `data/webcam/golden-48/` (crop 48×48 + `expected.json` berisi probabilitas Core ML per frame) — Swift harus nyamain crop-nya dan dapet probabilitas yang sama (±0.02).
 
+### Kesamaan Swift vs Python — 15 Sep
+
+Program tes kecil (di luar repo) ngejalanin kode `FaceCropper` app + model Core ML di 43 gambar emas:
+
+| cek | hasil |
+|---|---|
+| kotak dari Python, grayscale + resize INTER_AREA versi Swift | selisih piksel **maks 1** dari 255 (rata-rata 0,001), prob maks 0,005 — **identik** |
+| Vision Swift hari ini vs kotak Python **tanggal 14** | beda kotak ~10 px, prob maks 0,60, tebakan sama 37–40/43 |
+| **Python hari ini** vs kotak Python tanggal 14 (kode sama, frame sama) | beda kotak **8,9 px** |
+| Vision Swift vs Python, **sama-sama hari ini** | beda **1,8 px** (Vision di salinan 640) / 2,7 px (resolusi penuh) |
+
+**Laptop di-upgrade ke macOS 27 di antara dua pengukuran, dan detektor wajah Vision ikut berubah.** Kotak yang sama geser ~9 px (sekitar 2% lebar wajah). Kalau dibandingin di OS yang sama, Swift dan Python cuma beda ~2 px — pipeline-nya sama. App sekarang juga jalanin Vision di salinan 640, sama kayak Python.
+
+Dua akibatnya:
+- Kotak di gambar emas tanggal 14 udah basi buat dibandingin langsung; cek kotak cuma sah di OS yang sama.
+- Pergeseran crop ~2% udah bisa ngubah tebakan di beberapa frame yang nyaris seri (3–6 dari 43). Smoothing di app nyerap ini, tapi angka webcam tanggal 12–14 diukur pakai Vision versi lama — tes live di app perlu diulang di macOS 27.
+
 ---
 
 # Model audio — beatbox (clap / hihats / kick / snare)

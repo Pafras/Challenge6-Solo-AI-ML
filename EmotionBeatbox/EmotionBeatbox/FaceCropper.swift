@@ -1,3 +1,4 @@
+import CoreImage
 import CoreVideo
 import Vision
 
@@ -21,12 +22,18 @@ nonisolated struct FaceCropper: Sendable {
     }
 
     func crop(_ buffer: CVPixelBuffer) -> Crop? {
+        let W = Double(CVPixelBufferGetWidth(buffer)), H = Double(CVPixelBufferGetHeight(buffer))
+        // Vision looks at a copy at most 640 wide, as face_detect.py does. On
+        // the golden frames that puts its box within ~2 px of Python's (4-5 px
+        // at full size), and it is faster. The box comes back as 0-1
+        // fractions, so it maps onto the full frame unchanged.
+        let scale = min(1, 640 / W)
+        let small = CIImage(cvPixelBuffer: buffer).transformed(by: CGAffineTransform(scaleX: scale, y: scale))
         let request = VNDetectFaceRectanglesRequest()
-        try? VNImageRequestHandler(cvPixelBuffer: buffer, orientation: .up).perform([request])
+        try? VNImageRequestHandler(ciImage: small, orientation: .up).perform([request])
         let area = { (f: VNFaceObservation) in f.boundingBox.width * f.boundingBox.height }
         guard let face = request.results?.max(by: { area($0) < area($1) }) else { return nil }
 
-        let W = Double(CVPixelBufferGetWidth(buffer)), H = Double(CVPixelBufferGetHeight(buffer))
         let bb = face.boundingBox
         // Vision: 0-1 with the origin at the bottom left. Pixels: origin top
         // left. Truncated to whole pixels first, as face_detect.py does.

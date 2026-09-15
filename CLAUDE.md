@@ -177,7 +177,12 @@ accounts, a database, a progression system, 3D graphics.
   the operations translate faithfully. A trained model's confident
   predictions have margins far wider than 1e-2; only genuinely ambiguous
   faces could flip, and temporal smoothing absorbs those. Shipping float32
-  instead is a one-flag change if it ever matters.
+  instead is a one-flag change if it ever matters. **Vision changes with
+  macOS (found 15 Sep):** after the upgrade to macOS 27 the same Python code
+  on the same frames gave face boxes ~9 px off those of 14 Sep, enough to
+  flip a few near-tie frames. Swift and Python agree to ~2 px on the same
+  OS, so compare boxes only on one OS, and re-test live after an upgrade.
+  The Swift grey + area resize matches Python to 1 grey level.
 - **Upscaled training images, sharp webcam images.** FER2013 faces are 48x48
   and the pretrained models see them resized up to 224x224 — soft, blurry
   inputs. A webcam face crop resized straight to 224 is sharp, which is not
