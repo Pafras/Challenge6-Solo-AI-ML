@@ -15,6 +15,13 @@ AVP_Dataset-2/
 *.pth
 *.mlmodel
 *.mlpackage/
+# The app bundles copies of the model and the beat samples
+# (scripts/sync_app_assets.py), so those copies are committed.
+!EmotionBeatbox/EmotionBeatbox/Resources/*.wav
+!EmotionBeatbox/EmotionBeatbox/Resources/EmotionClassifier.mlpackage/
+# Its weights sit in Data/, which the data/ rule above also matches on a
+# case-insensitive Mac; without this line the app would ship without them.
+!EmotionBeatbox/EmotionBeatbox/Resources/EmotionClassifier.mlpackage/**
 
 # Xcode
 xcuserdata/
