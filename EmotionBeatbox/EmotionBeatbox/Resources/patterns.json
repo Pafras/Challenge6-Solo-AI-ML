@@ -11,45 +11,51 @@
     "surprise": {"fill_at": 0.90, "strength_b": 0.103, "strength_c": 0.149},
     "sad":      {"fill_at": 0.55, "strength_b": 0.075, "strength_c": 0.108}
   },
-  "default_genre": "hiphop",
+  "default_genre": "house",
   "genres": {
-    "hiphop": {
-      "label": "Hip-hop",
+    "techno": {
+      "label": "Techno",
+      "gain": {"K": 1.0, "S": 0.8, "C": 0.55, "H": 0.5},
       "expressions": {
         "neutral": {
-          "mood": "calm",
-          "bpm": 90,
-          "A": ["K", "H", "-", "H", "K", "H", "S", "H"],
-          "B": ["K", "H", "-", "H", "K", "C", "S", "H"],
-          "C": ["K", "H", "S", "H", "K", "H", "SC", "-"]
+          "mood": "hipnotis, lurus",
+          "bpm": 132,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "H", "-", "K", "-", "H", "-", "K", "-", "H", "-", "K", "-", "H", "-"],
+          "B": ["K", "-", "H", "-", "K", "-", "H", "H", "K", "-", "H", "-", "K", "-", "SH", "-"],
+          "C": ["K", "H", "H", "H", "K", "-", "H", "H", "K", "H", "H", "H", "K", "-", "SH", "H"]
         },
         "happy": {
-          "mood": "groove",
-          "bpm": 110,
-          "A": ["KH", "H", "SH", "H", "KH", "KH", "SH", "H"],
-          "B": ["KH", "H", "SH", "C", "KH", "H", "SH", "CH"],
-          "C": ["KH", "H", "SH", "H", "KH", "S", "SC", "SC"]
+          "mood": "hipnotis, terang",
+          "bpm": 132,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "H", "-", "KC", "-", "H", "-", "K", "-", "H", "-", "KC", "-", "H", "-"],
+          "B": ["K", "-", "H", "H", "KC", "-", "H", "-", "K", "-", "H", "H", "KC", "-", "H", "H"],
+          "C": ["K", "H", "H", "H", "KC", "H", "H", "-", "K", "H", "H", "H", "KC", "H", "SC", "H"]
         },
         "angry": {
-          "mood": "heavy",
-          "bpm": 130,
-          "A": ["K", "K", "S", "H", "K", "K", "S", "SH"],
-          "B": ["K", "H", "S", "K", "K", "K", "SC", "H"],
-          "C": ["K", "K", "S", "S", "K", "SC", "S", "SC"]
+          "mood": "hard techno",
+          "bpm": 132,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "H", "-", "K", "-", "H", "-", "K", "-", "H", "-", "K", "-", "KH", "-"],
+          "B": ["K", "-", "H", "H", "K", "-", "KH", "-", "K", "-", "H", "H", "K", "-", "KH", "H"],
+          "C": ["K", "H", "H", "H", "K", "H", "KH", "H", "K", "H", "H", "H", "KS", "H", "KH", "SH"]
         },
         "surprise": {
-          "mood": "variation",
-          "bpm": 120,
-          "A": ["KH", "C", "SH", "C", "KH", "S", "H", "C"],
-          "B": ["C", "KH", "S", "H", "KC", "H", "S", "C"],
-          "C": ["KH", "SC", "KH", "SC", "K", "S", "C", "C"]
+          "mood": "hipnotis, glitch",
+          "bpm": 132,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "H", "-", "K", "H", "-", "C", "K", "-", "SH", "-", "K", "-", "H", "C"],
+          "B": ["K", "-", "HC", "-", "K", "H", "S", "-", "K", "C", "H", "-", "K", "H", "SC", "-"],
+          "C": ["K", "H", "HC", "H", "K", "H", "SC", "H", "K", "C", "H", "H", "K", "SH", "SC", "H"]
         },
         "sad": {
-          "mood": "sparse",
-          "bpm": 70,
-          "A": ["K", "-", "H", "-", "S", "-", "H", "-"],
-          "B": ["K", "-", "H", "K", "S", "-", "H", "-"],
-          "C": ["K", "-", "H", "-", "S", "-", "C", "H"]
+          "mood": "hipnotis, dalam",
+          "bpm": 132,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "-", "-", "K", "-", "H", "-", "K", "-", "-", "-", "K", "-", "H", "-"],
+          "B": ["K", "-", "-", "-", "K", "-", "H", "-", "K", "-", "H", "-", "K", "-", "SH", "-"],
+          "C": ["K", "-", "H", "-", "K", "-", "H", "H", "K", "-", "H", "-", "KS", "-", "H", "H"]
         }
       }
     },

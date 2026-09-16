@@ -130,7 +130,7 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [x] Ekspresi ganti → pattern ganti di step berikutnya, bukan restart loop — *di bar berikutnya, tahan 0,8 dtk, minimal 2 bar per pattern*
 - [ ] **Rekam demo video cadangan sore ini** — free mode aja udah cukup
 - [x] Bar dots: 8 titik per bar + label "Berikutnya: … di awal bar", biar gak perlu ngitung bar pakai kuping
-- [x] Genre: Hip-hop / House / Trap / EDM, dipilih pengguna (bukan model), grid 1/16 buat trap & EDM, takaran volume per genre
+- [x] Genre: House / Techno / Trap / EDM, dipilih pengguna (bukan model), grid 1/16 buat techno, trap & EDM, takaran volume per genre
 - [x] Kekuatan ekspresi dari landmark: kalibrasi muka datar 2 dtk, lalu jarak titik dari muka datar itu milih variasi A/B/C per bar (batas diukur dari 7 orang rekaman)
 - [ ] *(stretch)* Quest: 1–2 target sequence hardcoded + score sequence match
 - [x] *(kalau sempat)* Fill dari keyakinan: rata-rata keyakinan satu bar ≥ ~0,8 → bar berikutnya main variasi C sekali, lalu balik ke giliran A→B→A→C. Diputusin per bar, bukan per frame, jadi gak nambah jitter. Catat di `CLAUDE.md` sebagai pengecualian kecil dari "variasi gak dipilih dari keyakinan"; jelasin sebagai kejelasan ekspresi, bukan kekuatan emosi

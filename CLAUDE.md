@@ -136,7 +136,7 @@ brief's star rating):
   mechanism runs at a time — calibrated, strength decides; not calibrated,
   the rotation and the clarity fill do. The table lives in
   `audio/patterns.json`, shared by the preview script and the app.
-  **Genres, 16 Sep:** four of them — Hip-hop, House, Trap, EDM — each with
+  **Genres, 16 Sep:** four of them — House, Techno, Trap, EDM — each with
   its own tempo and its own A/B/C per expression, picked by the user from a
   segmented control and never by the model, so a genre change cannot add
   jitter. A pattern may set `steps_per_beat: 4` for a sixteenth-note grid
