@@ -6,9 +6,6 @@ struct PatternTable: Decodable {
     struct Entry: Decodable {
         let mood: String
         let bpm: Double
-        let fillAt: Float
-        let strengthB: Float
-        let strengthC: Float
         let A: [String]
         let B: [String]
         let C: [String]
@@ -18,11 +15,26 @@ struct PatternTable: Decodable {
         }
     }
 
+    /// Per expression, and about the face rather than the music, so every
+    /// genre shares it.
+    struct Face: Decodable {
+        let fillAt: Float
+        let strengthB: Float
+        let strengthC: Float
+    }
+
+    struct Genre: Decodable {
+        let label: String
+        let expressions: [String: Entry]
+    }
+
     let barsPerVariation: Int
     let order: [String]
     let samplesPerSound: Int
     let gain: [String: Float]
-    let expressions: [String: Entry]
+    let expressionSettings: [String: Face]
+    let defaultGenre: String
+    let genres: [String: Genre]
 }
 
 /// Sample playback on a bar clock. Not AI.
@@ -56,6 +68,12 @@ final class BeatEngine {
     private var strengthCount = 0
     /// Set from the smoother; applied at the next bar.
     var target: Expression?
+    /// Picked by the user, never by the model, so it adds no jitter. Like a
+    /// new expression, it takes over at the next bar.
+    var genre: String
+    var genreOptions: [(id: String, label: String)] {
+        table.genres.map { (id: $0.key, label: $0.value.label) }.sorted { $0.label < $1.label }
+    }
 
     private let table: PatternTable
     private let engine = AVAudioEngine()
@@ -81,6 +99,7 @@ final class BeatEngine {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         let table = try decoder.decode(PatternTable.self, from: Data(contentsOf: url))
         self.table = table
+        genre = table.defaultGenre
 
         // Loaded through a static helper: a closure in init may not touch
         // self before every stored property has a value.
@@ -182,23 +201,24 @@ final class BeatEngine {
         // never per frame, so it adds no jitter; never two bars running, or
         // C would stop sounding special.
         let fill = expression == playing && !filled
-            && (clarity ?? 0) >= (table.expressions[expression.rawValue]?.fillAt ?? 1)
+            && (clarity ?? 0) >= (table.expressionSettings[expression.rawValue]?.fillAt ?? 1)
         if expression != playing {           // a new expression starts at A
             playing = expression
             barsHeld = 0
         }
-        guard let entry = table.expressions[expression.rawValue] else { return }
+        guard let entry = table.genres[genre]?.expressions[expression.rawValue],
+              let face = table.expressionSettings[expression.rawValue] else { return }
         if let travel = strength {
             // Calibrated: how far the face travelled from its resting shape
             // decides how busy this bar is. The clarity fill steps aside, so
             // only one thing ever picks the variation.
-            variation = travel >= entry.strengthC ? "C" : (travel >= entry.strengthB ? "B" : "A")
+            variation = travel >= face.strengthC ? "C" : (travel >= face.strengthB ? "B" : "A")
             filled = false
         } else {
             variation = fill ? "C" : table.order[(barsHeld / table.barsPerVariation) % table.order.count]
             filled = fill
         }
-        fillAt = entry.fillAt
+        fillAt = face.fillAt
         claritySum = 0
         clarityCount = 0
         clarity = nil

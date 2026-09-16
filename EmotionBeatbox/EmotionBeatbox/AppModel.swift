@@ -14,6 +14,9 @@ final class AppModel {
     var playing: Expression?
     var variation = "A"
     var bpm: Double = 0
+    /// The user's choice, applied at the next bar. Empty until the engine loads.
+    var genre = "" { didSet { beat?.genre = genre } }
+    var genreOptions: [(id: String, label: String)] = []
     var clarity: Float?
     var fillAt: Float = 1
     var filled = false
@@ -43,6 +46,8 @@ final class AppModel {
             let beat = try BeatEngine()
             try beat.start()
             self.beat = beat
+            genreOptions = beat.genreOptions
+            genre = beat.genre
         } catch {
             status = "Gagal memuat: \(error.localizedDescription)"
             return

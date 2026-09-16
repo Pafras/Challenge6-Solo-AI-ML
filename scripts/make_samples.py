@@ -75,9 +75,8 @@ def clean(path, token):
     return x / np.abs(x).max() * PEAK
 
 
-def render(expr, cfg, takes, bars=8):
+def render(spec, cfg, takes, bars=8):
     """Eight bars of one expression, variations rotating as in the app."""
-    spec = cfg["expressions"][expr]
     step = 60 / spec["bpm"] / 2
     n_steps = len(spec["A"])
     out = np.zeros(int(bars * n_steps * step * SR) + SR)
@@ -108,11 +107,12 @@ def main():
             out = SAMPLES / f"{NAME[token]}_{k}.wav"
             sf.write(out, x, SR, subtype="PCM_16")
             print(f"{out.name:12} <- {parse_name(path)[1]:12} (model yakin {conf:.3f})  {len(x) / SR:.2f} s")
-    for expr, spec in cfg["expressions"].items():
-        out = render(expr, cfg, takes)
-        sf.write(PREVIEW / f"{expr}.wav", out, SR, subtype="PCM_16")
-        used = sorted({t for v in "ABC" for hit in spec[v] for t in hit.replace("-", "")})
-        print(f"preview {expr:8} {spec['bpm']:3} BPM  bunyi {''.join(used):4}  {len(out) / SR:.1f} s")
+    for genre, g in cfg["genres"].items():
+        for expr, spec in g["expressions"].items():
+            out = render(spec, cfg, takes)
+            sf.write(PREVIEW / f"{genre}-{expr}.wav", out, SR, subtype="PCM_16")
+            used = sorted({t for v in "ABC" for hit in spec[v] for t in hit.replace("-", "")})
+            print(f"preview {genre:8} {expr:8} {spec['bpm']:3} BPM  bunyi {''.join(used):4}  {len(out) / SR:.1f} s")
 
 
 if __name__ == "__main__":

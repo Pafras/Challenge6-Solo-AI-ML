@@ -40,6 +40,15 @@ struct ContentView: View {
             if !model.status.isEmpty {
                 Text(model.status).font(.callout).foregroundStyle(.secondary)
             }
+            if !model.genreOptions.isEmpty {
+                // The user picks the genre; the model only ever picks the expression.
+                Picker("Genre", selection: $model.genre) {
+                    ForEach(model.genreOptions, id: \.id) { option in
+                        Text(option.label).tag(option.id)
+                    }
+                }
+                .pickerStyle(.segmented).labelsHidden()
+            }
             Text(model.playing?.emoji ?? "🎧").font(.system(size: 64))
             Text(model.playing.map { "Beat: \($0.rawValue)" } ?? "Tunjukkan ekspresimu")
                 .font(.title2.bold())
