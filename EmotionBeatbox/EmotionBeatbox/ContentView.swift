@@ -24,11 +24,16 @@ struct ContentView: View {
         // Redrawn on every display frame, reading the audio clock itself.
         TimelineView(.animation) { _ in
             let now = model.currentStep()
-            HStack(spacing: 6) {
-                ForEach(0..<(now?.of ?? 8), id: \.self) { i in
+            let steps = now?.of ?? 8
+            // Four beats to a bar, whatever the grid: every steps/4-th dot is
+            // on a beat and drawn bigger.
+            let perBeat = max(1, steps / 4)
+            HStack(spacing: steps > 8 ? 3 : 6) {
+                ForEach(0..<steps, id: \.self) { i in
+                    let size: CGFloat = i % perBeat == 0 ? 12 : 8
                     Circle()
                         .fill(i == now?.step ? Color.accentColor : Color.secondary.opacity(0.35))
-                        .frame(width: i % 2 == 0 ? 12 : 8, height: i % 2 == 0 ? 12 : 8)
+                        .frame(width: size, height: size)
                 }
             }
             .frame(height: 14)

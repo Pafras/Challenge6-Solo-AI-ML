@@ -77,7 +77,7 @@ def clean(path, token):
 
 def render(spec, cfg, takes, bars=8):
     """Eight bars of one expression, variations rotating as in the app."""
-    step = 60 / spec["bpm"] / 2
+    step = 60 / spec["bpm"] / spec.get("steps_per_beat", 2)
     n_steps = len(spec["A"])
     out = np.zeros(int(bars * n_steps * step * SR) + SR)
     turn = {t: 0 for t in NAME}   # round-robin over the takes of each sound

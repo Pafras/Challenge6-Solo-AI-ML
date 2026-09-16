@@ -1,5 +1,5 @@
 {
-  "_comment": "Single source of truth for the beat. Read by scripts/make_samples.py (previews) and bundled into the macOS app. One step = one eighth note (60 / bpm / 2 s). A step lists the sounds that hit together: K kick, H hi-hat, S snare, C clap, '-' rest. The user picks the genre by hand; the model only ever picks the expression, so the genre adds no jitter. While an expression is held, the variations rotate in 'order', each lasting 'bars_per_variation' bars; a new expression always starts at A, at the next bar. 'expression_settings' sits outside the genres because it is about the face, not the music: 'fill_at' is the mean probability over a bar above which the next bar plays C once (never two running), set near the median clear bar in webcam log #4; 'strength_b' / 'strength_c' are the mean travel of the 76 landmark points from the user's calibrated resting face, in pupil distances, and once calibrated they pick A/B/C instead (thirds over the 7 recorded people, scripts/strength_thresholds.py). All of these are tuning knobs, not laws.",
+  "_comment": "Single source of truth for the beat. Read by scripts/make_samples.py (previews) and bundled into the macOS app. A bar is one pattern; 'steps_per_beat' says how fine the grid is (2 = eighth notes, the default; 4 = sixteenths, which trap and EDM need for hat rolls), so a step lasts 60 / bpm / steps_per_beat seconds. A step lists the sounds that hit together: K kick, H hi-hat, S snare, C clap, '-' rest. The user picks the genre by hand; the model only ever picks the expression, so the genre adds no jitter. While an expression is held, the variations rotate in 'order', each lasting 'bars_per_variation' bars; a new expression always starts at A, at the next bar. 'expression_settings' sits outside the genres because it is about the face, not the music: 'fill_at' is the mean probability over a bar above which the next bar plays C once (never two running), set near the median clear bar in webcam log #4; 'strength_b' / 'strength_c' are the mean travel of the 76 landmark points from the user's calibrated resting face, in pupil distances, and once calibrated they pick A/B/C instead (thirds over the 7 recorded people, scripts/strength_thresholds.py). All of these are tuning knobs, not laws.",
   "bars_per_variation": 2,
   "order": ["A", "B", "A", "C"],
   "samples_per_sound": 3,
@@ -93,83 +93,93 @@
         }
       }
     },
-    "rock": {
-      "label": "Rock",
+    "trap": {
+      "label": "Trap",
       "expressions": {
         "neutral": {
-          "mood": "backbeat",
-          "bpm": 100,
-          "A": ["KH", "H", "SH", "H", "KH", "H", "SH", "H"],
-          "B": ["KH", "H", "SH", "H", "KH", "KH", "SH", "H"],
-          "C": ["KH", "H", "SH", "H", "KH", "KH", "SH", "SH"]
+          "mood": "half-time, adem",
+          "bpm": 130,
+          "steps_per_beat": 4,
+          "A": ["KH", "-", "H", "-", "H", "-", "H", "-", "SH", "-", "H", "-", "KH", "-", "H", "-"],
+          "B": ["KH", "-", "H", "-", "H", "-", "KH", "-", "SH", "-", "H", "-", "KH", "-", "H", "H"],
+          "C": ["KH", "H", "H", "H", "H", "-", "KH", "-", "SH", "H", "H", "H", "KH", "-", "H", "H"]
         },
         "happy": {
-          "mood": "backbeat, ngegas",
-          "bpm": 130,
-          "A": ["KH", "H", "SH", "H", "KH", "H", "SH", "KH"],
-          "B": ["KH", "H", "SH", "KH", "KH", "H", "SH", "H"],
-          "C": ["KH", "KH", "SH", "H", "KH", "KH", "SH", "SC"]
+          "mood": "half-time, cerah",
+          "bpm": 140,
+          "steps_per_beat": 4,
+          "A": ["KH", "-", "H", "-", "H", "-", "KH", "-", "SH", "-", "H", "-", "H", "-", "KH", "H"],
+          "B": ["KH", "-", "H", "H", "H", "-", "KH", "-", "SC", "-", "H", "-", "H", "H", "KH", "H"],
+          "C": ["KH", "H", "H", "H", "H", "-", "KH", "H", "SC", "H", "H", "H", "KH", "H", "SC", "H"]
         },
         "angry": {
-          "mood": "punk, cepat",
+          "mood": "half-time, berat",
           "bpm": 150,
-          "A": ["KH", "KH", "SH", "KH", "KH", "KH", "SH", "SH"],
-          "B": ["KH", "KH", "SH", "KH", "KH", "SH", "KH", "SH"],
-          "C": ["KH", "KH", "SH", "SH", "KH", "KH", "SC", "SC"]
+          "steps_per_beat": 4,
+          "A": ["KH", "-", "H", "-", "KH", "-", "H", "-", "SH", "-", "H", "-", "KH", "-", "KH", "-"],
+          "B": ["KH", "-", "H", "H", "KH", "-", "H", "-", "SH", "-", "H", "H", "KH", "-", "KH", "H"],
+          "C": ["KH", "H", "H", "H", "KH", "H", "H", "H", "SC", "H", "H", "H", "KH", "H", "SC", "H"]
         },
         "surprise": {
-          "mood": "backbeat, kaget",
-          "bpm": 140,
-          "A": ["KH", "C", "SH", "H", "KC", "H", "SH", "C"],
-          "B": ["KH", "H", "SC", "H", "KH", "C", "SH", "SH"],
-          "C": ["KH", "SC", "SH", "C", "KH", "SH", "SC", "SC"]
+          "mood": "half-time, loncat",
+          "bpm": 145,
+          "steps_per_beat": 4,
+          "A": ["KC", "-", "H", "-", "H", "C", "H", "-", "SH", "-", "C", "-", "KH", "-", "H", "C"],
+          "B": ["KC", "H", "H", "-", "H", "C", "KH", "-", "SC", "-", "H", "C", "KH", "-", "H", "C"],
+          "C": ["KC", "H", "SC", "H", "H", "C", "KH", "H", "SC", "H", "C", "H", "KH", "SC", "H", "C"]
         },
         "sad": {
-          "mood": "ballad, pelan",
-          "bpm": 80,
-          "A": ["K", "-", "S", "-", "K", "-", "S", "-"],
-          "B": ["K", "-", "S", "-", "K", "H", "S", "-"],
-          "C": ["K", "-", "S", "H", "K", "-", "SC", "H"]
+          "mood": "half-time, kosong",
+          "bpm": 120,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "H", "-", "-", "-", "H", "-", "S", "-", "H", "-", "-", "-", "H", "-"],
+          "B": ["K", "-", "H", "-", "-", "-", "H", "-", "S", "-", "H", "-", "K", "-", "H", "-"],
+          "C": ["K", "-", "H", "H", "-", "-", "H", "-", "SC", "-", "H", "H", "K", "-", "H", "H"]
         }
       }
     },
-    "dembow": {
-      "label": "Dembow",
+    "edm": {
+      "label": "EDM",
       "expressions": {
         "neutral": {
-          "mood": "dembow, santai",
-          "bpm": 95,
-          "A": ["K", "-", "S", "K", "-", "S", "H", "-"],
-          "B": ["K", "H", "S", "K", "-", "S", "H", "C"],
-          "C": ["K", "H", "S", "K", "H", "S", "KH", "C"]
+          "mood": "festival, tenang",
+          "bpm": 124,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "H", "-", "K", "-", "H", "-", "K", "-", "H", "-", "K", "-", "H", "-"],
+          "B": ["K", "-", "H", "-", "KC", "-", "H", "-", "K", "-", "H", "-", "KC", "-", "H", "H"],
+          "C": ["K", "-", "H", "H", "KC", "-", "H", "-", "K", "-", "H", "H", "KC", "-", "SH", "H"]
         },
         "happy": {
-          "mood": "dembow, rame",
-          "bpm": 100,
-          "A": ["KH", "-", "SH", "K", "H", "SH", "H", "C"],
-          "B": ["KH", "C", "SH", "K", "H", "SH", "KH", "C"],
-          "C": ["KH", "C", "SC", "KH", "C", "SH", "KH", "SC"]
+          "mood": "festival, naik",
+          "bpm": 128,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "H", "-", "KC", "-", "H", "-", "K", "-", "H", "-", "KC", "-", "H", "-"],
+          "B": ["K", "-", "H", "H", "KC", "-", "H", "-", "K", "-", "H", "H", "KC", "-", "H", "C"],
+          "C": ["K", "H", "H", "H", "KC", "H", "H", "-", "K", "H", "H", "H", "KC", "H", "SC", "C"]
         },
         "angry": {
-          "mood": "dembow, keras",
-          "bpm": 105,
-          "A": ["K", "K", "S", "K", "K", "S", "K", "S"],
-          "B": ["K", "KH", "S", "KH", "K", "S", "KH", "S"],
-          "C": ["KH", "KH", "SC", "KH", "KH", "SC", "KH", "SC"]
+          "mood": "festival, keras",
+          "bpm": 132,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "H", "-", "KS", "-", "H", "-", "K", "-", "H", "-", "KS", "-", "H", "-"],
+          "B": ["K", "-", "H", "H", "KS", "-", "H", "-", "K", "H", "H", "-", "KS", "-", "KH", "H"],
+          "C": ["K", "H", "H", "H", "KS", "H", "H", "H", "K", "H", "H", "H", "KS", "H", "SC", "SC"]
         },
         "surprise": {
-          "mood": "dembow, loncat",
-          "bpm": 102,
-          "A": ["K", "C", "S", "KC", "-", "S", "C", "H"],
-          "B": ["KC", "H", "S", "K", "C", "SH", "KC", "S"],
-          "C": ["KC", "SC", "S", "KC", "C", "SH", "KC", "SC"]
+          "mood": "festival, kaget",
+          "bpm": 130,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "C", "-", "KH", "-", "C", "-", "K", "-", "H", "C", "KH", "-", "S", "-"],
+          "B": ["KC", "-", "H", "-", "K", "C", "H", "-", "KC", "-", "S", "-", "K", "C", "H", "C"],
+          "C": ["KC", "H", "SC", "H", "K", "C", "H", "H", "KC", "H", "SC", "H", "K", "C", "SC", "C"]
         },
         "sad": {
-          "mood": "dembow, kosong",
-          "bpm": 88,
-          "A": ["K", "-", "S", "-", "-", "S", "-", "-"],
-          "B": ["K", "-", "S", "-", "H", "S", "-", "-"],
-          "C": ["K", "-", "SH", "-", "H", "S", "C", "-"]
+          "mood": "festival, sepi",
+          "bpm": 118,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "-", "-", "H", "-", "-", "-", "K", "-", "-", "-", "S", "-", "-", "-"],
+          "B": ["K", "-", "-", "-", "H", "-", "-", "-", "K", "-", "H", "-", "S", "-", "-", "H"],
+          "C": ["K", "-", "H", "-", "H", "-", "-", "H", "K", "-", "H", "-", "SC", "-", "H", "H"]
         }
       }
     }

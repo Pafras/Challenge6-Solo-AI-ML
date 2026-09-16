@@ -6,6 +6,9 @@ struct PatternTable: Decodable {
     struct Entry: Decodable {
         let mood: String
         let bpm: Double
+        /// 2 = eighth notes (the default), 4 = sixteenths, which trap and
+        /// EDM need for hat rolls.
+        let stepsPerBeat: Int?
         let A: [String]
         let B: [String]
         let C: [String]
@@ -227,7 +230,7 @@ final class BeatEngine {
         strength = nil
         bpm = entry.bpm
         let steps = entry.steps(variation)
-        let stepFrames = sampleRate * 60 / entry.bpm / 2
+        let stepFrames = sampleRate * 60 / entry.bpm / Double(entry.stepsPerBeat ?? 2)
         for (i, step) in steps.enumerated() {
             let at = nextBar + AVAudioFramePosition(Double(i) * stepFrames)
             for sound in step where sound != "-" { hit(String(sound), at: at) }
