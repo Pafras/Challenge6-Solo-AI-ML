@@ -325,7 +325,19 @@ Dua akibatnya:
 - **Bicubic Swift = `cv2.INTER_CUBIC`:** beda maks 1 tingkat abu-abu, rata-rata 0,0000. Baris 1 dan 2 identik, jadi resize bukan sumber selisih.
 - **Vision Swift ≠ Vision Python, bahkan di file yang sama persis.** Revisi request sama (3) di dua sisi, dan Python sendiri deterministik (gambar sama dua kali → selisih 0,0). Sisa selisihnya ada di Vision per proses, gak bisa disamain dari kode kita.
 - Lewat PNG selisihnya kira-kira setengah, tapi **gak ngubah satu pun tebakan gabungan**. App tetap pakai pixel buffer; encode PNG per frame gak ada gunanya.
-- Median 0,019 jarak pupil ≈ 0,3 px di crop 48. Dengan bobot landmark 0,45, efeknya ke prob gabungan maks 0,05, masih jauh di bawah beda di frame nyaris seri yang udah diserap smoothing.
+### Kenapa crop harus turun ke 48 dulu — 16 Sep
+
+Pertanyaannya wajar: kenapa gak langsung resize crop webcam ke 224, ngapain mampir ke 48? Diukur di 43 crop emas (ukuran crop asli 357–536 px), model final, dua jalur di frame yang sama:
+
+| | tebakan sama | keyakinan rata-rata |
+|---|---|---|
+| **lewat 48 → 224** (jalur app) vs **langsung ke 224** | **29/43 (67%)** | 0.723 vs 0.705 |
+
+**14 dari 43 frame berubah tebakan** cuma karena jalur resize-nya beda. Bukan beda tipis di angka desimal, tapi ganti kelas. Beberapa yang paling jelas: frame yang lewat 48 ditebak surprise dengan yakin 0.98–0.99 jadi angry 0.45–0.74 lewat jalur langsung, dan beberapa neutral yakin (0.77–0.91) jadi sad.
+
+Sebabnya: FER2013 aslinya 48×48, dan waktu latihan semua foto itu diperbesar ke 224, jadi model belajar dari gambar **buram**. Crop webcam tajam, dan wajah setajam itu gak pernah ada di data latih. Turun ke 48 dulu itu sengaja buang detail, biar inputnya seburam data latih.
+
+Ini juga jenis bug yang paling berbahaya: **gak ada error, gak ada peringatan**, model tetap ngasih angka yang kelihatan meyakinkan. Ketahuannya cuma kalau dibandingin kayak gini. Dengan bobot landmark 0,45, efeknya ke prob gabungan maks 0,05, masih jauh di bawah beda di frame nyaris seri yang udah diserap smoothing.
 
 ---
 
