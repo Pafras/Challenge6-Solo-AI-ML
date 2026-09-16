@@ -135,7 +135,18 @@ brief's star rating):
   how far the face actually moved, not how sure the model is. Only one
   mechanism runs at a time — calibrated, strength decides; not calibrated,
   the rotation and the clarity fill do. The table lives in
-  `audio/patterns.json`, shared by the preview script and the app. Each
+  `audio/patterns.json`, shared by the preview script and the app.
+  **Genres, 16 Sep:** four of them — Hip-hop, House, Trap, EDM — each with
+  its own tempo and its own A/B/C per expression, picked by the user from a
+  segmented control and never by the model, so a genre change cannot add
+  jitter. A pattern may set `steps_per_beat: 4` for a sixteenth-note grid
+  (trap hat rolls, EDM), and a genre may override the mix — EDM turns the
+  hats and claps down so the kick carries the low end. EDM holds one tempo
+  across all five expressions, because a club set does; only the density
+  moves. Rejected: buying or downloading a bass sound. Every sound in the
+  app comes from the beatbox bucket, a stock sample would break that and
+  bring unclear licensing, and recording one by mouth is the option if it
+  is ever wanted. Each
   sound has three takes from the bucket, played in turn.
   **Switch brakes, 15 Sep:** a new expression must stay stable for 0.8 s
   before it reaches the beat, and a pattern plays at least 2 bars before
