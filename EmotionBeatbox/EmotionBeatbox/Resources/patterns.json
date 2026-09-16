@@ -11,8 +11,100 @@
     "surprise": {"fill_at": 0.90, "strength_b": 0.103, "strength_c": 0.149},
     "sad":      {"fill_at": 0.55, "strength_b": 0.075, "strength_c": 0.108}
   },
-  "default_genre": "house",
+  "default_genre": "techno",
   "genres": {
+    "breakbeat": {
+      "label": "Breakbeat",
+      "gain": {"K": 1.0, "S": 0.9, "C": 0.7, "H": 0.42},
+      "expressions": {
+        "neutral": {
+          "mood": "break, longgar",
+          "bpm": 130,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "H", "-", "S", "-", "H", "K", "-", "-", "K", "-", "S", "-", "H", "-"],
+          "B": ["K", "-", "H", "K", "S", "-", "H", "-", "K", "-", "K", "H", "S", "-", "SH", "-"],
+          "C": ["K", "H", "SH", "K", "S", "H", "H", "K", "KH", "H", "K", "H", "SC", "H", "SH", "K"]
+        },
+        "happy": {
+          "mood": "break, lincah",
+          "bpm": 140,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "H", "K", "S", "-", "H", "-", "K", "-", "KH", "-", "S", "-", "H", "K"],
+          "B": ["K", "H", "H", "K", "S", "-", "SH", "-", "K", "H", "K", "H", "SC", "-", "H", "K"],
+          "C": ["K", "H", "SH", "K", "SC", "H", "SH", "K", "KH", "H", "K", "H", "SC", "H", "SH", "K"]
+        },
+        "angry": {
+          "mood": "break, brutal",
+          "bpm": 150,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "K", "-", "S", "-", "K", "K", "-", "K", "K", "-", "S", "-", "K", "-"],
+          "B": ["K", "H", "K", "K", "S", "-", "KH", "K", "K", "K", "K", "H", "S", "K", "KH", "-"],
+          "C": ["K", "H", "SK", "K", "SH", "K", "KH", "K", "KH", "K", "K", "H", "SC", "K", "SH", "K"]
+        },
+        "surprise": {
+          "mood": "break, patah",
+          "bpm": 145,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "C", "K", "S", "-", "H", "-", "-", "C", "K", "-", "SC", "-", "H", "K"],
+          "B": ["K", "C", "H", "K", "SC", "-", "H", "C", "K", "-", "KC", "-", "S", "C", "SH", "-"],
+          "C": ["KC", "H", "SH", "K", "SC", "H", "CH", "K", "K", "C", "KH", "H", "SC", "C", "SH", "K"]
+        },
+        "sad": {
+          "mood": "break, pelan",
+          "bpm": 115,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "-", "-", "S", "-", "-", "-", "-", "-", "K", "-", "S", "-", "-", "-"],
+          "B": ["K", "-", "H", "-", "S", "-", "-", "-", "-", "-", "K", "H", "S", "-", "H", "-"],
+          "C": ["K", "-", "H", "K", "S", "-", "H", "-", "K", "-", "K", "H", "SC", "-", "H", "-"]
+        }
+      }
+    },
+    "bounce": {
+      "label": "Bounce",
+      "gain": {"K": 1.0, "S": 0.85, "C": 0.7, "H": 0.38},
+      "expressions": {
+        "neutral": {
+          "mood": "bounce, kalem",
+          "bpm": 150,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "H", "-", "KC", "-", "H", "-", "K", "-", "H", "-", "KC", "-", "H", "-"],
+          "B": ["K", "-", "H", "-", "KC", "-", "H", "K", "K", "-", "H", "-", "KC", "-", "H", "K"],
+          "C": ["K", "-", "H", "K", "KC", "-", "SH", "K", "K", "-", "H", "K", "KC", "-", "SH", "K"]
+        },
+        "happy": {
+          "mood": "bounce, rame",
+          "bpm": 158,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "H", "-", "KC", "-", "H", "K", "K", "-", "H", "-", "KC", "-", "H", "K"],
+          "B": ["K", "-", "H", "K", "KC", "-", "H", "K", "K", "H", "H", "K", "KC", "-", "SH", "K"],
+          "C": ["K", "H", "SH", "K", "KC", "H", "H", "K", "K", "H", "SH", "K", "SC", "H", "SH", "K"]
+        },
+        "angry": {
+          "mood": "bounce, ganas",
+          "bpm": 165,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "H", "K", "KS", "-", "H", "K", "K", "-", "H", "K", "KS", "-", "H", "K"],
+          "B": ["K", "K", "H", "K", "KS", "-", "KH", "K", "K", "K", "H", "K", "KS", "-", "SH", "K"],
+          "C": ["K", "K", "SH", "K", "KS", "H", "KH", "K", "K", "K", "SH", "K", "SC", "H", "KH", "K"]
+        },
+        "surprise": {
+          "mood": "bounce, kaget",
+          "bpm": 160,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "C", "K", "KC", "-", "H", "-", "K", "C", "H", "K", "SC", "-", "H", "K"],
+          "B": ["KC", "-", "H", "K", "K", "C", "SH", "-", "KC", "-", "H", "K", "SC", "C", "H", "K"],
+          "C": ["KC", "H", "SC", "K", "KC", "H", "SH", "K", "KC", "C", "SH", "K", "SC", "H", "SC", "K"]
+        },
+        "sad": {
+          "mood": "bounce, pelan",
+          "bpm": 140,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "-", "-", "KC", "-", "-", "-", "K", "-", "-", "-", "KC", "-", "-", "-"],
+          "B": ["K", "-", "-", "-", "KC", "-", "H", "-", "K", "-", "-", "-", "KC", "-", "H", "K"],
+          "C": ["K", "-", "H", "-", "KC", "-", "H", "K", "K", "-", "H", "-", "SC", "-", "H", "K"]
+        }
+      }
+    },
     "techno": {
       "label": "Techno",
       "gain": {"K": 1.0, "S": 0.8, "C": 0.55, "H": 0.5},
@@ -59,88 +151,49 @@
         }
       }
     },
-    "house": {
-      "label": "House",
+    "brazilfunk": {
+      "label": "Brazil funk",
+      "gain": {"K": 1.0, "S": 0.85, "C": 0.8, "H": 0.4},
       "expressions": {
         "neutral": {
-          "mood": "four-on-the-floor, tenang",
-          "bpm": 118,
-          "A": ["K", "H", "K", "H", "K", "H", "K", "H"],
-          "B": ["K", "H", "KC", "H", "K", "H", "KC", "H"],
-          "C": ["K", "H", "KC", "H", "K", "KH", "KC", "SH"]
-        },
-        "happy": {
-          "mood": "four-on-the-floor, clap",
-          "bpm": 124,
-          "A": ["K", "H", "KC", "H", "K", "H", "KC", "H"],
-          "B": ["KH", "H", "KC", "H", "KH", "H", "KC", "HS"],
-          "C": ["KH", "H", "KC", "SH", "KH", "H", "KC", "SC"]
-        },
-        "angry": {
-          "mood": "four-on-the-floor, keras",
-          "bpm": 130,
-          "A": ["K", "H", "KS", "H", "K", "H", "KS", "H"],
-          "B": ["K", "KH", "KS", "H", "K", "KH", "KS", "SH"],
-          "C": ["K", "KH", "KS", "SH", "K", "KH", "KS", "SC"]
-        },
-        "surprise": {
-          "mood": "four-on-the-floor, loncat",
-          "bpm": 126,
-          "A": ["K", "C", "KH", "C", "K", "H", "KC", "S"],
-          "B": ["KH", "C", "K", "SC", "KH", "C", "K", "SH"],
-          "C": ["KH", "SC", "KH", "C", "KH", "SC", "KC", "SC"]
-        },
-        "sad": {
-          "mood": "four-on-the-floor, pelan",
-          "bpm": 112,
-          "A": ["K", "-", "K", "H", "K", "-", "K", "H"],
-          "B": ["K", "-", "K", "H", "K", "C", "K", "H"],
-          "C": ["K", "H", "K", "HC", "K", "H", "K", "S"]
-        }
-      }
-    },
-    "trap": {
-      "label": "Trap",
-      "expressions": {
-        "neutral": {
-          "mood": "half-time, adem",
+          "mood": "tamborzão, kalem",
           "bpm": 130,
           "steps_per_beat": 4,
-          "A": ["KH", "-", "H", "-", "H", "-", "H", "-", "SH", "-", "H", "-", "KH", "-", "H", "-"],
-          "B": ["KH", "-", "H", "-", "H", "-", "KH", "-", "SH", "-", "H", "-", "KH", "-", "H", "H"],
-          "C": ["KH", "H", "H", "H", "H", "-", "KH", "-", "SH", "H", "H", "H", "KH", "-", "H", "H"]
+          "A": ["K", "-", "-", "K", "S", "-", "K", "-", "-", "K", "-", "-", "S", "-", "K", "-"],
+          "B": ["K", "-", "H", "K", "SC", "-", "K", "H", "-", "K", "H", "-", "SC", "-", "K", "H"],
+          "C": ["K", "H", "C", "K", "SC", "H", "K", "C", "KH", "K", "C", "H", "SC", "C", "K", "C"]
         },
         "happy": {
-          "mood": "half-time, cerah",
-          "bpm": 140,
+          "mood": "tamborzão, ceria",
+          "bpm": 135,
           "steps_per_beat": 4,
-          "A": ["KH", "-", "H", "-", "H", "-", "KH", "-", "SH", "-", "H", "-", "H", "-", "KH", "H"],
-          "B": ["KH", "-", "H", "H", "H", "-", "KH", "-", "SC", "-", "H", "-", "H", "H", "KH", "H"],
-          "C": ["KH", "H", "H", "H", "H", "-", "KH", "H", "SC", "H", "H", "H", "KH", "H", "SC", "H"]
+          "A": ["K", "-", "C", "K", "SC", "-", "K", "-", "-", "K", "C", "-", "SC", "-", "K", "C"],
+          "B": ["K", "C", "H", "K", "SC", "C", "K", "H", "C", "K", "H", "C", "SC", "-", "K", "C"],
+          "C": ["K", "C", "CH", "K", "SC", "C", "K", "C", "KH", "K", "C", "C", "SC", "C", "K", "C"]
         },
         "angry": {
-          "mood": "half-time, berat",
-          "bpm": 150,
-          "steps_per_beat": 4,
-          "A": ["KH", "-", "H", "-", "KH", "-", "H", "-", "SH", "-", "H", "-", "KH", "-", "KH", "-"],
-          "B": ["KH", "-", "H", "H", "KH", "-", "H", "-", "SH", "-", "H", "H", "KH", "-", "KH", "H"],
-          "C": ["KH", "H", "H", "H", "KH", "H", "H", "H", "SC", "H", "H", "H", "KH", "H", "SC", "H"]
-        },
-        "surprise": {
-          "mood": "half-time, loncat",
+          "mood": "tamborzão, brutal",
           "bpm": 145,
           "steps_per_beat": 4,
-          "A": ["KH", "-", "H", "KH", "-", "-", "H", "-", "SCH", "-", "H", "-", "KH", "H", "-", "H"],
-          "B": ["KH", "-", "H", "KH", "-", "H", "H", "-", "SCH", "-", "KH", "-", "H", "H", "SC", "-"],
-          "C": ["KH", "H", "H", "KH", "H", "H", "H", "KH", "SCH", "H", "KH", "H", "H", "SC", "SC", "H"]
+          "A": ["K", "-", "K", "K", "S", "-", "K", "K", "-", "K", "K", "-", "S", "-", "K", "K"],
+          "B": ["K", "K", "K", "K", "S", "-", "K", "K", "K", "K", "K", "H", "S", "K", "K", "K"],
+          "C": ["K", "K", "SK", "K", "SC", "K", "K", "K", "KH", "K", "K", "K", "SC", "K", "K", "K"]
+        },
+        "surprise": {
+          "mood": "tamborzão, kaget",
+          "bpm": 138,
+          "steps_per_beat": 4,
+          "A": ["K", "-", "C", "K", "S", "C", "K", "-", "C", "K", "-", "C", "SC", "-", "K", "C"],
+          "B": ["KC", "-", "C", "K", "SC", "C", "K", "C", "-", "KC", "H", "C", "S", "C", "KC", "C"],
+          "C": ["KC", "C", "SC", "K", "SC", "C", "KC", "C", "KH", "KC", "C", "C", "SC", "C", "KC", "C"]
         },
         "sad": {
-          "mood": "half-time, kosong",
+          "mood": "tamborzão, sepi",
           "bpm": 120,
           "steps_per_beat": 4,
-          "A": ["K", "-", "H", "-", "-", "-", "H", "-", "S", "-", "H", "-", "-", "-", "H", "-"],
-          "B": ["K", "-", "H", "-", "-", "-", "H", "-", "S", "-", "H", "-", "K", "-", "H", "-"],
-          "C": ["K", "-", "H", "H", "-", "-", "H", "-", "SC", "-", "H", "H", "K", "-", "H", "H"]
+          "A": ["K", "-", "-", "-", "S", "-", "-", "-", "-", "K", "-", "-", "S", "-", "-", "-"],
+          "B": ["K", "-", "-", "K", "S", "-", "-", "-", "-", "K", "-", "-", "S", "-", "H", "-"],
+          "C": ["K", "-", "H", "K", "SC", "-", "K", "-", "-", "K", "H", "-", "SC", "-", "K", "H"]
         }
       }
     },

@@ -52,7 +52,8 @@ struct ContentView: View {
                         Text(option.label).tag(option.id)
                     }
                 }
-                .pickerStyle(.segmented).labelsHidden()
+                // A menu, not a segmented row: six labels do not fit in 300 pt.
+                .pickerStyle(.menu).labelsHidden()
             }
             Text(model.playing?.emoji ?? "🎧").font(.system(size: 64))
             Text(model.playing.map { "Beat: \($0.rawValue)" } ?? "Tunjukkan ekspresimu")
