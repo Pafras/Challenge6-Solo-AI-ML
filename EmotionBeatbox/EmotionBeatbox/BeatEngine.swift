@@ -28,6 +28,9 @@ struct PatternTable: Decodable {
 
     struct Genre: Decodable {
         let label: String
+        /// Optional: EDM turns the hats and claps down so the kick carries
+        /// the low end, since the bucket has no bass sound.
+        let gain: [String: Float]?
         let expressions: [String: Entry]
     }
 
@@ -211,6 +214,7 @@ final class BeatEngine {
         }
         guard let entry = table.genres[genre]?.expressions[expression.rawValue],
               let face = table.expressionSettings[expression.rawValue] else { return }
+        applyGain()
         if let travel = strength {
             // Calibrated: how far the face travelled from its resting shape
             // decides how busy this bar is. The clarity fill steps aside, so
@@ -251,6 +255,16 @@ final class BeatEngine {
         guard let bar = bars.last(where: { $0.start <= t }) else { return nil }
         let s = Int(Double(t - bar.start) / bar.stepFrames)
         return s < bar.steps ? (s, bar.steps) : nil
+    }
+
+    /// The genre's balance, set on the players as each bar is scheduled, so a
+    /// genre change lands with the bar rather than halfway through one.
+    private func applyGain() {
+        let mix = table.genres[genre]?.gain ?? table.gain
+        for (token, players) in pools {
+            let volume = mix[token] ?? table.gain[token] ?? 1
+            for player in players where player.volume != volume { player.volume = volume }
+        }
     }
 
     /// Takes and players both go round-robin: neighbouring hits of one sound

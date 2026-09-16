@@ -75,8 +75,9 @@ def clean(path, token):
     return x / np.abs(x).max() * PEAK
 
 
-def render(spec, cfg, takes, bars=8):
+def render(spec, cfg, takes, bars=8, gain=None):
     """Eight bars of one expression, variations rotating as in the app."""
+    gain = {**cfg["gain"], **(gain or {})}   # the genre's balance over the shared one
     step = 60 / spec["bpm"] / spec.get("steps_per_beat", 2)
     n_steps = len(spec["A"])
     out = np.zeros(int(bars * n_steps * step * SR) + SR)
@@ -86,7 +87,7 @@ def render(spec, cfg, takes, bars=8):
         for i, hit in enumerate(spec[variation]):
             at = int((bar * n_steps + i) * step * SR)
             for token in hit.replace("-", ""):
-                s = takes[token][turn[token] % len(takes[token])] * cfg["gain"][token]
+                s = takes[token][turn[token] % len(takes[token])] * gain[token]
                 turn[token] += 1
                 out[at:at + len(s)] += s
     out = out[:int(bars * n_steps * step * SR)]
@@ -109,7 +110,7 @@ def main():
             print(f"{out.name:12} <- {parse_name(path)[1]:12} (model yakin {conf:.3f})  {len(x) / SR:.2f} s")
     for genre, g in cfg["genres"].items():
         for expr, spec in g["expressions"].items():
-            out = render(spec, cfg, takes)
+            out = render(spec, cfg, takes, gain=g.get("gain"))
             sf.write(PREVIEW / f"{genre}-{expr}.wav", out, SR, subtype="PCM_16")
             used = sorted({t for v in "ABC" for hit in spec[v] for t in hit.replace("-", "")})
             print(f"preview {genre:8} {expr:8} {spec['bpm']:3} BPM  bunyi {''.join(used):4}  {len(out) / SR:.1f} s")
