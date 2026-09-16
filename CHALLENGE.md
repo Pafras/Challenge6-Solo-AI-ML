@@ -128,7 +128,8 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 - [x] Audio engine: BPM clock + sequencer token → suara, loop mulus
 - [x] Mapping emosi → beat pattern (rule-based, tabel biasa)
 - [x] Ekspresi ganti → pattern ganti di step berikutnya, bukan restart loop — *di bar berikutnya, tahan 0,8 dtk, minimal 2 bar per pattern*
-- [ ] **Rekam demo video cadangan sore ini** — free mode aja udah cukup
+- [x] **Rekam video cadangan** — bukan buat disubmit (mentor: yang dinilai sharing + live demo), tapi jaga-jaga kalau live demo gagal gara-gara cahaya/suara/grogi
+- [ ] Latihan live demo sekali, kalau bisa di ruangan yang cahayanya mirip
 - [x] Bar dots: 8 titik per bar + label "Berikutnya: … di awal bar", biar gak perlu ngitung bar pakai kuping
 - [x] Genre: Techno / EDM / Breakbeat / R&B / Brazil funk, dipilih pengguna (bukan model), grid 1/16, takaran volume per genre
 - [x] Kekuatan ekspresi dari landmark: kalibrasi muka datar 2 dtk, lalu jarak titik dari muka datar itu milih variasi A/B/C per bar (batas diukur dari 7 orang rekaman)
@@ -141,7 +142,7 @@ Konteks lengkap + riwayat pivot: lihat `CLAUDE.md`. Spec teknis penuh: `docs/spe
 
 - [ ] Polish seadanya: benerin yang paling kerasa ganggu, jangan nambah fitur
 - [ ] Finalisasi model card + rapikan `docs/experiments.md` jadi cerita
-- [ ] Rekam demo final (kalau yang Rabu udah cukup, pakai itu)
+- [ ] Siapin materi sharing: cerita dari `docs/experiments.md` (arsitektur → overfitting → label smoothing → fine-tune → landmark & gabungan), plus `docs/landmark-boxplot.png`
 - [ ] Submit ke Academy + refleksi
 
 ## Opsional (cuma kalau semua di atas kelar)
