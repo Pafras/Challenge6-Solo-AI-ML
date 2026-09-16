@@ -136,16 +136,19 @@ brief's star rating):
   mechanism runs at a time — calibrated, strength decides; not calibrated,
   the rotation and the clarity fill do. The table lives in
   `audio/patterns.json`, shared by the preview script and the app.
-  **Genres, 16 Sep:** five of them — Techno, EDM, Breakbeat, Bounce and
-  Brazil funk (House, Trap, Hip-hop and Dangdut were tried and dropped by
-  ear) — each with
+  **Genres, 16 Sep:** five of them — Techno, EDM, Breakbeat, R&B and
+  Brazil funk (House, Trap, Hip-hop, Dangdut and Bounce were tried and
+  dropped by ear) — each with
   its own tempo and its own A/B/C per expression, picked by the user from a
   segmented control and never by the model, so a genre change cannot add
   jitter. A pattern may set `steps_per_beat: 4` for a sixteenth-note grid
   (trap hat rolls, EDM), and a genre may override the mix — EDM turns the
   hats and claps down so the kick carries the low end. EDM holds one tempo
   across all five expressions, because a club set does; only the density
-  moves. Rejected: buying or downloading a bass sound. Every sound in the
+  moves. **Sad is not a slow beat (16 Sep):** dropping it far below the
+  genre's other tempos made the beat sound like it fell over rather than
+  changed mood, so sad now sits at or near the genre tempo and carries its
+  sadness in the texture — fewer kicks, fewer claps, hats still running. Rejected: buying or downloading a bass sound. Every sound in the
   app comes from the beatbox bucket, a stock sample would break that and
   bring unclear licensing, and recording one by mouth is the option if it
   is ever wanted. Each
