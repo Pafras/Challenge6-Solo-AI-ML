@@ -45,6 +45,19 @@ nonisolated struct FaceLandmarks: Sendable {
             image: image)
     }
 
+    /// How far this face sits from the user's resting face: the mean travel
+    /// of the 76 points, in pupil distances (scripts/strength_thresholds.py).
+    /// One number for every expression, so no per-expression geometry is
+    /// needed, and the user's own flat face cancels out face shape.
+    static func strength(_ features: [Float], from baseline: [Float]) -> Float? {
+        guard features.count == baseline.count, !features.isEmpty else { return nil }
+        var total: Float = 0
+        for i in stride(from: 0, to: features.count, by: 2) {
+            total += hypot(features[i] - baseline[i], features[i + 1] - baseline[i + 1])
+        }
+        return total / Float(features.count / 2)
+    }
+
     /// OpenCV's INTER_CUBIC: Keys cubic with a = -0.75, pixel centres
     /// aligned, edge pixels repeated. Separable, so rows first, then columns.
     static func cubicResize(_ src: [UInt8], from n: Int, to m: Int) -> [UInt8] {

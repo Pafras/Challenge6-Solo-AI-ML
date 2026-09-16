@@ -1,5 +1,5 @@
 {
-  "_comment": "Single source of truth for the beat. Read by scripts/make_samples.py (previews) and bundled into the macOS app. One step = one eighth note (60 / bpm / 2 s). A step lists the sounds that hit together: K kick, H hi-hat, S snare, C clap, '-' rest. While an expression is held, the variations rotate in 'order', each lasting 'bars_per_variation' bars; a new expression always starts at A, at the next bar. Fill: when the playing expression's mean probability over a bar reaches its 'fill_at', the next bar plays C once (never two bars running). fill_at is per expression because the model's certainty differs by class; set near the median clear bar in webcam log #4 (one person), so a tuning knob, not a law.",
+  "_comment": "Single source of truth for the beat. Read by scripts/make_samples.py (previews) and bundled into the macOS app. One step = one eighth note (60 / bpm / 2 s). A step lists the sounds that hit together: K kick, H hi-hat, S snare, C clap, '-' rest. While an expression is held, the variations rotate in 'order', each lasting 'bars_per_variation' bars; a new expression always starts at A, at the next bar. Fill: when the playing expression's mean probability over a bar reaches its 'fill_at', the next bar plays C once (never two bars running). fill_at is per expression because the model's certainty differs by class; set near the median clear bar in webcam log #4 (one person), so a tuning knob, not a law. Strength: once the user has calibrated a resting face, the variation comes from how far the face travels from it instead (mean point travel in pupil distances, scripts/strength_thresholds.py): below 'strength_b' plays A, then B, and from 'strength_c' C. Thresholds are the thirds measured on the 7 recorded people; tuning knobs too.",
   "bars_per_variation": 2,
   "order": ["A", "B", "A", "C"],
   "samples_per_sound": 3,
@@ -9,6 +9,8 @@
       "mood": "calm",
       "bpm": 90,
       "fill_at": 0.80,
+      "strength_b": 0.021,
+      "strength_c": 0.043,
       "A": ["K", "H", "-", "H", "K", "H", "S", "H"],
       "B": ["K", "H", "-", "H", "K", "C", "S", "H"],
       "C": ["K", "H", "S", "H", "K", "H", "SC", "-"]
@@ -17,6 +19,8 @@
       "mood": "groove",
       "bpm": 110,
       "fill_at": 0.84,
+      "strength_b": 0.081,
+      "strength_c": 0.148,
       "A": ["KH", "H", "SH", "H", "KH", "KH", "SH", "H"],
       "B": ["KH", "H", "SH", "C", "KH", "H", "SH", "CH"],
       "C": ["KH", "H", "SH", "H", "KH", "S", "SC", "SC"]
@@ -25,6 +29,8 @@
       "mood": "heavy",
       "bpm": 130,
       "fill_at": 0.70,
+      "strength_b": 0.083,
+      "strength_c": 0.107,
       "A": ["K", "K", "S", "H", "K", "K", "S", "SH"],
       "B": ["K", "H", "S", "K", "K", "K", "SC", "H"],
       "C": ["K", "K", "S", "S", "K", "SC", "S", "SC"]
@@ -33,6 +39,8 @@
       "mood": "variation",
       "bpm": 120,
       "fill_at": 0.90,
+      "strength_b": 0.103,
+      "strength_c": 0.149,
       "A": ["KH", "C", "SH", "C", "KH", "S", "H", "C"],
       "B": ["C", "KH", "S", "H", "KC", "H", "S", "C"],
       "C": ["KH", "SC", "KH", "SC", "K", "S", "C", "C"]
@@ -41,6 +49,8 @@
       "mood": "sparse",
       "bpm": 70,
       "fill_at": 0.55,
+      "strength_b": 0.075,
+      "strength_c": 0.108,
       "A": ["K", "-", "H", "-", "S", "-", "H", "-"],
       "B": ["K", "-", "H", "K", "S", "-", "H", "-"],
       "C": ["K", "-", "H", "-", "S", "-", "C", "H"]

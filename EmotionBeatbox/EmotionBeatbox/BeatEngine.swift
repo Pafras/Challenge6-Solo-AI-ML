@@ -7,6 +7,8 @@ struct PatternTable: Decodable {
         let mood: String
         let bpm: Double
         let fillAt: Float
+        let strengthB: Float
+        let strengthC: Float
         let A: [String]
         let B: [String]
         let C: [String]
@@ -46,6 +48,12 @@ final class BeatEngine {
     private(set) var filled = false
     private var claritySum: Float = 0
     private var clarityCount = 0
+    /// Mean travel of the face from the user's resting face over this bar,
+    /// once they have calibrated one. It picks the variation instead of the
+    /// rotation: the face itself says how busy the beat gets.
+    private(set) var strength: Float?
+    private var strengthSum: Float = 0
+    private var strengthCount = 0
     /// Set from the smoother; applied at the next bar.
     var target: Expression?
 
@@ -156,7 +164,12 @@ final class BeatEngine {
 
     /// Every frame's probabilities, in Expression.modelOrder. Only the playing
     /// expression's share counts.
-    func observe(_ probs: [Float]) {
+    func observe(_ probs: [Float], strength travel: Float?) {
+        if let travel {
+            strengthSum += travel
+            strengthCount += 1
+            strength = strengthSum / Float(strengthCount)
+        }
         guard let playing, let i = Expression.modelOrder.firstIndex(of: playing), i < probs.count else { return }
         claritySum += probs[i]
         clarityCount += 1
@@ -175,12 +188,23 @@ final class BeatEngine {
             barsHeld = 0
         }
         guard let entry = table.expressions[expression.rawValue] else { return }
-        variation = fill ? "C" : table.order[(barsHeld / table.barsPerVariation) % table.order.count]
-        filled = fill
+        if let travel = strength {
+            // Calibrated: how far the face travelled from its resting shape
+            // decides how busy this bar is. The clarity fill steps aside, so
+            // only one thing ever picks the variation.
+            variation = travel >= entry.strengthC ? "C" : (travel >= entry.strengthB ? "B" : "A")
+            filled = false
+        } else {
+            variation = fill ? "C" : table.order[(barsHeld / table.barsPerVariation) % table.order.count]
+            filled = fill
+        }
         fillAt = entry.fillAt
         claritySum = 0
         clarityCount = 0
         clarity = nil
+        strengthSum = 0
+        strengthCount = 0
+        strength = nil
         bpm = entry.bpm
         let steps = entry.steps(variation)
         let stepFrames = sampleRate * 60 / entry.bpm / 2

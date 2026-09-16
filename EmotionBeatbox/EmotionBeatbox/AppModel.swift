@@ -17,6 +17,13 @@ final class AppModel {
     var clarity: Float?
     var fillAt: Float = 1
     var filled = false
+    /// The user's resting face, averaged over the calibration seconds.
+    /// Until it exists, variations rotate and the clarity fill applies.
+    private(set) var baseline: [Float]?
+    private(set) var strength: Float?
+    var calibrating: Bool { calibrateUntil != nil }
+    private var calibrateUntil: Date?
+    private var calibrationFrames: [[Float]] = []
 
     let camera = CameraManager()
     private var smoother = Smoother()
@@ -61,14 +68,31 @@ final class AppModel {
                 self.variation = beat.variation
                 self.bpm = beat.bpm
                 self.clarity = beat.clarity
+                self.strength = beat.strength
                 self.fillAt = beat.fillAt
                 self.filled = beat.filled
             }
         }
     }
 
+    /// Hold a flat face for two seconds; the average of those frames becomes
+    /// the resting face every later frame is measured against.
+    func calibrate() {
+        calibrationFrames.removeAll()
+        calibrateUntil = .now.addingTimeInterval(2)
+    }
+
     /// For the bar dots, which ask on every display frame.
     func currentStep() -> (step: Int, of: Int)? { beat?.currentStep() }
+
+    private static func average(_ rows: [[Float]]) -> [Float]? {
+        guard let first = rows.first else { return nil }
+        var out = [Float](repeating: 0, count: first.count)
+        for row in rows where row.count == out.count {
+            for i in out.indices { out[i] += row[i] / Float(rows.count) }
+        }
+        return out
+    }
 
     private func handle(_ result: FrameProcessor.Result?) {
         faceFound = result != nil
@@ -77,7 +101,18 @@ final class AppModel {
         raw = result.expression
         confidence = result.confidence
         probs = result.probs
-        beat?.observe(result.probs)
+        var travel: Float?
+        if let points = result.landmarks {
+            if let until = calibrateUntil {
+                calibrationFrames.append(points.features)
+                if Date.now >= until {
+                    calibrateUntil = nil
+                    baseline = Self.average(calibrationFrames)
+                }
+            }
+            if let baseline { travel = FaceLandmarks.strength(points.features, from: baseline) }
+        }
+        beat?.observe(result.probs, strength: travel)
         stable = smoother.add(result.expression, confidence: result.confidence)
         // Below the threshold the smoother returns nil: keep the current
         // pattern playing rather than stopping or switching.

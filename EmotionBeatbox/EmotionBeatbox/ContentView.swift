@@ -47,10 +47,16 @@ struct ContentView: View {
                 Text("variasi \(model.variation)\(model.filled ? " · fill 🔥" : "") · \(Int(model.bpm)) BPM")
                     .font(.callout).foregroundStyle(.secondary)
                 barDots
-                // Clear enough through the bar, and the next bar is a fill.
-                Text(String(format: "kejelasan bar ini %.2f · fill kalau ≥ %.2f", model.clarity ?? 0, model.fillAt))
-                    .font(.caption).monospacedDigit()
-                    .foregroundStyle((model.clarity ?? 0) >= model.fillAt ? Color.orange : Color.secondary)
+                if model.baseline == nil {
+                    // Clear enough through the bar, and the next bar is a fill.
+                    Text(String(format: "kejelasan bar ini %.2f · fill kalau ≥ %.2f", model.clarity ?? 0, model.fillAt))
+                        .font(.caption).monospacedDigit()
+                        .foregroundStyle((model.clarity ?? 0) >= model.fillAt ? Color.orange : Color.secondary)
+                } else {
+                    // Calibrated: the face's own travel picks the variation.
+                    Text(String(format: "kekuatan ekspresi %.3f → variasi %@", model.strength ?? 0, model.variation))
+                        .font(.caption).monospacedDigit().foregroundStyle(.secondary)
+                }
                 // The face has settled on another expression: say when it takes over,
                 // so nobody has to count bars by ear.
                 if let next = model.stable, next != model.playing {
@@ -77,6 +83,12 @@ struct ContentView: View {
             }
             Text("Stabil: \(model.stable?.rawValue ?? "—")  (threshold 0,6)")
                 .font(.caption).foregroundStyle(.secondary)
+            Button(model.calibrating ? "Tahan muka datar…"
+                   : model.baseline == nil ? "Kalibrasi muka datar (2 dtk)" : "Kalibrasi ulang") {
+                model.calibrate()
+            }
+            .font(.caption)
+            .disabled(model.calibrating || !model.faceFound)
         }
     }
 }

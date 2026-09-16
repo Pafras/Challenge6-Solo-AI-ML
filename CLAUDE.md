@@ -124,7 +124,17 @@ brief's star rating):
   clearly the face shows the expression, not how strong the emotion is. One
   threshold per expression, because the fused model's certainty differs by
   class (webcam log #4 bars: surprise 0.85–0.93, angry 0.68–0.71, sad
-  ≤ 0.55); a single 0.8 would fill surprise every bar and angry never. The table lives in
+  ≤ 0.55); a single 0.8 would fill surprise every bar and angry never.
+  **Superseded where the user calibrates, 16 Sep: variation from expression
+  strength.** Hold a flat face for two seconds and the app measures every
+  later frame against it: strength = the mean travel of the 76 landmark
+  points from that resting face, in pupil distances. Averaged over a bar, it
+  picks A, B or C (`strength_b` / `strength_c` in `audio/patterns.json`,
+  measured as the thirds over the 7 recorded people by
+  `scripts/strength_thresholds.py`). This is the thing confidence is not:
+  how far the face actually moved, not how sure the model is. Only one
+  mechanism runs at a time — calibrated, strength decides; not calibrated,
+  the rotation and the clarity fill do. The table lives in
   `audio/patterns.json`, shared by the preview script and the app. Each
   sound has three takes from the bucket, played in turn.
   **Switch brakes, 15 Sep:** a new expression must stay stable for 0.8 s
