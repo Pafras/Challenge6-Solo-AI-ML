@@ -1,0 +1,20 @@
+# torch is pinned to 2.7.0 because that is the newest version coremltools 9.0
+# has actually been tested against — 2.8 only raises a warning today, but the
+# failure would land on Day 9, which has no slack, under a model already
+# trained. Nothing this project uses changed between 2.7 and 2.8.
+# Re-check when a newer coremltools ships: if it covers 2.8, unpinning is free.
+torch==2.7.0
+torchvision
+# Audio model. torchaudio pinned to match torch; on macOS it has no backend
+# of its own for reading .wav, and soundfile supplies one (bundles libsndfile).
+torchaudio==2.7.0
+soundfile
+coremltools
+numpy
+matplotlib
+# Camera and drawing only. 5.x dropped the Haar face detector; pin <5 only
+# if the webcam test has to fall back from Vision to Haar.
+opencv-python
+# Face detection in the webcam test: Apple Vision, the detector the app
+# uses, called from Python. 12.0 does not support this venv's Python 3.9.
+pyobjc-framework-Vision==11.1
